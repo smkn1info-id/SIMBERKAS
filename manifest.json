@@ -1,7 +1,7 @@
 {
-  "name": "SIMPEL-PAY",
-  "short_name": "SIMPEL-PAY",
-  "start_url": "https://igum84.github.io/SIMPEL-PAY/",
+  "name": "SIMBERKAS",
+  "short_name": "SIMBERKAS",
+  "start_url": "https://smkn1info-id.github.io/SIMBERKAS/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#667eea",
@@ -18,3 +18,4 @@
     }
   ]
 }
+
