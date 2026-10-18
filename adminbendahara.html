@@ -48,12 +48,24 @@ h1{font-size:clamp(26px,4.5vw,36px);letter-spacing:-.025em;line-height:1.1}
 .chip{font-size:13px;font-weight:600;padding:6px 14px;border-radius:99px;background:var(--glass);box-shadow:0 0 0 .5px var(--line)}
 .panel{background:var(--glass);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);border-radius:16px;box-shadow:var(--shadow)}
 
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
-.stat{padding:16px}
-.stat .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff;margin-bottom:10px}
-.stat .ic svg{width:18px;height:18px}
-.stat small{color:var(--muted);font-size:13px}
-.stat b{display:block;font-size:clamp(20px,2.6vw,26px);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:16px}
+.sc{--c1:#3b82f6;--tint:rgba(59,130,246,.07);--bd:rgba(59,130,246,.24);display:flex;align-items:center;gap:14px;min-width:0;padding:16px;border-radius:18px;
+  background:linear-gradient(160deg,#fff 0%,var(--tint) 100%);border:1px solid var(--bd);box-shadow:0 1px 2px rgba(30,30,80,.04),0 4px 14px -8px rgba(30,30,80,.12);
+  transition:transform .2s,box-shadow .2s}
+.sc:hover{transform:translateY(-2px);box-shadow:0 1px 2px rgba(30,30,80,.04),0 10px 22px -10px rgba(30,30,80,.2)}
+.sc.s-done{--c1:#16a34a;--tint:rgba(34,197,94,.08);--bd:rgba(34,197,94,.28)}
+.sc.s-proc{--c1:#d97706;--tint:rgba(245,158,11,.09);--bd:rgba(245,158,11,.30)}
+.sc.s-out{--c1:#7c3aed;--tint:rgba(139,92,246,.07);--bd:rgba(139,92,246,.24)}
+.sc .si{flex:none;width:44px;height:44px;border-radius:13px;display:grid;place-items:center;color:var(--c1);background:rgba(255,255,255,.85);border:1px solid var(--bd)}
+.sc .si svg{width:22px;height:22px}
+.sc .sb{min-width:0}
+.sc .sl{font-size:12px;font-weight:600;color:var(--muted);line-height:1.3}
+.sc .sv{font-size:22px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin-top:2px;color:var(--text);font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc .ss{font-size:12px;font-weight:600;color:var(--c1);margin-top:1px;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sc.load .sv,.sc.load .ss{opacity:.45}
+@media (max-width:1100px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.stats{gap:8px}.sc{gap:10px;padding:12px}.sc .si{width:36px;height:36px;border-radius:10px}.sc .si svg{width:18px;height:18px}.sc .sv{font-size:17px}.sc .sl{font-size:11px}}
+@media (prefers-reduced-motion:reduce){.sc{transition:none}}
 .delta{font-size:12px;font-weight:600}.up{color:#1fa23c}.down{color:var(--red)}.mid{color:#b86e00}
 
 
@@ -113,7 +125,7 @@ body.lock{overflow:hidden}
 @media (max-width:520px){.sheet-grid{grid-template-columns:repeat(2,1fr)}.dock nav{gap:18px}.dock .d{width:96px;font-size:12px}}
 @media (prefers-reduced-motion:reduce){.sheet,.sheet-bd{transition:none!important}}
 
-@media (max-width:640px){.stats{grid-template-columns:1fr}}
+
 @media (max-width:520px){.acct div{display:none}.acct{padding:3px}.d{width:62px;padding:6px 2px;font-size:10.5px}.d .ic{width:36px;height:36px}.vchart{height:190px}.wrap{padding:16px 5px}.nav{padding-left:5px;padding-right:5px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -138,11 +150,16 @@ body.lock{overflow:hidden}
     <span class="chip" id="period">Tahun 2026</span>
   </div>
 
-  <section class="stats" id="stats" aria-label="Ringkasan"></section>
+  <section class="stats" id="stats" aria-label="Ringkasan transaksi belanja">
+    <div class="sc s-all load"><span class="si" data-i="bag"></span><div class="sb"><p class="sl">Total Transaksi Belanja</p><p class="sv" id="stAll">…</p><p class="ss" id="stAllS">Memuat…</p></div></div>
+    <div class="sc s-done load"><span class="si" data-i="check"></span><div class="sb"><p class="sl">Transaksi Belanja Selesai</p><p class="sv" id="stDone">…</p><p class="ss" id="stDoneS">Memuat…</p></div></div>
+    <div class="sc s-proc load"><span class="si" data-i="clock"></span><div class="sb"><p class="sl">Transaksi Belanja On Proses</p><p class="sv" id="stProc">…</p><p class="ss" id="stProcS">Memuat…</p></div></div>
+    <div class="sc s-out load"><span class="si" data-i="wallet"></span><div class="sb"><p class="sl">Total Pengeluaran Belanja</p><p class="sv" id="stOut">…</p><p class="ss" id="stOutS">Memuat…</p></div></div>
+  </section>
 
   <section class="panel box">
     <h2>Perbandingan transaksi bulanan</h2>
-    <p class="sub">Jumlah transaksi pembayaran per bulan, tahun ini dibanding tahun lalu</p>
+    <p class="sub">Jumlah transaksi belanja per bulan, tahun ini dibanding tahun lalu</p>
     <div class="legend"><span><i style="background:#2b86f0"></i><em id="lgCur" style="font-style:normal">2026</em></span><span><i style="background:#b79af2"></i><em id="lgPrev" style="font-style:normal">2025</em></span></div>
     <div class="vchart" id="vchart" role="img" aria-label="Grafik batang jumlah transaksi bulanan tahun ini dibanding tahun lalu"></div>
   </section>
@@ -191,6 +208,8 @@ body.lock{overflow:hidden}
     list:'<path d="M4 6h16M4 12h16M4 18h10"/>',
     folder:'<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>',
     check:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/>',
+    bag:'<path d="M6 7h12l1 13H5zM9 7a3 3 0 0 1 6 0"/>',
+    wallet:'<path d="M3 7a2 2 0 0 1 2-2h12v4M3 7v11a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2z"/><circle cx="16.5" cy="14.5" r="1.2"/>',
     clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
   };
   function svg(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+P[n]+'</svg>';}
@@ -230,45 +249,66 @@ body.lock{overflow:hidden}
     }
   }
   muatIdentitas();
-  var nf=function(n){return n.toLocaleString('id-ID');};
+  var nf=function(n){return Number(n||0).toLocaleString('id-ID');};
   var pct=function(a,b){return b?(Math.round(a/b*1000)/10).toLocaleString('id-ID')+'%':'0%';};
 
-  /* Data contoh (dummy) untuk tampilan */
   var bulan=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-  var cur =[18,22,27,24,31,26,34,29,33, 9, 0, 0];
-  var prev=[14,19,21,23,24,27,29,27,30,31,29,36];
-  var proses=22;
 
   var now=new Date(),yr=now.getFullYear(),mi=now.getMonth();
   document.getElementById('period').textContent='Tahun '+yr;
   document.getElementById('lgCur').textContent=yr;
   document.getElementById('lgPrev').textContent=yr-1;
 
-  var total=cur.reduce(function(a,b){return a+b;},0);
-  var selesai=total-proses;
-  var prevSame=prev.slice(0,mi+1).reduce(function(a,b){return a+b;},0);
-  var chg=prevSame?Math.round((total-prevSame)/prevSame*1000)/10:0;
-  var chgTxt=(chg>=0?'+':'')+chg.toLocaleString('id-ID')+'% dari periode sama tahun lalu';
-
-  /* Kartu statistik */
-  var s=[
-    ['Total transaksi pembayaran',nf(total),chgTxt,chg>=0?'up':'down','list','linear-gradient(160deg,#4da3ff,#0a5fe0)'],
-    ['Total selesai',nf(selesai),pct(selesai,total)+' dari total transaksi','up','check','linear-gradient(160deg,#5be37a,#1fa23c)'],
-    ['Total diproses',nf(proses),pct(proses,total)+' dari total transaksi','mid','clock','linear-gradient(160deg,#ffb454,#f0780a)']
-  ];
-  document.getElementById('stats').innerHTML=s.map(function(x){
-    return '<div class="panel stat"><div class="ic" style="background:'+x[5]+'">'+svg(x[4])+'</div><small>'+x[0]+'</small><b>'+x[1]+'</b><span class="delta '+x[3]+'">'+x[2]+'</span></div>';}).join('');
-
-  /* Grafik batang vertikal */
-  var max=Math.max(10,Math.ceil(Math.max.apply(null,cur.concat(prev))/10)*10),v=document.getElementById('vchart');
-  var h='<span class="yl" style="bottom:22px">0</span><span class="yl" style="bottom:calc(22px + (100% - 22px)*.5)">'+(max/2)+'</span><span class="yl" style="bottom:calc(100% - 4px)">'+max+'</span>';
-  bulan.forEach(function(m,i){
-    h+='<div class="col" tabindex="0"><div class="tip">'+m+': '+cur[i]+' transaksi · lalu '+prev[i]+'</div><div class="pair"><div class="b prev" data-h="'+(prev[i]/max*100)+'"></div><div class="b cur" data-h="'+(cur[i]/max*100)+'"></div></div><span>'+m+'</span></div>';
-  });
-  v.innerHTML=h;
-  requestAnimationFrame(function(){requestAnimationFrame(function(){
-    document.querySelectorAll('.b').forEach(function(b){b.style.height=b.dataset.h+'%';});
-  });});
+  /* Kartu ringkasan: data nyata dari Supabase (surat_order + transaksi_selesai), tahun berjalan */
+  async function muatStats(){
+    var ids=['stAll','stDone','stProc','stOut'],cards=document.querySelectorAll('#stats .sc');
+    function set(id,v,sv){document.getElementById(id).textContent=v;document.getElementById(id+'S').textContent=sv;}
+    try{
+      var sb=window.supabase.createClient(SB_URL,SB_KEY);
+      var r=await sb.from('surat_order').select('tanggal,total,status');
+      if(r.error)throw r.error;
+      var d=await sb.from('transaksi_selesai').select('tanggal,total');
+      if(d.error)console.warn('transaksi_selesai:',d.error);
+      var cm=new Array(12).fill(0),pm=new Array(12).fill(0);
+      function tally(x){
+        var t=String(x.tanggal||''),y=+t.slice(0,4),m=+t.slice(5,7)-1;
+        if(m<0||m>11)return;
+        if(y===yr)cm[m]++;else if(y===yr-1)pm[m]++;
+      }
+      (r.data||[]).forEach(tally);((d&&d.data)||[]).forEach(tally);
+      gambar(cm,pm);
+      var nDone=0,nProc=0,sDone=0,sProc=0;
+      function thisYear(x){return +String(x.tanggal||'').slice(0,4)===yr;}
+      (r.data||[]).filter(thisYear).forEach(function(x){
+        var t=Number(x.total)||0;
+        if(x.status==='Selesai'){nDone++;sDone+=t;}else{nProc++;sProc+=t;}
+      });
+      ((d&&d.data)||[]).filter(thisYear).forEach(function(x){nDone++;sDone+=Number(x.total)||0;});
+      var nAll=nDone+nProc,sAll=sDone+sProc;
+      set('stAll',nf(nAll),'Rp '+nf(sAll));
+      set('stDone',nf(nDone),'Rp '+nf(sDone));
+      set('stProc',nf(nProc),'Rp '+nf(sProc));
+      set('stOut','Rp '+nf(sAll),'Tahun '+yr);
+    }catch(err){
+      console.error(err);
+      ids.forEach(function(id){set(id,'-','Gagal memuat');});
+    }
+    cards.forEach(function(c){c.classList.remove('load');});
+  }
+  /* Grafik batang vertikal: jumlah transaksi per bulan (tahun ini vs tahun lalu) */
+  function gambar(cur,prev){
+    var mx=Math.max.apply(null,cur.concat(prev)),max=Math.max(4,Math.ceil(mx/4)*4),v=document.getElementById('vchart');
+    var h='<span class="yl" style="bottom:22px">0</span><span class="yl" style="bottom:calc(22px + (100% - 22px)*.5)">'+(max/2)+'</span><span class="yl" style="bottom:calc(100% - 4px)">'+max+'</span>';
+    bulan.forEach(function(m,i){
+      h+='<div class="col" tabindex="0"><div class="tip">'+m+': '+cur[i]+' transaksi · lalu '+prev[i]+'</div><div class="pair"><div class="b prev" data-h="'+(prev[i]/max*100)+'"></div><div class="b cur" data-h="'+(cur[i]/max*100)+'"></div></div><span>'+m+'</span></div>';
+    });
+    v.innerHTML=h;
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      v.querySelectorAll('.b').forEach(function(b){b.style.height=b.dataset.h+'%';});
+    });});
+  }
+  gambar(new Array(12).fill(0),new Array(12).fill(0));
+  muatStats();
 })();
 </script>
 </body>
