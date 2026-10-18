@@ -88,6 +88,31 @@ html,body{overflow-x:hidden}
 .d .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.35)}
 .d .ic svg{width:21px;height:21px}
 
+/* Dock: hanya Menu & Log Out */
+.dock nav{justify-content:center;gap:28px}
+.dock nav>:first-child,.dock nav>:last-child{margin:0}
+.dock .d{width:110px}
+
+/* Bottom sheet (slide up) */
+.sheet-bd{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.35);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden;transition:opacity .28s ease,visibility 0s linear .34s}
+.sheet-bd.open{opacity:1;visibility:visible;transition:opacity .28s ease}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;width:min(720px,100%);margin:0 auto;border-radius:22px 22px 0 0;
+  background:rgba(255,255,255,.94);backdrop-filter:saturate(180%) blur(40px);-webkit-backdrop-filter:saturate(180%) blur(40px);
+  box-shadow:0 -10px 40px rgba(30,30,80,.25),0 0 0 .5px rgba(0,0,0,.14);padding:10px 20px calc(24px + env(safe-area-inset-bottom));
+  transform:translateY(105%);visibility:hidden;transition:transform .34s cubic-bezier(.2,.9,.3,1),visibility 0s linear .34s;max-height:85vh;overflow-y:auto}
+.sheet.open{transform:none;visibility:visible;transition:transform .34s cubic-bezier(.2,.9,.3,1)}
+.grab{width:40px;height:5px;border-radius:99px;background:rgba(120,120,128,.35);margin:0 auto 12px}
+.sheet-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.sheet-h h2{font-size:20px;letter-spacing:-.01em}
+.sheet-x{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--track);color:var(--muted)}
+.sheet-x svg{width:16px;height:16px}
+.sheet-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sheet-grid .d{width:auto;padding:14px 8px;background:var(--card);box-shadow:0 0 0 .5px var(--line);font-size:13px}
+.sheet-grid .d:hover{background:rgba(120,120,128,.18)}
+body.lock{overflow:hidden}
+@media (max-width:520px){.sheet-grid{grid-template-columns:repeat(2,1fr)}.dock nav{gap:18px}.dock .d{width:96px;font-size:12px}}
+@media (prefers-reduced-motion:reduce){.sheet,.sheet-bd{transition:none!important}}
+
 @media (max-width:640px){.stats{grid-template-columns:1fr}}
 @media (max-width:520px){.acct div{display:none}.acct{padding:3px}.d{width:62px;padding:6px 2px;font-size:10.5px}.d .ic{width:36px;height:36px}.vchart{height:190px}.wrap{padding:16px 5px}.nav{padding-left:5px;padding-right:5px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -97,8 +122,8 @@ html,body{overflow-x:hidden}
 
 <header class="nav">
   <div class="brand">
-    <span class="sch-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/></svg></span>
-    <span class="sch-name"><b>SMP Negeri 1 Contoh</b><small>Kab. Contoh, Prov. Contoh</small></span>
+    <span class="sch-logo" id="navLogo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/></svg></span>
+    <span class="sch-name"><b id="navName">Memuat…</b><small id="navSmall"></small></span>
   </div>
   <span class="sp"></span>
   <div class="acct" aria-label="Akun masuk">
@@ -126,16 +151,30 @@ html,body{overflow-x:hidden}
 <!-- Sticky footer -->
 <div class="dock">
   <nav aria-label="Menu utama">
+    <button class="d" id="btnMenu" type="button" aria-haspopup="dialog" aria-expanded="false" aria-controls="sheet"><span class="ic" style="background:linear-gradient(160deg,#4da3ff,#0a5fe0)" data-i="grid"></span>Menu</button>
+    <a class="d" id="btnLogout" href="index.html"><span class="ic" style="background:linear-gradient(160deg,#ff7a8a,#e11d48)" data-i="out"></span>Log Out</a>
+  </nav>
+</div>
+
+<!-- Slide-up menu -->
+<div class="sheet-bd" id="sheetBd"></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="grab" aria-hidden="true"></div>
+  <div class="sheet-h">
+    <h2 id="sheetTitle">Menu</h2>
+    <button class="sheet-x" id="sheetX" type="button" aria-label="Tutup menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="sheet-grid">
     <a class="d" href="identitas.html"><span class="ic" style="background:linear-gradient(160deg,#4da3ff,#0a5fe0)" data-i="school"></span>Identitas Sekolah</a>
     <a class="d" href="infopajak.html"><span class="ic" style="background:linear-gradient(160deg,#ffb454,#f0780a)" data-i="tax"></span>Informasi Pajak</a>
     <a class="d" href="penerima.html"><span class="ic" style="background:linear-gradient(160deg,#c084fc,#7c3aed)" data-i="store"></span>Data Penerima/Toko</a>
     <a class="d" href="penandatangan.html"><span class="ic" style="background:linear-gradient(160deg,#ff8a5c,#e0451a)" data-i="sign"></span>Daftar Penanda Tangan</a>
     <a class="d" href="bukukas.html"><span class="ic" style="background:linear-gradient(160deg,#2dd4bf,#0f766e)" data-i="doc"></span>Buku Kas Umum</a>
     <a class="d" href="#"><span class="ic" style="background:linear-gradient(160deg,#5be37a,#1fa23c)" data-i="folder"></span>Manajemen Berkas</a>
-    <a class="d" href="index.html"><span class="ic" style="background:linear-gradient(160deg,#ff7a8a,#e11d48)" data-i="out"></span>Log Out</a>
-  </nav>
+  </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 (function(){
   var P={
@@ -156,6 +195,41 @@ html,body{overflow-x:hidden}
   };
   function svg(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+P[n]+'</svg>';}
   document.querySelectorAll('[data-i]').forEach(function(e){e.innerHTML=svg(e.dataset.i);});
+
+  /* ---------- Slide-up menu ---------- */
+  var sheet=document.getElementById('sheet'),bd=document.getElementById('sheetBd'),btnMenu=document.getElementById('btnMenu');
+  function openSheet(){sheet.classList.add('open');bd.classList.add('open');document.body.classList.add('lock');btnMenu.setAttribute('aria-expanded','true');
+    var f=sheet.querySelector('a');if(f)f.focus({preventScroll:true});}
+  function closeSheet(){if(!sheet.classList.contains('open'))return;sheet.classList.remove('open');bd.classList.remove('open');document.body.classList.remove('lock');
+    btnMenu.setAttribute('aria-expanded','false');btnMenu.focus({preventScroll:true});}
+  btnMenu.addEventListener('click',function(){sheet.classList.contains('open')?closeSheet():openSheet();});
+  bd.addEventListener('click',closeSheet);
+  document.getElementById('sheetX').addEventListener('click',closeSheet);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSheet();});
+  document.getElementById('btnLogout').addEventListener('click',function(){try{sessionStorage.removeItem('simberkas_session')}catch(_){}});
+
+  /* ---------- Identitas sekolah di navbar (dari tabel identitas_sekolah) ---------- */
+  var SB_URL='https://jnbhjmmmyqbcxaojbdlb.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuYmhqbW1teXFiY3hhb2piZGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNDcwMzMsImV4cCI6MjEwNzcyMzAzM30.KP1-LCQJ9MJlxFbQlqLfAtqLiv3uybRdbJ2AVLb9phw';
+  async function muatIdentitas(){
+    var nm=document.getElementById('navName'),sm=document.getElementById('navSmall'),lg=document.getElementById('navLogo');
+    try{
+      var sb=window.supabase.createClient(SB_URL,SB_KEY);
+      var r=await sb.from('identitas_sekolah').select('nama,kabupaten,provinsi,logo_url').eq('id',1).maybeSingle();
+      if(r.error)throw r.error;
+      var d=r.data||{};
+      nm.textContent=d.nama||'SimberKas';
+      sm.textContent=[d.kabupaten,d.provinsi].filter(Boolean).join(', ');
+      if(d.logo_url){
+        var img=new Image();img.alt='';img.src=d.logo_url;
+        lg.innerHTML='';lg.appendChild(img);
+      }
+    }catch(err){
+      console.error(err);
+      nm.textContent='SimberKas';
+    }
+  }
+  muatIdentitas();
   var nf=function(n){return n.toLocaleString('id-ID');};
   var pct=function(a,b){return b?(Math.round(a/b*1000)/10).toLocaleString('id-ID')+'%':'0%';};
 
