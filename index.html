@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SimberKas — Sistem Informasi Manajemen Pelayanan Pembayaran</title>
+
+    <!-- 🔥 PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <link rel="icon" href="icon-192.png">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
 <link rel="icon" type="image/png" href="logo.png">
 <meta name="description" content="SimberKas: aplikasi untuk menginput dan mengelola transaksi pembayaran sekolah di luar SIPLah.">
 <style>
@@ -347,5 +354,15 @@ dialog.closing::backdrop{animation:bd-out .22s ease both}
   tick();setInterval(tick,30000);
 })();
 </script>
+
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+            .then(reg => console.log('Service Worker aktif'))
+            .catch(err => console.log('SW gagal:', err));
+        });
+    }
+    </script>
 </body>
 </html>
