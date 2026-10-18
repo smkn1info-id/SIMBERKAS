@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Informasi Pajak — SimberKas</title>
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+:root{
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  --text:#1d1d1f;--muted:#6e6e73;--accent:#0a7aff;--green:#28c840;--orange:#ff9f0a;--red:#ff453a;--purple:#af52de;
+  --glass:rgba(255,255,255,.72);--card:rgba(255,255,255,.88);--line:rgba(0,0,0,.1);--bar:rgba(255,255,255,.6);--track:rgba(120,120,128,.16);
+  --field:rgba(255,255,255,.9);--field-line:rgba(0,0,0,.16);--err:#d70015;
+  --wall:linear-gradient(135deg,#9cbcff 0%,#c4b0fb 40%,#f9c4de 72%,#fde3bd 100%);
+  --shadow:0 14px 40px rgba(30,30,80,.2),0 0 0 .5px rgba(0,0,0,.14);
+  color-scheme:light;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--text);background:var(--wall) fixed;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
+
+/* Navbar */
+.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:8px 20px;padding-top:calc(8px + env(safe-area-inset-top));
+  background:var(--bar);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-bottom:.5px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em;min-width:0}
+.sch-logo{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;overflow:hidden;
+  background:linear-gradient(160deg,#4da3ff,#0a5fe0);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 2px 6px rgba(0,0,0,.22)}
+.sch-logo svg{width:20px;height:20px}
+.sch-logo img{width:100%;height:100%;object-fit:contain}
+.sch-name{display:block;min-width:0;line-height:1.2}
+.sch-name b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sch-name small{display:block;font-size:11px;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){.sch-name small{display:none}.sch-name b{font-size:13px}}
+.sp{flex:1}
+.acct{display:flex;align-items:center;gap:10px;padding:4px 6px 4px 12px;border-radius:99px;background:var(--track)}
+.acct div{text-align:right;line-height:1.2}
+.acct b{display:block;font-size:13px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.acct small{font-size:11px;color:var(--muted)}
+.avatar{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(160deg,#4da3ff,#7c3aed);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+
+/* Layout */
+.wrap{max-width:none;margin:0;padding:22px min(150px,12vw)}
+.head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px;margin-bottom:18px}
+h1{font-size:clamp(26px,4.5vw,36px);letter-spacing:-.025em;line-height:1.1}
+.head p{color:var(--muted);font-size:14px;margin-top:4px}
+.chip{font-size:13px;font-weight:600;padding:6px 14px;border-radius:99px;background:var(--glass);box-shadow:0 0 0 .5px var(--line);display:inline-flex;align-items:center;gap:6px}
+.chip svg{width:14px;height:14px}
+.panel{background:var(--glass);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);border-radius:16px;box-shadow:var(--shadow)}
+.box{padding:20px}
+.box h2{font-size:18px;letter-spacing:-.01em}
+.box .sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+
+/* Form */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.full{grid-column:1/-1}
+.f label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.f label i{font-style:normal;color:var(--err);margin-left:2px}
+.f input,.f textarea{width:100%;font:inherit;font-size:15px;color:var(--text);background:var(--field);border:1px solid var(--field-line);border-radius:10px;padding:10px 12px;
+  transition:border-color .15s,box-shadow .15s}
+.f textarea{resize:vertical;min-height:84px}
+.f input::placeholder,.f textarea::placeholder{color:var(--muted);opacity:.8}
+.f input:focus,.f textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,122,255,.25)}
+.f input[readonly]{background:var(--track);color:var(--muted);cursor:not-allowed}
+.f .hint{font-size:12px;color:var(--muted);margin-top:4px}
+.f .msg{display:none;font-size:12px;color:var(--err);margin-top:4px;font-weight:600}
+.f.bad input,.f.bad textarea{border-color:var(--err)}
+.f.bad .msg{display:block}
+.f.bad .hint{display:none}
+
+/* Logo */
+.logo-box{position:sticky;top:76px}
+.drop{display:grid;place-items:center;text-align:center;aspect-ratio:1/1;border-radius:14px;border:1.5px dashed var(--field-line);background:var(--field);
+  padding:14px;cursor:pointer;overflow:hidden;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--track)}
+.drop img{max-width:100%;max-height:100%;object-fit:contain;display:none}
+.drop.has img{display:block}
+.drop.has .ph{display:none}
+.ph{color:var(--muted);font-size:13px}
+.ph svg{width:34px;height:34px;margin:0 auto 8px;display:block;color:var(--accent)}
+.ph b{display:block;color:var(--text);font-size:14px}
+.logo-meta{font-size:12px;color:var(--muted);margin-top:10px;min-height:18px;word-break:break-all}
+.logo-meta.bad{color:var(--err);font-weight:600}
+.row{display:flex;gap:8px;margin-top:12px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:11px;font-size:14px;font-weight:600;
+  background:var(--track);transition:transform .15s,filter .15s,background .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn svg{width:17px;height:17px}
+.btn.pri{color:#fff;background:linear-gradient(160deg,#4da3ff,#0a5fe0);box-shadow:0 4px 12px rgba(10,98,224,.35),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn.sm{padding:8px 12px;font-size:13px;flex:1}
+.btn[disabled]{opacity:.45;pointer-events:none}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(112px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:40;max-width:min(92vw,420px);
+  padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;color:#fff;background:#1d1d1fe6;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.ok{background:rgba(31,162,60,.95)}
+.toast.err{background:rgba(215,0,21,.95)}
+
+/* Sticky footer dock */
+.dock{position:fixed!important;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);border-top:.5px solid rgba(0,0,0,.1);box-shadow:0 -4px 20px rgba(30,30,80,.12);transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}
+html,body{overflow-x:hidden}
+.dock nav{--text:#1d1d1f;--track:rgba(120,120,128,.16);color:var(--text);width:100%;display:flex;justify-content:flex-start;gap:6px;padding:8px;overflow-x:auto;scrollbar-width:none}
+.dock nav::-webkit-scrollbar{display:none}
+.dock nav>:first-child{margin-left:auto}.dock nav>:last-child{margin-right:auto}
+.d{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;width:92px;padding:8px 6px;border-radius:16px;font-size:12px;font-weight:600;line-height:1.2;text-align:center;transition:background .15s,transform .15s}
+.d:hover{background:var(--track);transform:translateY(-3px)}
+button.d[disabled]{opacity:.5;pointer-events:none}
+.d.on{background:var(--track)}
+.d .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.35)}
+.d .ic svg{width:21px;height:21px}
+
+@media (max-width:900px){.layout{grid-template-columns:1fr}.logo-box{position:static;order:-1}.drop{aspect-ratio:auto;min-height:170px}}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+@media (max-width:520px){.acct div{display:none}.acct{padding:3px}.d{width:62px;padding:6px 2px;font-size:10.5px}.d .ic{width:36px;height:36px}.wrap{padding:16px 5px}.nav{padding-left:5px;padding-right:5px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Halaman Informasi Pajak */
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.tools .f{flex:1;min-width:200px}
+.tools .cnt{font-size:13px;color:var(--muted)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
+th{text-align:left;font-size:13px;color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line)}
+td{padding:12px;border-bottom:.5px solid var(--line);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+td small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+.kode{font-weight:700}
+.act{display:flex;gap:6px;justify-content:flex-end}
+.ib{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:var(--track);transition:background .15s}
+.ib:hover{background:rgba(120,120,128,.28)}.ib.del:hover{background:rgba(255,69,58,.22);color:var(--err)}
+.ib svg{width:16px;height:16px}
+.empty{text-align:center;padding:40px 12px;color:var(--muted)}
+.empty b{display:block;color:var(--text);font-size:15px;margin-bottom:4px}
+dialog{border:0;padding:0;background:transparent;margin:auto;width:min(560px,94vw);max-height:92vh;overflow:visible}
+dialog::backdrop{background:rgba(20,20,40,.38);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
+dialog .panel{background:var(--card);max-height:90vh;overflow:auto}
+.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.btn.danger{color:#fff;background:linear-gradient(160deg,#ff6b60,#d70015)}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+</head>
+<body>
+
+<header class="nav">
+  <div class="brand">
+    <span class="sch-logo" id="navLogo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/></svg></span>
+    <span class="sch-name"><b id="navName">SMP Negeri 1 Contoh</b><small id="navSub">Kab. Contoh, Prov. Contoh</small></span>
+  </div>
+  <span class="sp"></span>
+  <div class="acct" aria-label="Akun masuk">
+    <div><b>Admin Utama</b><small>Admin</small></div>
+    <span class="avatar">AU</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <div><h1>Informasi Pajak</h1><p>Daftar jenis pajak dan tarif yang dipakai pada transaksi</p></div>
+    <a class="chip" href="adminbendahara.html"><span data-i="back"></span>Kembali ke Beranda</a>
+  </div>
+
+  <section class="panel box">
+    <div class="tools">
+      <div class="f"><input id="q" type="search" placeholder="Cari nama pajak" aria-label="Cari pajak"></div>
+      <span class="cnt" id="cnt"></span>
+      <button type="button" class="btn pri" id="btnAdd"><span data-i="plus"></span>Tambah pajak</button>
+    </div>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>ID</th><th>Nama pajak</th><th class="num">Besaran</th><th></th></tr></thead>
+        <tbody id="tb"><tr><td colspan="4" class="empty">Memuat data…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<!-- Form tambah / ubah -->
+<dialog id="dlg" aria-labelledby="dlgTitle">
+  <form id="frm" class="panel box" novalidate autocomplete="off">
+    <h2 id="dlgTitle">Tambah pajak</h2>
+    <p class="sub">Kolom bertanda <span style="color:var(--err)">*</span> wajib diisi</p>
+    <div class="grid">
+      <div class="f">
+        <label for="fid">ID</label>
+        <input id="fid" type="text" value="Otomatis" readonly aria-describedby="idHint">
+        <p class="hint" id="idHint">Dibuat otomatis oleh sistem</p>
+      </div>
+      <div class="f" data-f="besaran">
+        <label for="besaran">Besaran pajak (%)<i>*</i></label>
+        <input id="besaran" type="text" inputmode="decimal" maxlength="6" placeholder="Contoh: 11 atau 1,5">
+        <p class="msg"></p>
+      </div>
+      <div class="f full" data-f="nama">
+        <label for="nama">Nama pajak<i>*</i></label>
+        <input id="nama" type="text" maxlength="120" placeholder="Contoh: PPN">
+        <p class="msg"></p>
+      </div>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn" id="btnCancel">Batal</button>
+      <button type="submit" class="btn pri" id="btnSave"><span data-i="save"></span>Simpan</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Konfirmasi hapus -->
+<dialog id="dlgDel" aria-labelledby="delTitle">
+  <div class="panel box">
+    <h2 id="delTitle">Hapus pajak?</h2>
+    <p class="sub" id="delText" style="margin-bottom:0"></p>
+    <div class="actions">
+      <button type="button" class="btn" id="delNo">Batal</button>
+      <button type="button" class="btn danger" id="delYes">Hapus</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="dock">
+  <nav aria-label="Menu halaman informasi pajak">
+    <a class="d" href="adminbendahara.html"><span class="ic" style="background:linear-gradient(160deg,#94a3b8,#475569)" data-i="grid"></span>Beranda</a>
+    <button type="button" class="d" id="dkAdd"><span class="ic" style="background:linear-gradient(160deg,#4ade80,#16a34a)" data-i="plus"></span>Tambah</button>
+    <button type="button" class="d" id="btnRefresh"><span class="ic" style="background:linear-gradient(160deg,#2dd4bf,#0f766e)" data-i="refresh"></span>Refresh</button>
+  </nav>
+</div>
+
+<script>
+(function(){
+  var P={
+    school:'<path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/>',
+    grid:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+    back:'<path d="M15 5l-7 7 7 7"/>',
+    save:'<path d="M5 3h11l3 3v15H5zM8 3v5h7V3M8 21v-7h8v7"/>',
+    refresh:'<path d="M21 2v6h-6M3 12a9 9 0 0115-6.7L21 8M3 22v-6h6M21 12a9 9 0 01-15 6.7L3 16"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    edit:'<path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/>',
+    trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>'
+  };
+  function svg(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+P[n]+'</svg>';}
+  function icons(root){(root||document).querySelectorAll('[data-i]').forEach(function(e){e.innerHTML=svg(e.dataset.i);});}
+  icons();
+
+  var $=function(id){return document.getElementById(id);};
+  var SB_URL='https://jnbhjmmmyqbcxaojbdlb.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuYmhqbW1teXFiY3hhb2piZGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNDcwMzMsImV4cCI6MjEwNzcyMzAzM30.KP1-LCQJ9MJlxFbQlqLfAtqLiv3uybRdbJ2AVLb9phw';
+  var T='informasi_pajak';
+  var sb=window.supabase.createClient(SB_URL,SB_KEY);
+  var rows=[],editId=null,delRow=null,toastTimer;
+
+  function toast(t,type){var el=$('toast');el.textContent=t;el.className='toast show '+(type||'');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.className='toast';},3200);}
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function fmt(n){return Number(n).toLocaleString('id-ID',{maximumFractionDigits:2});}
+
+  /* ---------- Identitas sekolah di navbar ---------- */
+  async function muatSekolah(){
+    var r=await sb.from('identitas_sekolah').select('nama,kabupaten,provinsi,logo_url').eq('id',1).maybeSingle();
+    if(r.error||!r.data)return;
+    $('navName').textContent=r.data.nama||'Sekolah';
+    $('navSub').textContent=[r.data.kabupaten,r.data.provinsi].filter(Boolean).join(', ');
+    if(r.data.logo_url)$('navLogo').innerHTML='<img alt="" src="'+esc(r.data.logo_url)+'">';
+  }
+
+  /* ---------- Daftar ---------- */
+  function render(){
+    var q=$('q').value.trim().toLowerCase();
+    var list=rows.filter(function(r){return !q||r.nama.toLowerCase().indexOf(q)>=0||String(r.id)===q;});
+    $('cnt').textContent=rows.length?list.length+' dari '+rows.length+' pajak':'';
+    if(!list.length){
+      $('tb').innerHTML='<tr><td colspan="4" class="empty"><b>'+(rows.length?'Tidak ada hasil':'Belum ada data pajak')+'</b>'+(rows.length?'Coba kata kunci lain.':'Klik Tambah pajak untuk mengisi data pertama.')+'</td></tr>';
+      return;
+    }
+    $('tb').innerHTML=list.map(function(r){
+      return '<tr><td class="kode">'+esc(r.id)+'</td>'
+        +'<td>'+esc(r.nama)+'</td>'
+        +'<td class="num">'+fmt(r.besaran)+'%</td>'
+        +'<td><div class="act"><button type="button" class="ib" data-edit="'+r.id+'" aria-label="Ubah '+esc(r.nama)+'">'+svg('edit')+'</button>'
+        +'<button type="button" class="ib del" data-del="'+r.id+'" aria-label="Hapus '+esc(r.nama)+'">'+svg('trash')+'</button></div></td></tr>';
+    }).join('');
+  }
+  async function muat(){
+    var r=await sb.from(T).select('*').order('id');
+    if(r.error){console.error(r.error);$('tb').innerHTML='<tr><td colspan="4" class="empty"><b>Gagal memuat data</b>'+esc(r.error.message)+'</td></tr>';return;}
+    rows=r.data||[];render();
+  }
+  $('q').addEventListener('input',render);
+  $('btnRefresh').addEventListener('click',function(){muat();muatSekolah();toast('Data diperbarui');});
+  $('tb').addEventListener('click',function(e){
+    var b=e.target.closest('button');if(!b)return;
+    var id=b.dataset.edit||b.dataset.del;
+    var row=rows.filter(function(r){return String(r.id)===id;})[0];if(!row)return;
+    if(b.dataset.edit)bukaForm(row);else bukaHapus(row);
+  });
+
+  /* ---------- Form ---------- */
+  var dlg=$('dlg'),frm=$('frm');
+  var rules={
+    nama:function(v){if(!v)return 'Nama pajak wajib diisi';},
+    besaran:function(v){
+      if(!v)return 'Besaran pajak wajib diisi';
+      if(!/^\d+([.,]\d{1,2})?$/.test(v))return 'Isi angka, contoh 11 atau 1,5';
+      var n=parseFloat(v.replace(',','.'));
+      if(n<0||n>100)return 'Besaran harus antara 0 dan 100';
+    }
+  };
+  function check(n){
+    var f=document.querySelector('[data-f="'+n+'"]'),m=rules[n]($(n).value.trim());
+    f.classList.toggle('bad',!!m);f.querySelector('.msg').textContent=m||'';return !m;
+  }
+  Object.keys(rules).forEach(function(n){
+    $(n).addEventListener('blur',function(){check(n);});
+    $(n).addEventListener('input',function(){if(document.querySelector('[data-f="'+n+'"]').classList.contains('bad'))check(n);});
+  });
+  $('besaran').addEventListener('input',function(){this.value=this.value.replace(/[^\d.,]/g,'');});
+
+  function bukaForm(row){
+    editId=row?row.id:null;
+    frm.reset();
+    document.querySelectorAll('.f.bad').forEach(function(f){f.classList.remove('bad');});
+    $('dlgTitle').textContent=row?'Ubah pajak':'Tambah pajak';
+    $('fid').value=row?row.id:'Otomatis';
+    $('nama').value=row?row.nama:'';
+    $('besaran').value=row?String(row.besaran).replace('.',','):'';
+    dlg.showModal();$('nama').focus();
+  }
+  $('btnAdd').addEventListener('click',function(){bukaForm(null);});
+  $('dkAdd').addEventListener('click',function(){bukaForm(null);});
+  $('btnCancel').addEventListener('click',function(){dlg.close();});
+  [dlg,$('dlgDel')].forEach(function(d){d.addEventListener('click',function(e){if(e.target===d)d.close();});});
+
+  /* Enter = pindah ke kolom berikutnya, di kolom terakhir = simpan */
+  frm.addEventListener('keydown',function(e){
+    if(e.key!=='Enter'||e.isComposing)return;
+    var el=e.target;
+    if(el.tagName!=='INPUT')return;
+    e.preventDefault();
+    var list=Array.prototype.filter.call(frm.querySelectorAll('input'),function(x){return !x.readOnly&&!x.disabled;});
+    var i=list.indexOf(el);
+    if(i<list.length-1)list[i+1].focus();else{el.blur();frm.requestSubmit();}
+  });
+
+  frm.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var bad=null;
+    ['nama','besaran'].forEach(function(n){if(!check(n)&&!bad)bad=n;});
+    if(bad){$(bad).focus();toast('Periksa kembali kolom yang berwarna merah','err');return;}
+    var payload={
+      nama:$('nama').value.trim(),
+      besaran:parseFloat($('besaran').value.trim().replace(',','.'))
+    };
+    var btn=$('btnSave');btn.disabled=true;
+    var r=editId!==null?await sb.from(T).update(payload).eq('id',editId):await sb.from(T).insert(payload);
+    btn.disabled=false;
+    if(r.error){console.error(r.error);toast('Gagal menyimpan: '+r.error.message,'err');return;}
+    dlg.close();toast(editId!==null?'Pajak berhasil diperbarui':'Pajak berhasil ditambahkan','ok');muat();
+  });
+
+  /* ---------- Hapus ---------- */
+  function bukaHapus(row){
+    delRow=row;
+    $('delText').textContent=row.nama+' ('+fmt(row.besaran)+'%) akan dihapus permanen.';
+    $('dlgDel').showModal();
+  }
+  $('delNo').addEventListener('click',function(){$('dlgDel').close();});
+  $('delYes').addEventListener('click',async function(){
+    if(!delRow)return;
+    var r=await sb.from(T).delete().eq('id',delRow.id);
+    $('dlgDel').close();
+    if(r.error){console.error(r.error);toast('Gagal menghapus: '+r.error.message,'err');return;}
+    toast('Pajak berhasil dihapus','ok');delRow=null;muat();
+  });
+
+  muatSekolah();muat();
+})();
+</script>
+</body>
+</html>

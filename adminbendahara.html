@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Beranda Admin — SimberKas</title>
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+:root{
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  --text:#1d1d1f;--muted:#6e6e73;--accent:#0a7aff;--green:#28c840;--orange:#ff9f0a;--red:#ff453a;--purple:#af52de;
+  --glass:rgba(255,255,255,.72);--card:rgba(255,255,255,.88);--line:rgba(0,0,0,.1);--bar:rgba(255,255,255,.6);--track:rgba(120,120,128,.16);
+  --wall:linear-gradient(135deg,#9cbcff 0%,#c4b0fb 40%,#f9c4de 72%,#fde3bd 100%);
+  --shadow:0 14px 40px rgba(30,30,80,.2),0 0 0 .5px rgba(0,0,0,.14);
+  color-scheme:light;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--text);background:var(--wall) fixed;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
+
+/* Navbar */
+.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:8px 20px;padding-top:calc(8px + env(safe-area-inset-top));
+  background:var(--bar);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-bottom:.5px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em;min-width:0}
+.sch-logo{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;overflow:hidden;
+  background:linear-gradient(160deg,#4da3ff,#0a5fe0);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 2px 6px rgba(0,0,0,.22)}
+.sch-logo svg{width:20px;height:20px}
+.sch-logo img{width:100%;height:100%;object-fit:contain}
+.sch-name{display:block;min-width:0;line-height:1.2}
+.sch-name b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sch-name small{display:block;font-size:11px;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){.sch-name small{display:none}.sch-name b{font-size:13px}}
+.sp{flex:1}
+.acct{display:flex;align-items:center;gap:10px;padding:4px 6px 4px 12px;border-radius:99px;background:var(--track)}
+.acct div{text-align:right;line-height:1.2}
+.acct b{display:block;font-size:13px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.acct small{font-size:11px;color:var(--muted)}
+.avatar{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(160deg,#4da3ff,#7c3aed);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+
+/* Layout */
+.wrap{max-width:none;margin:0;padding:22px min(150px,12vw)}
+.head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px;margin-bottom:18px}
+h1{font-size:clamp(26px,4.5vw,36px);letter-spacing:-.025em;line-height:1.1}
+.head p{color:var(--muted);font-size:14px;margin-top:4px}
+.chip{font-size:13px;font-weight:600;padding:6px 14px;border-radius:99px;background:var(--glass);box-shadow:0 0 0 .5px var(--line)}
+.panel{background:var(--glass);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);border-radius:16px;box-shadow:var(--shadow)}
+
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:16px}
+.stat{padding:16px}
+.stat .ic{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff;margin-bottom:10px}
+.stat .ic svg{width:18px;height:18px}
+.stat small{color:var(--muted);font-size:13px}
+.stat b{display:block;font-size:clamp(20px,2.6vw,26px);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.delta{font-size:12px;font-weight:600}.up{color:#1fa23c}.down{color:var(--red)}.mid{color:#b86e00}
+
+
+.box{padding:20px}
+.box h2{font-size:18px;letter-spacing:-.01em}
+.box .sub{font-size:13px;color:var(--muted);margin-bottom:14px}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-bottom:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* Vertical bar chart */
+.vchart{display:flex;align-items:flex-end;gap:clamp(4px,1.4vw,14px);height:220px;padding:0 0 0 30px;position:relative;
+  background:repeating-linear-gradient(to top,transparent 0,transparent 54px,var(--line) 54px,var(--line) 55px)}
+.col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+.pair{display:flex;align-items:flex-end;gap:3px;height:calc(100% - 22px);width:100%;justify-content:center}
+.b{width:42%;max-width:20px;border-radius:6px 6px 2px 2px;transition:height .8s cubic-bezier(.2,.8,.2,1);height:0;position:relative}
+.b.cur{background:linear-gradient(180deg,#5aa9ff,#0a62e0);box-shadow:0 4px 10px rgba(10,98,224,.3)}
+.b.prev{background:linear-gradient(180deg,#d6c2fb,#a98af0)}
+.col span{font-size:11px;color:var(--muted);height:22px;line-height:22px}
+.col:hover .tip,.col:focus .tip{opacity:1}
+.tip{position:absolute;bottom:calc(100% - 4px);left:50%;transform:translateX(-50%);opacity:0;pointer-events:none;white-space:nowrap;z-index:3;
+  font-size:12px;padding:6px 10px;border-radius:8px;background:#1d1d1fe6;color:#fff;transition:opacity .15s}
+.yl{position:absolute;left:0;font-size:10px;color:var(--muted);transform:translateY(50%)}
+
+/* Sticky footer dock */
+.dock{position:fixed!important;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);border-top:.5px solid rgba(0,0,0,.1);box-shadow:0 -4px 20px rgba(30,30,80,.12);transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}
+html,body{overflow-x:hidden}
+.dock nav{--text:#1d1d1f;--track:rgba(120,120,128,.16);color:var(--text);width:100%;display:flex;justify-content:flex-start;gap:6px;padding:8px;overflow-x:auto;scrollbar-width:none}
+.dock nav::-webkit-scrollbar{display:none}
+.dock nav>:first-child{margin-left:auto}.dock nav>:last-child{margin-right:auto}
+.d{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;width:92px;padding:8px 6px;border-radius:16px;font-size:12px;font-weight:600;line-height:1.2;text-align:center;transition:background .15s,transform .15s}
+.d:hover{background:var(--track);transform:translateY(-3px)}
+.d .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.35)}
+.d .ic svg{width:21px;height:21px}
+
+@media (max-width:640px){.stats{grid-template-columns:1fr}}
+@media (max-width:520px){.acct div{display:none}.acct{padding:3px}.d{width:62px;padding:6px 2px;font-size:10.5px}.d .ic{width:36px;height:36px}.vchart{height:190px}.wrap{padding:16px 5px}.nav{padding-left:5px;padding-right:5px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="brand">
+    <span class="sch-logo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/></svg></span>
+    <span class="sch-name"><b>SMP Negeri 1 Contoh</b><small>Kab. Contoh, Prov. Contoh</small></span>
+  </div>
+  <span class="sp"></span>
+  <div class="acct" aria-label="Akun masuk">
+    <div><b>Admin Utama</b><small>Admin</small></div>
+    <span class="avatar">AU</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <div><h1>Beranda</h1><p>Ringkasan transaksi pembayaran di luar SIPLah</p></div>
+    <span class="chip" id="period">Tahun 2026</span>
+  </div>
+
+  <section class="stats" id="stats" aria-label="Ringkasan"></section>
+
+  <section class="panel box">
+    <h2>Perbandingan transaksi bulanan</h2>
+    <p class="sub">Jumlah transaksi pembayaran per bulan, tahun ini dibanding tahun lalu</p>
+    <div class="legend"><span><i style="background:#2b86f0"></i><em id="lgCur" style="font-style:normal">2026</em></span><span><i style="background:#b79af2"></i><em id="lgPrev" style="font-style:normal">2025</em></span></div>
+    <div class="vchart" id="vchart" role="img" aria-label="Grafik batang jumlah transaksi bulanan tahun ini dibanding tahun lalu"></div>
+  </section>
+</main>
+
+<!-- Sticky footer -->
+<div class="dock">
+  <nav aria-label="Menu utama">
+    <a class="d" href="identitas.html"><span class="ic" style="background:linear-gradient(160deg,#4da3ff,#0a5fe0)" data-i="school"></span>Identitas Sekolah</a>
+    <a class="d" href="infopajak.html"><span class="ic" style="background:linear-gradient(160deg,#ffb454,#f0780a)" data-i="tax"></span>Informasi Pajak</a>
+    <a class="d" href="penerima.html"><span class="ic" style="background:linear-gradient(160deg,#c084fc,#7c3aed)" data-i="store"></span>Data Penerima/Toko</a>
+    <a class="d" href="penandatangan.html"><span class="ic" style="background:linear-gradient(160deg,#ff8a5c,#e0451a)" data-i="sign"></span>Daftar Penanda Tangan</a>
+    <a class="d" href="bukukas.html"><span class="ic" style="background:linear-gradient(160deg,#2dd4bf,#0f766e)" data-i="doc"></span>Buku Kas Umum</a>
+    <a class="d" href="#"><span class="ic" style="background:linear-gradient(160deg,#5be37a,#1fa23c)" data-i="folder"></span>Manajemen Berkas</a>
+    <a class="d" href="index.html"><span class="ic" style="background:linear-gradient(160deg,#ff7a8a,#e11d48)" data-i="out"></span>Log Out</a>
+  </nav>
+</div>
+
+<script>
+(function(){
+  var P={
+    sign:'<path d="M4 20h16M5 16l9.5-9.5a2.1 2.1 0 013 3L8 19l-4 1z"/>',
+    school:'<path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/>',
+    store:'<path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9c0 1.7 1.3 3 3 3s3-1.3 3-3c0 1.7 1.3 3 3 3s3-1.3 3-3c0 1.7 1.3 3 3 3M10 20v-5h4v5"/>',
+    doc:'<path d="M6 3h8l4 4v14H6zM14 3v4h4M9 13h6M9 17h6"/>',
+    grid:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+    out:'<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>',
+    tax:'<path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>',
+    admin:'<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/>',
+    users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.5 3-5.5 6.5-5.5s6.5 2 6.5 5.5M16 4.8a3.5 3.5 0 010 6.4M18 14.8c2 .6 3.5 2.2 3.5 5.2"/>',
+    pay:'<rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19M6.5 15h4"/>',
+    list:'<path d="M4 6h16M4 12h16M4 18h10"/>',
+    folder:'<path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>',
+    check:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/>',
+    clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
+  };
+  function svg(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+P[n]+'</svg>';}
+  document.querySelectorAll('[data-i]').forEach(function(e){e.innerHTML=svg(e.dataset.i);});
+  var nf=function(n){return n.toLocaleString('id-ID');};
+  var pct=function(a,b){return b?(Math.round(a/b*1000)/10).toLocaleString('id-ID')+'%':'0%';};
+
+  /* Data contoh (dummy) untuk tampilan */
+  var bulan=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  var cur =[18,22,27,24,31,26,34,29,33, 9, 0, 0];
+  var prev=[14,19,21,23,24,27,29,27,30,31,29,36];
+  var proses=22;
+
+  var now=new Date(),yr=now.getFullYear(),mi=now.getMonth();
+  document.getElementById('period').textContent='Tahun '+yr;
+  document.getElementById('lgCur').textContent=yr;
+  document.getElementById('lgPrev').textContent=yr-1;
+
+  var total=cur.reduce(function(a,b){return a+b;},0);
+  var selesai=total-proses;
+  var prevSame=prev.slice(0,mi+1).reduce(function(a,b){return a+b;},0);
+  var chg=prevSame?Math.round((total-prevSame)/prevSame*1000)/10:0;
+  var chgTxt=(chg>=0?'+':'')+chg.toLocaleString('id-ID')+'% dari periode sama tahun lalu';
+
+  /* Kartu statistik */
+  var s=[
+    ['Total transaksi pembayaran',nf(total),chgTxt,chg>=0?'up':'down','list','linear-gradient(160deg,#4da3ff,#0a5fe0)'],
+    ['Total selesai',nf(selesai),pct(selesai,total)+' dari total transaksi','up','check','linear-gradient(160deg,#5be37a,#1fa23c)'],
+    ['Total diproses',nf(proses),pct(proses,total)+' dari total transaksi','mid','clock','linear-gradient(160deg,#ffb454,#f0780a)']
+  ];
+  document.getElementById('stats').innerHTML=s.map(function(x){
+    return '<div class="panel stat"><div class="ic" style="background:'+x[5]+'">'+svg(x[4])+'</div><small>'+x[0]+'</small><b>'+x[1]+'</b><span class="delta '+x[3]+'">'+x[2]+'</span></div>';}).join('');
+
+  /* Grafik batang vertikal */
+  var max=Math.max(10,Math.ceil(Math.max.apply(null,cur.concat(prev))/10)*10),v=document.getElementById('vchart');
+  var h='<span class="yl" style="bottom:22px">0</span><span class="yl" style="bottom:calc(22px + (100% - 22px)*.5)">'+(max/2)+'</span><span class="yl" style="bottom:calc(100% - 4px)">'+max+'</span>';
+  bulan.forEach(function(m,i){
+    h+='<div class="col" tabindex="0"><div class="tip">'+m+': '+cur[i]+' transaksi · lalu '+prev[i]+'</div><div class="pair"><div class="b prev" data-h="'+(prev[i]/max*100)+'"></div><div class="b cur" data-h="'+(cur[i]/max*100)+'"></div></div><span>'+m+'</span></div>';
+  });
+  v.innerHTML=h;
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    document.querySelectorAll('.b').forEach(function(b){b.style.height=b.dataset.h+'%';});
+  });});
+})();
+</script>
+</body>
+</html>

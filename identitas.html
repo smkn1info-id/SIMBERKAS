@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Identitas Sekolah — SimberKas</title>
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+:root{
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  --text:#1d1d1f;--muted:#6e6e73;--accent:#0a7aff;--green:#28c840;--orange:#ff9f0a;--red:#ff453a;--purple:#af52de;
+  --glass:rgba(255,255,255,.72);--card:rgba(255,255,255,.88);--line:rgba(0,0,0,.1);--bar:rgba(255,255,255,.6);--track:rgba(120,120,128,.16);
+  --field:rgba(255,255,255,.9);--field-line:rgba(0,0,0,.16);--err:#d70015;
+  --wall:linear-gradient(135deg,#9cbcff 0%,#c4b0fb 40%,#f9c4de 72%,#fde3bd 100%);
+  --shadow:0 14px 40px rgba(30,30,80,.2),0 0 0 .5px rgba(0,0,0,.14);
+  color-scheme:light;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--text);background:var(--wall) fixed;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
+
+/* Navbar */
+.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:8px 20px;padding-top:calc(8px + env(safe-area-inset-top));
+  background:var(--bar);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-bottom:.5px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em;min-width:0}
+.sch-logo{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;overflow:hidden;
+  background:linear-gradient(160deg,#4da3ff,#0a5fe0);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 2px 6px rgba(0,0,0,.22)}
+.sch-logo svg{width:20px;height:20px}
+.sch-logo img{width:100%;height:100%;object-fit:contain}
+.sch-name{display:block;min-width:0;line-height:1.2}
+.sch-name b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sch-name small{display:block;font-size:11px;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){.sch-name small{display:none}.sch-name b{font-size:13px}}
+.sp{flex:1}
+.acct{display:flex;align-items:center;gap:10px;padding:4px 6px 4px 12px;border-radius:99px;background:var(--track)}
+.acct div{text-align:right;line-height:1.2}
+.acct b{display:block;font-size:13px;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.acct small{font-size:11px;color:var(--muted)}
+.avatar{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(160deg,#4da3ff,#7c3aed);overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover}
+
+/* Layout */
+.wrap{max-width:none;margin:0;padding:22px min(150px,12vw)}
+.head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px;margin-bottom:18px}
+h1{font-size:clamp(26px,4.5vw,36px);letter-spacing:-.025em;line-height:1.1}
+.head p{color:var(--muted);font-size:14px;margin-top:4px}
+.chip{font-size:13px;font-weight:600;padding:6px 14px;border-radius:99px;background:var(--glass);box-shadow:0 0 0 .5px var(--line);display:inline-flex;align-items:center;gap:6px}
+.chip svg{width:14px;height:14px}
+.panel{background:var(--glass);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);border-radius:16px;box-shadow:var(--shadow)}
+.box{padding:20px}
+.box h2{font-size:18px;letter-spacing:-.01em}
+.box .sub{font-size:13px;color:var(--muted);margin-bottom:16px}
+
+/* Form */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.full{grid-column:1/-1}
+.f label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.f label i{font-style:normal;color:var(--err);margin-left:2px}
+.f input,.f textarea{width:100%;font:inherit;font-size:15px;color:var(--text);background:var(--field);border:1px solid var(--field-line);border-radius:10px;padding:10px 12px;
+  transition:border-color .15s,box-shadow .15s}
+.f textarea{resize:vertical;min-height:84px}
+.f input::placeholder,.f textarea::placeholder{color:var(--muted);opacity:.8}
+.f input:focus,.f textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,122,255,.25)}
+.f input[readonly]{background:var(--track);color:var(--muted);cursor:not-allowed}
+.f .hint{font-size:12px;color:var(--muted);margin-top:4px}
+.pw{position:relative}.pw input{padding-right:44px}
+.pw .eye{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:8px;display:grid;place-items:center;color:var(--muted);background:none;border:0;cursor:pointer}
+.pw .eye:hover{color:var(--text)}.pw .eye svg{width:19px;height:19px}
+.f .msg{display:none;font-size:12px;color:var(--err);margin-top:4px;font-weight:600}
+.f.bad input,.f.bad textarea{border-color:var(--err)}
+.f.bad .msg{display:block}
+.f.bad .hint{display:none}
+
+/* Logo */
+.logo-box{position:sticky;top:76px}
+.drop{display:grid;place-items:center;text-align:center;aspect-ratio:1/1;border-radius:14px;border:1.5px dashed var(--field-line);background:var(--field);
+  padding:14px;cursor:pointer;overflow:hidden;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--track)}
+.drop img{max-width:100%;max-height:100%;object-fit:contain;display:none}
+.drop.has img{display:block}
+.drop.has .ph{display:none}
+.ph{color:var(--muted);font-size:13px}
+.ph svg{width:34px;height:34px;margin:0 auto 8px;display:block;color:var(--accent)}
+.ph b{display:block;color:var(--text);font-size:14px}
+.logo-meta{font-size:12px;color:var(--muted);margin-top:10px;min-height:18px;word-break:break-all}
+.logo-meta.bad{color:var(--err);font-weight:600}
+.row{display:flex;gap:8px;margin-top:12px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:11px;font-size:14px;font-weight:600;
+  background:var(--track);transition:transform .15s,filter .15s,background .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn svg{width:17px;height:17px}
+.btn.pri{color:#fff;background:linear-gradient(160deg,#4da3ff,#0a5fe0);box-shadow:0 4px 12px rgba(10,98,224,.35),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn.sm{padding:8px 12px;font-size:13px;flex:1}
+.btn[disabled]{opacity:.45;pointer-events:none}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(112px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:40;max-width:min(92vw,420px);
+  padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;color:#fff;background:#1d1d1fe6;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.ok{background:rgba(31,162,60,.95)}
+.toast.err{background:rgba(215,0,21,.95)}
+
+/* Sticky footer dock */
+.dock{position:fixed!important;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);border-top:.5px solid rgba(0,0,0,.1);box-shadow:0 -4px 20px rgba(30,30,80,.12);transform:translateZ(0);-webkit-transform:translateZ(0);will-change:transform}
+html,body{overflow-x:hidden}
+.dock nav{--text:#1d1d1f;--track:rgba(120,120,128,.16);color:var(--text);width:100%;display:flex;justify-content:flex-start;gap:6px;padding:8px;overflow-x:auto;scrollbar-width:none}
+.dock nav::-webkit-scrollbar{display:none}
+.dock nav>:first-child{margin-left:auto}.dock nav>:last-child{margin-right:auto}
+.d{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;width:92px;padding:8px 6px;border-radius:16px;font-size:12px;font-weight:600;line-height:1.2;text-align:center;transition:background .15s,transform .15s}
+.d:hover{background:var(--track);transform:translateY(-3px)}
+button.d[disabled]{opacity:.5;pointer-events:none}
+.d.on{background:var(--track)}
+.d .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.35)}
+.d .ic svg{width:21px;height:21px}
+
+@media (max-width:900px){.layout{grid-template-columns:1fr}.logo-box{position:static;order:-1}.drop{aspect-ratio:auto;min-height:170px}}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+@media (max-width:520px){.acct div{display:none}.acct{padding:3px}.d{width:62px;padding:6px 2px;font-size:10.5px}.d .ic{width:36px;height:36px}.wrap{padding:16px 5px}.nav{padding-left:5px;padding-right:5px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="brand">
+    <span class="sch-logo" id="navLogo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/></svg></span>
+    <span class="sch-name"><b id="navName">SMP Negeri 1 Contoh</b><small>Kab. Contoh, Prov. Contoh</small></span>
+  </div>
+  <span class="sp"></span>
+  <div class="acct" aria-label="Akun masuk">
+    <div><b>Admin Utama</b><small>Admin</small></div>
+    <span class="avatar">AU</span>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <div><h1>Identitas Sekolah</h1><p>Data ini dipakai pada kop dan dokumen transaksi</p></div>
+    <a class="chip" href="adminbendahara.html"><span data-i="back"></span>Kembali ke Beranda</a>
+  </div>
+
+  <form id="frm" class="layout" novalidate autocomplete="off">
+    <section class="panel box">
+      <h2>Data sekolah</h2>
+      <p class="sub">Kolom bertanda <span style="color:var(--err)">*</span> wajib diisi</p>
+
+      <div class="grid">
+        <div class="f">
+          <label for="id">ID</label>
+          <input id="id" name="id" type="text" value="1" readonly aria-describedby="idHint">
+          <p class="hint" id="idHint">Dibuat otomatis oleh sistem</p>
+        </div>
+        <div class="f" data-f="npsn">
+          <label for="npsn">NPSN<i>*</i></label>
+          <input id="npsn" name="npsn" type="text" inputmode="numeric" maxlength="8" placeholder="8 digit angka, contoh 10123456">
+          <p class="msg"></p>
+        </div>
+
+        <div class="f full" data-f="nama">
+          <label for="nama">Nama sekolah<i>*</i></label>
+          <input id="nama" name="nama" type="text" maxlength="120" placeholder="Contoh: SMP Negeri 1 Contoh">
+          <p class="msg"></p>
+        </div>
+
+        <div class="f full" data-f="alamat">
+          <label for="alamat">Alamat<i>*</i></label>
+          <textarea id="alamat" name="alamat" maxlength="250" placeholder="Nama jalan, nomor, RT/RW"></textarea>
+          <p class="msg"></p>
+        </div>
+
+        <div class="f" data-f="desa">
+          <label for="desa">Desa / Kelurahan<i>*</i></label>
+          <input id="desa" name="desa" type="text" maxlength="80">
+          <p class="msg"></p>
+        </div>
+        <div class="f" data-f="kecamatan">
+          <label for="kecamatan">Kecamatan<i>*</i></label>
+          <input id="kecamatan" name="kecamatan" type="text" maxlength="80">
+          <p class="msg"></p>
+        </div>
+        <div class="f" data-f="kabupaten">
+          <label for="kabupaten">Kabupaten / Kota<i>*</i></label>
+          <input id="kabupaten" name="kabupaten" type="text" maxlength="80">
+          <p class="msg"></p>
+        </div>
+        <div class="f" data-f="provinsi">
+          <label for="provinsi">Provinsi<i>*</i></label>
+          <input id="provinsi" name="provinsi" type="text" maxlength="80">
+          <p class="msg"></p>
+        </div>
+
+        <div class="f" data-f="kodepos">
+          <label for="kodepos">Kode pos<i>*</i></label>
+          <input id="kodepos" name="kodepos" type="text" inputmode="numeric" maxlength="5" placeholder="5 digit">
+          <p class="msg"></p>
+        </div>
+        <div class="f" data-f="telepon">
+          <label for="telepon">Telepon<i>*</i></label>
+          <input id="telepon" name="telepon" type="tel" inputmode="tel" maxlength="20" placeholder="Contoh: 0717 123456">
+          <p class="msg"></p>
+        </div>
+
+        <div class="f full" data-f="email">
+          <label for="email">Email<i>*</i></label>
+          <input id="email" name="email" type="email" maxlength="120" placeholder="sekolah@contoh.sch.id">
+          <p class="msg"></p>
+        </div>
+
+        <div class="f" data-f="username">
+          <label for="username">Username<i>*</i></label>
+          <input id="username" name="username" type="text" maxlength="30" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Minimal 4 karakter">
+          <p class="msg"></p>
+        </div>
+        <div class="f" data-f="password">
+          <label for="password">Password<i>*</i></label>
+          <div class="pw">
+            <input id="password" name="password" type="password" maxlength="50" autocomplete="new-password" placeholder="Minimal 6 karakter">
+            <button class="eye" id="pwEye" type="button" aria-label="Tampilkan password" aria-pressed="false"></button>
+          </div>
+          <p class="msg"></p>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel box logo-box">
+      <h2>Logo sekolah</h2>
+      <p class="sub">PNG, JPG, atau WebP. Maksimal 2 MB</p>
+      <div class="drop" id="drop" tabindex="0" role="button" aria-label="Pilih file logo">
+        <img id="prev" alt="Pratinjau logo sekolah">
+        <div class="ph"><span data-i="upload"></span><b>Pilih atau tarik logo ke sini</b>Rasio persegi paling bagus</div>
+      </div>
+      <input id="logo" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+      <p class="logo-meta" id="logoMeta" aria-live="polite"></p>
+      <div class="row">
+        <button type="button" class="btn sm" id="btnPick">Pilih file</button>
+        <button type="button" class="btn sm" id="btnDel" disabled>Hapus</button>
+      </div>
+    </aside>
+  </form>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- Sticky footer -->
+<div class="dock">
+  <nav aria-label="Menu halaman identitas">
+    <a class="d" href="adminbendahara.html"><span class="ic" style="background:linear-gradient(160deg,#94a3b8,#475569)" data-i="grid"></span>Beranda</a>
+    <button type="button" class="d" id="btnReset"><span class="ic" style="background:linear-gradient(160deg,#ffb454,#f0780a)" data-i="reset"></span>Reset Form</button>
+    <button type="button" class="d" id="btnRefresh"><span class="ic" style="background:linear-gradient(160deg,#2dd4bf,#0f766e)" data-i="refresh"></span>Refresh</button>
+    <button type="button" class="d" id="btnSave"><span class="ic" style="background:linear-gradient(160deg,#4da3ff,#0a5fe0)" data-i="save"></span>Simpan</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+  /* ---------- Ikon ---------- */
+  var P={
+    sign:'<path d="M4 20h16M5 16l9.5-9.5a2.1 2.1 0 013 3L8 19l-4 1z"/>',
+    school:'<path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/>',
+    store:'<path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9c0 1.7 1.3 3 3 3s3-1.3 3-3c0 1.7 1.3 3 3 3s3-1.3 3-3c0 1.7 1.3 3 3 3M10 20v-5h4v5"/>',
+    doc:'<path d="M6 3h8l4 4v14H6zM14 3v4h4M9 13h6M9 17h6"/>',
+    grid:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+    out:'<path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>',
+    tax:'<path d="M19 5L5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>',
+    check:'<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/>',
+    back:'<path d="M15 5l-7 7 7 7"/>',
+    save:'<path d="M5 3h11l3 3v15H5zM8 3v5h7V3M8 21v-7h8v7"/>',
+    upload:'<path d="M12 16V4M7 9l5-5 5 5M4 16v4h16v-4"/>',
+    reset:'<path d="M3 12a9 9 0 109-9 9 9 0 00-6.4 2.6L3 8M3 3v5h5"/>',
+    eye:'<path d="M2 12s3.600-7 10-7 10 7 10 7-3.600 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/>',
+    eyeoff:'<path d="M3 3l18 18M10.600 6.100A9.800 9.800 0 0112 6c6.400 0 10 6 10 6a17 17 0 01-3.200 3.800M6.600 7.600A17 17 0 002 12s3.600 6 10 6a9.700 9.700 0 004.200-.9M9.900 9.900a3 3 0 004.200 4.200"/>',
+    refresh:'<path d="M21 2v6h-6M3 12a9 9 0 0115-6.7L21 8M3 22v-6h6M21 12a9 9 0 01-15 6.7L3 16"/>'
+  };
+  function svg(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+P[n]+'</svg>';}
+  document.querySelectorAll('[data-i]').forEach(function(e){e.innerHTML=svg(e.dataset.i);});
+
+  /* ---------- Util ---------- */
+  var $=function(id){return document.getElementById(id);};
+  var frm=$('frm'),logoFile=null,logoURL='',saved=null,removeLogo=false;
+  var toastTimer;
+  function toast(t,type){var el=$('toast');el.textContent=t;el.className='toast show '+(type||'');clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.className='toast';},3200);}
+
+  /* Input angka saja */
+  ['npsn','kodepos'].forEach(function(id){$(id).addEventListener('input',function(){this.value=this.value.replace(/\D/g,'');});});
+  ['username','password'].forEach(function(id){$(id).addEventListener('input',function(){this.value=this.value.replace(/\s/g,'');});});
+  $('username').addEventListener('input',function(){this.value=this.value.replace(/[^A-Za-z0-9._-]/g,'');});
+  $('telepon').addEventListener('input',function(){this.value=this.value.replace(/[^\d+\-\s()]/g,'');});
+
+  /* ---------- Validasi ---------- */
+  var rules={
+    npsn:function(v){if(!v)return 'NPSN wajib diisi';if(!/^\d{8}$/.test(v))return 'NPSN harus 8 digit angka';},
+    nama:function(v){if(!v)return 'Nama sekolah wajib diisi';if(v.length<3)return 'Nama sekolah terlalu pendek';},
+    alamat:function(v){if(!v)return 'Alamat wajib diisi';},
+    desa:function(v){if(!v)return 'Desa / kelurahan wajib diisi';},
+    kecamatan:function(v){if(!v)return 'Kecamatan wajib diisi';},
+    kabupaten:function(v){if(!v)return 'Kabupaten / kota wajib diisi';},
+    provinsi:function(v){if(!v)return 'Provinsi wajib diisi';},
+    kodepos:function(v){if(!v)return 'Kode pos wajib diisi';if(!/^\d{5}$/.test(v))return 'Kode pos harus 5 digit angka';},
+    telepon:function(v){if(!v)return 'Telepon wajib diisi';if(v.replace(/\D/g,'').length<6)return 'Nomor telepon terlalu pendek';},
+    email:function(v){if(!v)return 'Email wajib diisi';if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v))return 'Format email belum benar, contoh: sekolah@contoh.sch.id';},
+    username:function(v){if(!v)return 'Username wajib diisi';if(v.length<4)return 'Username minimal 4 karakter';if(!/^[A-Za-z0-9._-]+$/.test(v))return 'Hanya huruf, angka, titik, garis bawah, dan strip';},
+    password:function(v){if(!v)return 'Password wajib diisi';if(v.length<6)return 'Password minimal 6 karakter';}
+  };
+  function check(name){
+    var f=document.querySelector('[data-f="'+name+'"]'),inp=$(name),m=rules[name]($(name).value.trim());
+    f.classList.toggle('bad',!!m);f.querySelector('.msg').textContent=m||'';inp.setAttribute('aria-invalid',m?'true':'false');
+    return !m;
+  }
+  Object.keys(rules).forEach(function(n){
+    $(n).addEventListener('blur',function(){check(n);});
+    $(n).addEventListener('input',function(){if(document.querySelector('[data-f="'+n+'"]').classList.contains('bad'))check(n);});
+  });
+
+  /* ---------- Tampilkan / sembunyikan password ---------- */
+  function pwShow(on){
+    $('password').type=on?'text':'password';
+    $('pwEye').innerHTML=svg(on?'eyeoff':'eye');
+    $('pwEye').setAttribute('aria-pressed',on?'true':'false');
+    $('pwEye').setAttribute('aria-label',on?'Sembunyikan password':'Tampilkan password');
+  }
+  pwShow(false);
+  $('pwEye').addEventListener('click',function(){pwShow($('password').type==='password');});
+
+  /* ---------- Logo ---------- */
+  var MAX=2*1024*1024,OK=['image/png','image/jpeg','image/webp'];
+  function logoMsg(t,bad){var m=$('logoMeta');m.textContent=t||'';m.className='logo-meta'+(bad?' bad':'');}
+  function setLogo(file){
+    if(!file)return;
+    if(OK.indexOf(file.type)<0){logoMsg('Format tidak didukung. Pilih file PNG, JPG, atau WebP.',true);return;}
+    if(file.size>MAX){logoMsg('Ukuran file '+(file.size/1048576).toFixed(1).replace('.',',')+' MB, melebihi batas 2 MB.',true);return;}
+    if(logoURL)URL.revokeObjectURL(logoURL);
+    removeLogo=false;logoFile=file;logoURL=URL.createObjectURL(file);
+    $('prev').src=logoURL;$('drop').classList.add('has');$('btnDel').disabled=false;
+    logoMsg(file.name+' · '+Math.max(1,Math.round(file.size/1024))+' KB');
+    $('navLogo').innerHTML='<img alt="" src="'+logoURL+'">';
+  }
+  function clearLogo(){
+    if(logoURL)URL.revokeObjectURL(logoURL);
+    if(saved&&saved.logo_path)removeLogo=true;
+    logoFile=null;logoURL='';$('logo').value='';$('prev').removeAttribute('src');
+    $('drop').classList.remove('has');$('btnDel').disabled=true;logoMsg('');
+    $('navLogo').innerHTML=svg('school');
+  }
+  var drop=$('drop');
+  drop.addEventListener('click',function(){$('logo').click();});
+  drop.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();$('logo').click();}});
+  $('btnPick').addEventListener('click',function(){$('logo').click();});
+  $('btnDel').addEventListener('click',clearLogo);
+  $('logo').addEventListener('change',function(){setLogo(this.files[0]);});
+  ['dragenter','dragover'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('over');});});
+  ['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('over');});});
+  drop.addEventListener('drop',function(e){setLogo(e.dataTransfer.files[0]);});
+
+  /* Nama sekolah di navbar ikut berubah saat diketik */
+  $('nama').addEventListener('input',function(){$('navName').textContent=this.value.trim()||'SMP Negeri 1 Contoh';});
+
+  /* ---------- Reset ---------- */
+  $('btnReset').addEventListener('click',function(){
+    frm.reset();clearLogo();pwShow(false);
+    document.querySelectorAll('.f.bad').forEach(function(f){f.classList.remove('bad');});
+    $('navName').textContent='SMP Negeri 1 Contoh';
+    toast('Form dikosongkan');
+  });
+
+  /* ---------- Refresh ---------- */
+  $('btnRefresh').addEventListener('click',function(){location.reload();});
+
+  /* ---------- Simpan ---------- */
+  $('btnSave').addEventListener('click',function(){frm.requestSubmit();});
+  /* ---------- Supabase ---------- */
+  var SB_URL='https://jnbhjmmmyqbcxaojbdlb.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuYmhqbW1teXFiY3hhb2piZGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNDcwMzMsImV4cCI6MjEwNzcyMzAzM30.KP1-LCQJ9MJlxFbQlqLfAtqLiv3uybRdbJ2AVLb9phw';
+  var BUCKET='aset',TABLE='identitas_sekolah';
+  var sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+  function tampilNav(d){
+    $('navName').textContent=d.nama||'SMP Negeri 1 Contoh';
+    var sm=document.querySelector('.sch-name small');
+    if(sm)sm.textContent=[d.kabupaten,d.provinsi].filter(Boolean).join(', ');
+  }
+
+  /* Muat data saat halaman dibuka */
+  async function muat(){
+    var r=await sb.from(TABLE).select('*').eq('id',1).maybeSingle();
+    if(r.error){console.error(r.error);toast('Gagal memuat data: '+r.error.message,'err');return;}
+    if(!r.data)return;               /* belum ada data -> mode input */
+    saved=r.data;
+    Object.keys(rules).forEach(function(n){$(n).value=r.data[n]||'';});
+    tampilNav(r.data);
+    if(r.data.logo_url){
+      $('prev').src=r.data.logo_url;$('drop').classList.add('has');$('btnDel').disabled=false;
+      logoMsg('Logo tersimpan');
+      $('navLogo').innerHTML='<img alt="" src="'+r.data.logo_url+'">';
+    }
+  }
+
+  /* Simpan: belum ada data -> INSERT, sudah ada -> UPDATE (upsert id=1) */
+  async function simpanIdentitas(data,file){
+    var payload=Object.assign({},data,{id:1});
+    var oldPath=saved&&saved.logo_path,newPath=null;
+
+    if(file){
+      var ext=(file.name.split('.').pop()||'png').toLowerCase();
+      newPath='logo/logo-sekolah-'+Date.now()+'.'+ext;
+      var up=await sb.storage.from(BUCKET).upload(newPath,file,{contentType:file.type,upsert:true});
+      if(up.error)throw up.error;
+      payload.logo_path=newPath;
+      payload.logo_url=sb.storage.from(BUCKET).getPublicUrl(newPath).data.publicUrl;
+    }else if(removeLogo){
+      payload.logo_path=null;payload.logo_url=null;
+    }
+
+    var r=await sb.from(TABLE).upsert(payload,{onConflict:'id'}).select().single();
+    if(r.error){
+      if(newPath)await sb.storage.from(BUCKET).remove([newPath]);   /* batalkan upload */
+      throw r.error;
+    }
+    if(oldPath&&(file||removeLogo))await sb.storage.from(BUCKET).remove([oldPath]);  /* buang logo lama */
+    saved=r.data;removeLogo=false;logoFile=null;
+    tampilNav(saved);
+  }
+
+  muat();
+
+  /* ---------- Enter = pindah ke kolom berikutnya ---------- */
+  frm.addEventListener('keydown',function(e){
+    if(e.key!=='Enter'||e.isComposing)return;
+    var el=e.target;
+    if(el.tagName!=='INPUT'&&el.tagName!=='TEXTAREA')return;
+    if(el.tagName==='TEXTAREA'&&e.shiftKey)return;   /* Shift+Enter = baris baru di Alamat */
+    e.preventDefault();
+    var list=Array.prototype.filter.call(frm.querySelectorAll('input,textarea'),function(x){
+      return x.type!=='hidden'&&x.type!=='file'&&!x.readOnly&&!x.disabled;
+    });
+    var i=list.indexOf(el);
+    if(i<0)return;
+    if(i<list.length-1){list[i+1].focus();}
+    else{el.blur();frm.requestSubmit();}               /* kolom terakhir: Enter = Simpan */
+  });
+
+  frm.addEventListener('submit',function(e){
+    e.preventDefault();
+    var firstBad=null;
+    Object.keys(rules).forEach(function(n){if(!check(n)&&!firstBad)firstBad=n;});
+    if(firstBad){$(firstBad).focus();toast('Periksa kembali kolom yang berwarna merah','err');return;}
+    var data={id:$('id').value};
+    Object.keys(rules).forEach(function(n){data[n]=$(n).value.trim();});
+    var btn=$('btnSave');btn.disabled=true;
+    simpanIdentitas(data,logoFile).then(function(){
+      toast('Identitas sekolah berhasil disimpan','ok');
+    }).catch(function(err){
+      console.error(err);
+      toast('Gagal menyimpan: '+((err&&err.message)||'coba lagi'),'err');
+    }).then(function(){btn.disabled=false;});
+  });
+})();
+</script>
+</body>
+</html>

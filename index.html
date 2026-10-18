@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SimberKas — Sistem Informasi Manajemen Pelayanan Pembayaran</title>
+<link rel="icon" type="image/png" href="logo.png">
+<meta name="description" content="SimberKas: aplikasi untuk menginput dan mengelola transaksi pembayaran sekolah di luar SIPLah.">
+<style>
+:root{
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  --text:#1d1d1f; --muted:#6e6e73; --accent:#0a7aff; --accent-2:#0062d6;
+  --glass:rgba(255,255,255,.72); --glass-strong:rgba(255,255,255,.86);
+  --line:rgba(0,0,0,.1); --bar:rgba(255,255,255,.55);
+  --wall:linear-gradient(135deg,#7aa7ff 0%,#a78bfa 38%,#f9a8d4 70%,#fcd9a8 100%);
+  --shadow:0 22px 60px rgba(30,30,80,.28),0 0 0 .5px rgba(0,0,0,.18);
+}
+@media (prefers-color-scheme:dark){
+  :root{--text:#f5f5f7;--muted:#a1a1a6;--accent:#2f8bff;--accent-2:#5aa2ff;
+    --glass:rgba(40,40,46,.7);--glass-strong:rgba(34,34,40,.88);--line:rgba(255,255,255,.12);--bar:rgba(20,20,26,.5);
+    --wall:linear-gradient(135deg,#1e2a5a 0%,#3b2a6e 40%,#6b2d5c 75%,#7a4a3a 100%);
+    --shadow:0 22px 60px rgba(0,0,0,.55),0 0 0 .5px rgba(255,255,255,.14)}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:56px}
+body{font-family:var(--font);color:var(--text);background:var(--wall) fixed;line-height:1.55;-webkit-font-smoothing:antialiased;min-height:100vh}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:8px}
+
+/* Menu bar */
+.menubar{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:18px;height:34px;padding:0 20px;font-size:13px;
+  background:var(--bar);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-bottom:.5px solid var(--line)}
+.menubar b{font-weight:700}
+.menubar nav{display:flex;gap:18px}
+.menubar .sp{flex:1}
+.menubar a:hover{opacity:.7}
+.clock{font-variant-numeric:tabular-nums}
+
+/* Windows */
+.wrap{max-width:none;margin:0;padding:28px min(150px,12vw) 90px}
+.win{background:var(--glass);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);
+  border-radius:14px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:28px}
+.titlebar{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:.5px solid var(--line);position:relative}
+.dot{width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.2)}
+.dot.r{background:#ff5f57}.dot.y{background:#febc2e}.dot.g{background:#28c840}
+.titlebar .t{position:absolute;left:0;right:0;text-align:center;font-size:13px;font-weight:600;color:var(--muted);pointer-events:none}
+.body{padding:clamp(24px,5vw,56px)}
+
+/* Hero */
+.hero{display:grid;grid-template-columns:1fr;gap:40px;align-items:center}
+.logo{position:relative;display:block;width:88px;height:88px;margin-bottom:22px;border-radius:22%;overflow:hidden;
+  background:linear-gradient(160deg,#ffffff,#e6ecf7);
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 -4px 8px rgba(0,0,0,.18) inset,
+    0 3px 0 rgba(0,0,0,.14),0 10px 18px rgba(20,30,80,.28),0 22px 36px rgba(20,30,80,.22);
+  transform:perspective(500px) rotateX(6deg) rotateY(-8deg);transition:transform .3s ease}
+.logo:hover{transform:perspective(500px) rotateX(0) rotateY(0) translateY(-3px)}
+.logo img{display:block;width:100%;height:100%;object-fit:contain;padding:12%}
+.logo::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(155deg,rgba(255,255,255,.65) 0%,rgba(255,255,255,0) 45%,rgba(0,0,0,.14) 100%)}
+h1{font-size:clamp(34px,6vw,56px);line-height:1.05;letter-spacing:-.03em;font-weight:700}
+.full{font-size:15px;color:var(--muted);margin:10px 0 18px;font-weight:500}
+.lead{font-size:clamp(16px,2.2vw,19px);max-width:46ch;color:var(--text)}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.btn{display:inline-block;font:inherit;font-size:16px;font-weight:600;border:0;cursor:pointer;border-radius:10px;padding:12px 22px;min-height:44px;transition:transform .15s,background .15s}
+.btn.primary{background:var(--accent);color:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.25)}
+.btn.primary:hover{background:var(--accent-2)}
+.btn.ghost{background:rgba(120,120,128,.18);color:var(--text)}
+.btn:active{transform:scale(.97)}
+
+/* Sections */
+h2{font-size:clamp(24px,4vw,34px);letter-spacing:-.02em;line-height:1.15;margin-bottom:10px}
+.sub{color:var(--muted);max-width:60ch;margin-bottom:28px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.card{background:var(--glass-strong);border-radius:12px;padding:20px;box-shadow:0 0 0 .5px var(--line)}
+.ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;margin-bottom:14px;color:#fff}
+.ico svg{width:22px;height:22px}
+.c1{background:linear-gradient(160deg,#4da3ff,#0a5fe0)}
+.c2{background:linear-gradient(160deg,#5be37a,#1fa23c)}
+.c3{background:linear-gradient(160deg,#ffb454,#f0780a)}
+.c4{background:linear-gradient(160deg,#c084fc,#7c3aed)}
+.c5{background:linear-gradient(160deg,#ff7a8a,#e11d48)}
+.c6{background:linear-gradient(160deg,#9ca3af,#4b5563)}
+.card h3{font-size:17px;margin-bottom:6px}
+.card p{font-size:14.5px;color:var(--muted)}
+.roles{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.role h3{display:flex;align-items:center;gap:10px}
+.role ul{margin:12px 0 0 18px;font-size:14.5px;color:var(--muted)}
+.role li{margin-bottom:4px}
+
+.about{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(20px,4vw,44px);align-items:center}
+.about.no-img{grid-template-columns:1fr}
+.about .sub{margin-bottom:0;max-width:none}
+.about-img{margin:0;border-radius:18px;overflow:hidden;background:rgba(255,255,255,.35);box-shadow:0 14px 34px rgba(30,30,80,.22),0 0 0 .5px rgba(0,0,0,.14)}
+.about-img img{display:block;width:100%;height:auto;object-fit:cover}
+
+footer{text-align:center;font-size:13px;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.35);padding:0 16px 30px}
+
+/* Login dialog (sheet) */
+dialog{--text:#1d1d1f;--muted:#6e6e73;--accent:#0a7aff;--accent-2:#0062d6;--line:rgba(0,0,0,.1);--glass-strong:rgba(255,255,255,.86);
+  --shadow:0 22px 60px rgba(30,30,80,.28),0 0 0 .5px rgba(0,0,0,.18);color-scheme:light;
+  border:0;margin:auto;width:min(420px,calc(100% - 28px));border-radius:16px;padding:0;color:var(--text);
+  background:var(--glass-strong);backdrop-filter:blur(40px);-webkit-backdrop-filter:blur(40px);box-shadow:var(--shadow)}
+dialog::backdrop{background:rgba(0,0,0,.35);backdrop-filter:blur(3px)}
+dialog[open]{animation:dlg-in .34s cubic-bezier(.2,.9,.3,1.1) both}
+dialog[open]::backdrop{animation:bd-in .3s ease both}
+dialog.closing{animation:dlg-out .22s cubic-bezier(.4,0,1,1) both}
+dialog.closing::backdrop{animation:bd-out .22s ease both}
+@keyframes dlg-in{from{opacity:0;transform:translateY(16px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes dlg-out{from{opacity:1;transform:none}to{opacity:0;transform:translateY(10px) scale(.96)}}
+@keyframes bd-in{from{opacity:0}to{opacity:1}}
+@keyframes bd-out{from{opacity:1}to{opacity:0}}
+.vin{animation:view-in .3s cubic-bezier(.2,.8,.2,1) both}
+@keyframes view-in{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:none}}
+.vin.back{animation-name:view-back}
+@keyframes view-back{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+.dlg{padding:26px 22px 22px;text-align:center}
+.dlg .logo{width:68px;height:68px;margin:0 auto 18px}
+.dlg h2{font-size:22px;margin-bottom:6px}
+.dlg p{font-size:14px;color:var(--muted);margin-bottom:18px}
+.choice{display:flex;align-items:center;gap:14px;text-align:left;width:100%;padding:14px;margin-bottom:10px;border-radius:12px;
+  background:rgba(120,120,128,.14);transition:background .15s;font:inherit;color:inherit;border:0;cursor:pointer}
+.choice:hover{background:rgba(120,120,128,.26)}
+.choice b{display:block;font-size:16px}
+.choice small{color:var(--muted);font-size:13px}
+.choice .ico{margin:0;flex:none}
+.close{margin-top:6px;width:100%}
+.dlg label{display:block;text-align:left;font-size:13px;font-weight:600;margin-bottom:6px}
+.fld{margin-bottom:14px}
+.dlg .in{width:100%;font:inherit;font-size:16px;padding:10px 12px;min-height:44px;border-radius:10px;border:0;background:rgba(255,255,255,.9);color:#1d1d1f;box-shadow:0 0 0 .5px var(--line),inset 0 1px 2px rgba(0,0,0,.06)}
+.dlg .in:focus{outline:0;box-shadow:0 0 0 3px rgba(10,122,255,.4),0 0 0 1px var(--accent)}
+.dlg .pw{position:relative}.dlg .pw .in{padding-right:44px}
+.dlg .eye{position:absolute;right:4px;top:5px;width:34px;height:34px;border-radius:8px;display:grid;place-items:center;color:#6e6e73;border:0;background:none;cursor:pointer}
+.dlg .eye:hover{background:rgba(120,120,128,.18)}.dlg .eye svg{width:18px;height:18px}
+.btn.wide{width:100%}
+.lerr{margin:-4px 0 12px;padding:9px 12px;border-radius:10px;font-size:13.5px;text-align:left;color:#b42318;background:rgba(240,68,56,.12)}
+.btn[disabled]{opacity:.6;cursor:progress}
+[hidden]{display:none!important}
+
+@media (max-width:860px){
+  .hero{grid-template-columns:1fr;gap:28px}
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .about{grid-template-columns:1fr}
+  .about-img{max-width:560px;margin:0 auto}
+}
+@media (max-width:560px){
+  .menubar nav{display:none}
+  .wrap{padding:18px 16px 90px}
+  .grid,.roles{grid-template-columns:1fr}
+  .cta .btn{flex:1 1 100%;text-align:center}
+  .titlebar .t{font-size:12px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  .logo,.logo:hover{transform:none}
+}
+</style>
+</head>
+<body>
+
+<header class="menubar">
+  <b>&#63743; SimberKas</b>
+  <nav aria-label="Navigasi utama">
+    <a href="#fitur">Fitur</a>
+    <a href="#peran">Peran</a>
+    <a href="#tentang">Tentang</a>
+  </nav>
+  <span class="sp"></span>
+  <span class="clock" id="clock" aria-hidden="true"></span>
+</header>
+
+<main class="wrap">
+
+  <!-- Hero -->
+  <section class="win" aria-labelledby="judul">
+    <div class="titlebar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="t">SimberKas</span></div>
+    <div class="body hero">
+      <div>
+        <span class="logo"><img src="logo.png" alt="Logo SimberKas"></span>
+        <h1 id="judul">SimberKas</h1>
+        <p class="full">Sistem Informasi Manajemen Pelayanan Pembayaran</p>
+        <p class="lead">Catat transaksi pembayaran sekolah yang berjalan di luar SIPLah dengan rapi, cepat, dan mudah ditelusuri.</p>
+        <div class="cta">
+          <button class="btn primary" id="openLogin" type="button">Login</button>
+          <a class="btn ghost" href="#fitur">Lihat fitur</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tentang -->
+  <section class="win" id="tentang" aria-labelledby="h-tentang">
+    <div class="titlebar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="t">Tentang Aplikasi</span></div>
+    <div class="body about">
+      <div class="about-text">
+        <h2 id="h-tentang">Untuk transaksi di luar SIPLah</h2>
+        <p class="sub">Tidak semua pembayaran sekolah bisa diproses lewat SIPLah. SimberKas hadir sebagai tempat khusus untuk menginput, menyimpan, dan memantau transaksi pembayaran tersebut, sehingga pencatatan keuangan sekolah tetap tertib dan siap diperiksa kapan saja.</p>
+      </div>
+      <figure class="about-img">
+        <img src="gbtransaksi.png" alt="Ilustrasi pencatatan transaksi pembayaran sekolah di SimberKas" loading="lazy" decoding="async" onerror="this.closest('.about').classList.add('no-img');this.closest('figure').remove()">
+      </figure>
+    </div>
+  </section>
+
+  <!-- Fitur -->
+  <section class="win" id="fitur" aria-labelledby="h-fitur">
+    <div class="titlebar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="t">Fitur</span></div>
+    <div class="body">
+      <h2 id="h-fitur">Semua yang dibutuhkan untuk mencatat</h2>
+      <p class="sub">Dirancang sederhana agar bisa langsung dipakai tanpa pelatihan panjang.</p>
+      <div class="grid">
+        <article class="card"><div class="ico c1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></div><h3>Input transaksi</h3><p>Masukkan data pembayaran dengan formulir yang singkat dan jelas.</p></article>
+        <article class="card"><div class="ico c2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><h3>Riwayat pembayaran</h3><p>Lihat dan cari seluruh transaksi yang pernah dicatat.</p></article>
+        <article class="card"><div class="ico c3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3>Rekap otomatis</h3><p>Total pembayaran dihitung otomatis per periode.</p></article>
+        <article class="card"><div class="ico c4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg></div><h3>Cetak &amp; unduh</h3><p>Siapkan laporan untuk arsip atau pemeriksaan.</p></article>
+        <article class="card"><div class="ico c5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg></div><h3>Akses sesuai peran</h3><p>Setiap pengguna hanya melihat menu yang menjadi tugasnya.</p></article>
+        <article class="card"><div class="ico c6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/></svg></div><h3>Semua perangkat</h3><p>Nyaman dibuka dari komputer, tablet, maupun ponsel.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Peran -->
+  <section class="win" id="peran" aria-labelledby="h-peran">
+    <div class="titlebar"><i class="dot r"></i><i class="dot y"></i><i class="dot g"></i><span class="t">Peran Pengguna</span></div>
+    <div class="body">
+      <h2 id="h-peran">Masuk sesuai peran Anda</h2>
+      <p class="sub">SimberKas memiliki dua peran dengan hak akses berbeda.</p>
+      <div class="roles">
+        <article class="card role"><h3><span class="ico c1" style="margin:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></span>Admin Utama</h3>
+          <ul><li>Mengelola akun dan pengguna</li><li>Mengatur data master sekolah</li><li>Memantau seluruh transaksi</li></ul></article>
+        <article class="card role"><h3><span class="ico c2" style="margin:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9.5 9.5c0-1 1-1.5 2.5-1.5s2.5.6 2.5 1.7c0 2.3-5 1.2-5 3.6 0 1.1 1 1.7 2.5 1.7s2.5-.6 2.5-1.5"/></svg></span>Bendahara</h3>
+          <ul><li>Menginput transaksi pembayaran</li><li>Melihat riwayat dan rekap</li><li>Mencetak laporan keuangan</li></ul></article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>&copy; <span id="year">2026</span> SimberKas &middot; Sistem Informasi Manajemen Pelayanan Pembayaran</footer>
+
+<!-- Login sheet (tampilan saja) -->
+<dialog id="loginDialog" aria-labelledby="dlgTitle">
+  <div class="dlg">
+    <span class="logo"><img src="logo.png" alt="Logo SimberKas"></span>
+
+    <!-- Langkah 1: pilih peran -->
+    <div id="vRole">
+      <h2 id="dlgTitle">Login ke SimberKas</h2>
+      <p>Pilih peran untuk melanjutkan.</p>
+      <button class="choice" type="button" id="pickAdmin">
+        <span class="ico c1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/></svg></span>
+        <span><b>Admin Utama</b><small>Kelola pengguna dan data master</small></span>
+      </button>
+      <button class="choice" type="button" id="pickBendahara">
+        <span class="ico c2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M16 12h2M3 10h18"/></svg></span>
+        <span><b>Bendahara</b><small>Input dan rekap pembayaran</small></span>
+      </button>
+      <button class="btn ghost close" id="closeLogin" type="button">Batal</button>
+    </div>
+
+    <!-- Langkah 2: form login -->
+    <form id="vForm" hidden novalidate autocomplete="off" onsubmit="return false">
+      <h2 id="fTitle">Admin Utama</h2>
+      <p>Masukkan username dan password Anda.</p>
+      <div class="fld">
+        <label for="lu">Username</label>
+        <input class="in" id="lu" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Username">
+      </div>
+      <div class="fld">
+        <label for="lp">Password</label>
+        <div class="pw"><input class="in" id="lp" name="password" type="password" autocomplete="current-password" placeholder="Password"><button class="eye" id="leye" type="button" aria-label="Tampilkan password"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
+      </div>
+      <div class="lerr" id="lerr" role="alert" hidden></div>
+      <button class="btn primary wide" id="lgo" type="submit">Masuk</button>
+      <button class="btn ghost close" id="lback" type="button">Kembali</button>
+    </form>
+  </div>
+</dialog>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+  function $(i){return document.getElementById(i)}
+  var dlg=$('loginDialog'),vRole=$('vRole'),vForm=$('vForm'),curRole='admin';
+
+  function showErr(m){var e=$('lerr');e.textContent=m;e.hidden=!m}
+  function swap(show,back){show.hidden=false;show.classList.remove('vin','back');void show.offsetWidth;show.classList.add('vin');if(back)show.classList.add('back')}
+  function showRole(back){vForm.hidden=true;showErr('');$('lu').value='';$('lp').value='';$('lp').type='password';swap(vRole,back===true)}
+  function showForm(role){curRole=role;showErr('');$('fTitle').textContent=role==='bendahara'?'Bendahara':'Admin Utama';vRole.hidden=true;swap(vForm,false);$('lu').focus({preventScroll:true})}
+
+  var reduce=window.matchMedia('(prefers-reduced-motion:reduce)');
+  function openDlg(){showRole();dlg.classList.remove('closing');dlg.showModal()}
+  function closeDlg(){
+    if(!dlg.open||dlg.classList.contains('closing'))return;
+    if(reduce.matches){dlg.close();return}
+    dlg.classList.add('closing');
+    var done=false;
+    function fin(){if(done)return;done=true;dlg.classList.remove('closing');dlg.close()}
+    dlg.addEventListener('animationend',function h(e){if(e.target===dlg){dlg.removeEventListener('animationend',h);fin()}});
+    setTimeout(fin,320);
+  }
+
+  $('openLogin').addEventListener('click',openDlg);
+  $('closeLogin').addEventListener('click',closeDlg);
+  $('lback').addEventListener('click',function(){showRole(true)});
+  $('pickAdmin').addEventListener('click',function(){showForm('admin')});
+  $('pickBendahara').addEventListener('click',function(){showForm('bendahara')});
+  dlg.addEventListener('click',function(e){if(e.target===dlg)closeDlg()});
+  dlg.addEventListener('cancel',function(e){e.preventDefault();closeDlg()});
+  $('leye').addEventListener('click',function(){var p=$('lp'),s=p.type==='password';p.type=s?'text':'password';this.setAttribute('aria-label',s?'Sembunyikan password':'Tampilkan password')});
+
+  /* ---------- Login Bendahara: validasi ke tabel identitas_sekolah ---------- */
+  var SB_URL='https://jnbhjmmmyqbcxaojbdlb.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuYmhqbW1teXFiY3hhb2piZGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNDcwMzMsImV4cCI6MjEwNzcyMzAzM30.KP1-LCQJ9MJlxFbQlqLfAtqLiv3uybRdbJ2AVLb9phw';
+  var TABLE='identitas_sekolah';
+  var sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+  async function loginBendahara(u,p){
+    var r=await sb.from(TABLE).select('id,username')
+      .eq('username',u).eq('password',p).limit(1).maybeSingle();
+    if(r.error)throw r.error;
+    return !!r.data;
+  }
+
+  vForm.addEventListener('submit',async function(e){
+    e.preventDefault();
+    var u=$('lu').value.trim(),p=$('lp').value,btn=$('lgo');
+    showErr('');
+    if(!u||!p){showErr('Username dan password wajib diisi.');return}
+    if(curRole!=='bendahara'){showErr('Login Admin Utama belum diaktifkan.');return}
+    btn.disabled=true;btn.textContent='Memeriksa…';
+    try{
+      var ok=await loginBendahara(u,p);
+      if(!ok){showErr('Username atau password salah.');return}
+      try{sessionStorage.setItem('simberkas_session',JSON.stringify({role:'bendahara',username:u,at:Date.now()}))}catch(_){}
+      window.location.href='adminbendahara.html';
+    }catch(err){
+      console.error(err);
+      showErr('Gagal terhubung ke server. Coba lagi.');
+    }finally{
+      btn.disabled=false;btn.textContent='Masuk';
+    }
+  });
+
+  $('year').textContent=new Date().getFullYear();
+  var c=$('clock');
+  function tick(){c.textContent=new Date().toLocaleString('id-ID',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}
+  tick();setInterval(tick,30000);
+})();
+</script>
+</body>
+</html>
