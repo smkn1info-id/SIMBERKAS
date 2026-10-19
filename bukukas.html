@@ -337,7 +337,9 @@ td.rin{min-width:260px}
 .ps-body h4{font-size:15px;line-height:1.25;overflow-wrap:anywhere}
 .ps-body p{font-size:13px;line-height:1.35;color:var(--muted);white-space:pre-line;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
 .ps-card{cursor:pointer}.ps-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.ps-desc{margin-top:6px;display:block;width:100%;text-align:center;font-size:12.5px;font-weight:700;padding:6px 8px;border-radius:9px;background:var(--track);color:var(--text);transition:background .15s}
+.ps-act{margin-top:6px;display:flex;gap:6px;align-items:stretch}
+.ps-wa{flex:none;width:38px;display:grid;place-items:center;border-radius:9px;color:#fff;background:#25d366;transition:background .15s,transform .15s}.ps-wa:hover,.ps-wa:focus-visible{background:#1ebe5a;transform:scale(1.05)}.ps-wa svg{width:19px;height:19px}
+.ps-desc{flex:1 1 auto;min-width:0;display:block;text-align:center;font-size:12.5px;font-weight:700;padding:6px 8px;border-radius:9px;background:var(--track);color:var(--text);transition:background .15s}
 .ps-desc:hover,.ps-desc:focus-visible{background:rgba(120,120,128,.26)}
 /* Modal Deskripsi produk: semua data tampil utuh, isi bisa digulir di smartphone */
 #mProdDesc{z-index:103}
@@ -909,7 +911,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   });
 
   /* ---------- Lihat Produk Toko: klik produk -> masuk ke Rincian Barang ---------- */
-  var mps=$('mProdSO'),psData=[],psBusy=false;
+  var mps=$('mProdSO'),psData=[],psBusy=false,psToko=null;
   function psRp(v){return v==null||v===''?'Harga belum diisi':'Rp '+nf(Math.round(Number(v)));}
   function psHarga(p){return p.harga==null||p.harga===''?'':String(Math.round(Number(p.harga)));}
   function psCount(p){   /* jumlah produk ini yang sudah ada di rincian */
@@ -926,7 +928,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         +'<div class="ps-img">'+esc(ini)+(p.gambar_url?'<img alt="" loading="lazy" src="'+esc(p.gambar_url)+'" onerror="this.remove()">':'')+'</div>'
         +'<div class="ps-body">'+(p.kode_produk?'<span class="ps-kd">'+esc(p.kode_produk)+'</span>':'')+'<h4>'+esc(p.nama)+'</h4><p>'+esc(p.keterangan||'Tanpa keterangan')+'</p>'
         +'<div class="ps-price"><b>'+psRp(p.harga)+'</b>'+(p.stok==null?'':'<span class="ps-st'+(p.stok>0?'':' out')+'">'+(p.stok>0?'Stok '+esc(p.stok):'Habis')+'</span>')+'</div>'
-        +'<button type="button" class="ps-desc" data-psd="'+i+'">Deskripsi produk</button><span class="ps-add">+ Masukkan ke rincian</span></div></div>';
+        +'<div class="ps-act"><button type="button" class="ps-desc" data-psd="'+i+'">Deskripsi produk</button><button type="button" class="ps-wa" data-psw="'+i+'" aria-label="Tanya penjual lewat WhatsApp tentang produk ini" title="Tanya penjual lewat WhatsApp"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></button></div><span class="ps-add">+ Masukkan ke rincian</span></div></div>';
     }).join('');
     $('psBody').innerHTML=h?'<div class="ps-grid">'+h+'</div>':'<p class="state">Produk tidak ditemukan.</p>';
   }
@@ -959,7 +961,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       var q=await sb.from('produk').select('*').eq('id_toko',t.id_toko).order('created_at',{ascending:false});
       if(q.error)throw q.error;
       if(!q.data||!q.data.length){toast('Toko ini tidak aktif','err');return;}
-      psData=q.data;
+      psData=q.data;psToko=t;
       $('psT').textContent='Produk '+(t.nama_toko||t.nama_pemilik);
       $('psSub').textContent='Id Toko: '+t.id_toko+', '+psData.length+' produk. Klik produk untuk memasukkannya ke Rincian Barang';
       $('psInfo').textContent='';$('psq').value='';psRender();
@@ -998,10 +1000,38 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   $('pdAdd').addEventListener('click',function(){var p=pdCur;pdClose();if(p)psTambah(p);});
 
   $('btnProdToko').addEventListener('click',psOpen);
+
+  /* ---------- Tanya Penjual: buka WhatsApp ke nomor telepon penerima (tabel penerima, kolom telepon) ---------- */
+  function waNomor(t){
+    var d=String(t||'').replace(/\D/g,'');           /* buang spasi, tanda +, -, dan lainnya */
+    if(!d)return '';
+    if(d.indexOf('620')===0)d='62'+d.slice(3);       /* 6208xx -> 628xx */
+    else if(d.charAt(0)==='0')d='62'+d.slice(1);     /* 08xx -> 628xx */
+    else if(d.charAt(0)==='8')d='62'+d;              /* 8xx -> 628xx */
+    return d.length>=9&&d.length<=15?d:'';
+  }
+  /* Klik ikon WhatsApp di card produk: chat ke penjual dengan produk yang bersangkutan */
+  function waTanya(p){
+    var t=psToko;
+    if(!t){toast('Toko tidak ditemukan','err');return;}
+    var no=waNomor(t.telepon);
+    if(!no){toast(t.telepon?'Nomor telepon penjual tidak valid untuk WhatsApp':'Nomor telepon penjual belum diisi di data penerima','err');return;}
+    var pesan='Halo'+(t.nama_pemilik?' '+t.nama_pemilik:'')+', saya ingin bertanya tentang produk di '+(t.nama_toko||t.nama_pemilik)+':\n\n'
+      +'Produk: '+(p.nama||'-')+'\n'
+      +(p.kode_produk?'ID produk: '+p.kode_produk+'\n':'')
+      +(p.harga==null||p.harga===''?'':'Harga: '+psRp(p.harga)+'\n')
+      +(p.gambar_url?'Gambar produk:\n'+p.gambar_url+'\n':'')   /* tautan sendirian di barisnya agar WhatsApp menampilkan pratinjau gambar */
+      +'\nApakah produk ini masih tersedia?';
+    var url='https://wa.me/'+no+'?text='+encodeURIComponent(pesan);
+    var w=window.open(url,'_blank','noopener');
+    if(!w)location.href=url;   /* popup diblokir */
+  }
   $('psClose').addEventListener('click',psClose);$('psDone').addEventListener('click',psClose);
   mps.addEventListener('mousedown',function(e){if(e.target===mps)psClose();});
   $('psq').addEventListener('input',psRender);
   $('psBody').addEventListener('click',function(e){
+    var w=e.target.closest('[data-psw]');   /* ikon WhatsApp: tanya penjual, jangan tambah ke rincian */
+    if(w){e.stopPropagation();var pw=psData[+w.dataset.psw];if(pw)waTanya(pw);return;}
     var d=e.target.closest('[data-psd]');   /* tombol Deskripsi produk: buka modal, jangan tambah ke rincian */
     if(d){e.stopPropagation();var pd=psData[+d.dataset.psd];if(pd)pdOpen(pd);return;}
     var b=e.target.closest('[data-ps]');if(!b)return;
