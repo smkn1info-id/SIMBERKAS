@@ -370,7 +370,7 @@ td.rin{min-width:260px}
 .xform input{width:100%;box-sizing:border-box;font:inherit;font-size:var(--fz,16px);padding:9px 11px;border:1px solid #b9bec7;border-radius:8px;background:#fff;color:#1d1d1f;outline:none}
 .xform input::placeholder{color:#9aa0ab}
 .xform select{width:100%;box-sizing:border-box;font:inherit;font-size:var(--fz,16px);padding:9px 11px;border:1px solid #b9bec7;border-radius:8px;background:#fff;color:#1d1d1f;outline:none}.xform select:focus{border-color:#6b7280;box-shadow:0 0 0 3px rgba(107,114,128,.2)}.xform select.miss{border-color:#ff453a;background:#fff1f0;animation:shk .4s}
-.xin{position:relative}.xin input[data-k]{padding-right:42px}
+.xin{position:relative}.xin input[data-k]{padding-right:42px}.xin input[readonly]{background:var(--track);color:var(--muted);cursor:not-allowed}
 .xcal{position:absolute;right:5px;top:50%;transform:translateY(-50%);width:32px;height:32px;display:grid;place-items:center;border:0;border-radius:6px;background:transparent;color:#555;cursor:pointer}
 .xcal:hover{background:#eceef2}.xcal svg{width:18px;height:18px}
 .xform input.xdp{position:absolute;right:5px;top:0;width:32px;height:100%;opacity:0;pointer-events:none;padding:0;border:0}
@@ -1268,6 +1268,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       if(kosong){void el.offsetWidth;el.classList.add('miss');if(!first)first=el;}
     });
     if(!first)return true;
+    $('warn').querySelector('p').textContent=PB_RO.indexOf(first.dataset.k)>=0?'Nomor & Tanggal BASTB belum ada. Isi dan simpan Berita Acara terlebih dahulu':'Silahkan lengkapi data Surat Perintah Bayar terlebih dahulu';
     var w=$('warn');w.classList.add('show');clearTimeout(warnTimer);
     warnTimer=setTimeout(function(){w.classList.remove('show');},4200);
     first.focus({preventScroll:false});
@@ -1314,15 +1315,16 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     });
     return h+'</div>';
   }
+  var PB_RO=['bastb','tglb'];   /* diisi otomatis dari Berita Acara (tabel bast) */
   var PBF=[['no','Nomor SPBY'],['tgl','Tanggal SPBY',1],['bastb','Nomor BASTB'],['tglb','Tanggal BASTB',1],['beban','Dibebankan pada'],['kegiatan','Kegiatan'],['rek','Kode rekening']];
   function tglIso(t){var m=/^(\d{1,2})-(\d{1,2})-(\d{4})$/.exec(String(t||'').trim());return m?m[3]+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[1]).slice(-2):'';}
   function pbBind(r){
     var pap=$('xpaper'),pg=pap.querySelector('.pbp'),f=document.createElement('div');
     f.className='xform';f.id='xform';
-    f.innerHTML='<div class="xf-h"><b>Isian Manual</b><p>Ketik data di bawah ini, hasilnya langsung muncul di pratinjau (tanggal bisa diketik atau pakai ikon kalender). Gunakan tombol Preview Surat di bawah untuk membuka surat di tab baru.</p><span class="st" id="pbStat"></span></div><div class="xf-g">'+PBF.map(function(d){
-      var k=d[0],val=pbV[k]||'';
-      return '<div><label for="pbf_'+k+'">'+d[1]+'</label><div class="xin"><input id="pbf_'+k+'" type="text" data-k="'+k+'" autocomplete="off" value="'+esc(val)+'" placeholder="'+esc(PBPH[k]||d[1])+'">'
-       +(d[2]?'<button type="button" class="xcal" data-cal="'+k+'" aria-label="Pilih tanggal dari kalender">'+svg('cal')+'</button><input type="date" class="xdp" tabindex="-1" aria-hidden="true" data-dp="'+k+'">':'')+'</div></div>';
+    f.innerHTML='<div class="xf-h"><b>Isian Manual</b><p>Ketik data di bawah ini, hasilnya langsung muncul di pratinjau (tanggal bisa diketik atau pakai ikon kalender). Nomor &amp; Tanggal BASTB terisi otomatis dari Berita Acara, jadi isi dan simpan Berita Acara terlebih dahulu. Gunakan tombol Preview Surat di bawah untuk membuka surat di tab baru.</p><span class="st" id="pbStat"></span></div><div class="xf-g">'+PBF.map(function(d){
+      var k=d[0],val=pbV[k]||'',ro=PB_RO.indexOf(k)>=0;
+      return '<div><label for="pbf_'+k+'">'+d[1]+'</label><div class="xin"><input id="pbf_'+k+'" type="text" data-k="'+k+'" autocomplete="off" value="'+esc(val)+'" placeholder="'+esc(ro?'Isi dulu di Berita Acara':(PBPH[k]||d[1]))+'"'+(ro?' readonly title="Terisi otomatis dari Berita Acara"':'')+'>'
+       +(d[2]&&!ro?'<button type="button" class="xcal" data-cal="'+k+'" aria-label="Pilih tanggal dari kalender">'+svg('cal')+'</button><input type="date" class="xdp" tabindex="-1" aria-hidden="true" data-dp="'+k+'">':'')+'</div></div>';
     }).join('')+'</div>';
     pg.appendChild(f);pbFitPage();
     function apply(k,el,val){
@@ -1367,7 +1369,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
      +'<div>'+esc(tempat())+',&nbsp; '+esc(tglNum(r.tanggal))+'<br>Kuasa Pengguna Anggaran<div class="sp" style="height:'+'23mm'+'"></div>'+esc(r.kpa_nama)+(r.kpa_nip?'<br>NIP. '+esc(r.kpa_nip):'')+'</div></div></div>';
   }
   /* ---------- Pilih jenis berkas ---------- */
-  var DOCS=[['so','Surat Order',1],['pb','Perintah Bayar',1],['kw','Kwitansi',1],['ba','Berita Acara Serah Terima Barang',1],['tg','Tagihan',1],['fp','Faktur Perincian',1],['nt','Nota',1]];
+  var DOCS=[['so','Surat Order',1],['ba','Berita Acara Serah Terima Barang',1],['kw','Kwitansi',1],['pb','Perintah Bayar',1],['tg','Tagihan',1],['fp','Faktur Perincian',1],['nt','Nota',1]];
   var mdoc=$('mDoc'),docRow=null,docFrom=null;
   $('dlist').innerHTML=DOCS.map(function(d){
     return '<button type="button" class="dbtn'+(d[2]?'':' soon')+'" data-d="'+d[0]+'"><span class="di">'+svg('doc')+'</span><span class="tx">'+d[1]+'</span>'+(d[2]?'<span class="dst wt" data-k="'+d[0]+'">Memeriksa…</span>':'<em>Segera</em>')+'</button>';
@@ -1636,6 +1638,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
         if(!sy||pbSnap(pbV)===sy){pbV=dbV;pbSave(r,pbV);}
         pbSynced=pbSnap(dbV);try{localStorage.setItem('pbs:'+r.id,pbSynced);}catch(e){}
       }
+      /* Nomor & tanggal BASTB selalu mengikuti Berita Acara yang sudah disimpan (tabel bast) */
+      try{
+        var qb=await sb.from(BA_TABLE).select('nomor_bast,tanggal_bast').eq('surat_order_id',r.id).maybeSingle();
+        if(!mexp.classList.contains('open'))return;
+        if(!qb.error){pbV.bastb=(qb.data&&qb.data.nomor_bast)||'';pbV.tglb=(qb.data&&qb.data.tanggal_bast)?tglNum(qb.data.tanggal_bast):'';pbSave(r,pbV);}
+      }catch(e){console.error(e);}
       $('xpaper').innerHTML=pbHTML(r,true);pbBind(r);pbStat(rec);pbDirty();
     }
     else if(expType==='kw'){
@@ -1813,8 +1821,12 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   }
   function pbPayload(r){
     var t=function(k){return String(pbV[k]||'').trim();},a=tglDb(pbV.tgl),b=tglDb(pbV.tglb);
-    if(!a||!b){
-      var bad=$('pbf_'+(!a?'tgl':'tglb'));
+    if(!t('bastb')||!b){
+      toast('Nomor & Tanggal BASTB diambil dari Berita Acara. Isi dan simpan Berita Acara terlebih dahulu','err');
+      return null;
+    }
+    if(!a){
+      var bad=$('pbf_tgl');
       toast('Tanggal harus berformat dd-mm-yyyy dan berupa tanggal yang valid','err');
       if(bad){bad.classList.add('miss');bad.focus();}
       return null;
@@ -2249,18 +2261,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       kpaN:r.kpa_nama||'',kpaNip:kwNip(r.kpa_nip)
     };
   }
-  /* Nomor & tanggal BASTB dari Perintah Bayar (bila sudah diisi); pengurus barang dari halaman Penanda Tangan */
+  /* Berita Acara adalah sumber Nomor & Tanggal BASTB (Perintah Bayar yang mengikutinya); pengurus barang dari halaman Penanda Tangan */
   async function baAutoLoad(r){
-    var a={},pb={};
-    try{pb=JSON.parse(localStorage.getItem('pb:'+r.id)||'{}')||{};}catch(e){}
-    if(pb.bastb)a.nomor=String(pb.bastb);
-    if(pb.tglb)a.tgl=String(pb.tglb);
-    if(!a.nomor||!a.tgl){
-      try{
-        var q=await sb.from(PB_TABLE).select('nomor_bastb,tanggal_bastb').eq('surat_order_id',r.id).maybeSingle();
-        if(q&&q.data){if(!a.nomor&&q.data.nomor_bastb)a.nomor=q.data.nomor_bastb;if(!a.tgl&&q.data.tanggal_bastb)a.tgl=tglNum(q.data.tanggal_bastb);}
-      }catch(e){}
-    }
+    var a={};
     try{var t=await sb.from('penandatangan').select('nama,nip,jabatan,id').order('id',{ascending:true});baTtd=(t&&!t.error&&t.data)||[];}catch(e){baTtd=[];}
     var pg=baTtd.filter(function(x){return /pengurus\s+barang/i.test(x.jabatan||'');})[0];
     if(pg){a.p2N=pg.nama||'';a.p2Nip=kwNip(pg.nip);a.p2J0=pg.jabatan||'';}
@@ -2390,7 +2393,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   function baBind(r){
     var pap=$('xpaper'),f=document.createElement('div');
     f.className='xform';f.id='xform';f.style.cssText='position:relative;left:0;top:0;width:210mm;max-width:100%;margin:17px auto 0';
-    f.innerHTML='<div class="xf-h"><b>Isian Manual</b><p>Data sudah terisi otomatis dari surat order dan halaman Penanda Tangan. Ubah kolom mana pun bila perlu, hasilnya langsung tampil di pratinjau (tanggal bisa diketik atau pakai ikon kalender). NIP boleh dikosongkan. Nomor BAST tidak boleh sama dengan berita acara lain.</p><span class="st" id="baStat"></span>'
+    f.innerHTML='<div class="xf-h"><b>Isian Manual</b><p>Data sudah terisi otomatis dari surat order dan halaman Penanda Tangan. Ubah kolom mana pun bila perlu, hasilnya langsung tampil di pratinjau (tanggal bisa diketik atau pakai ikon kalender). NIP boleh dikosongkan. Nomor BAST tidak boleh sama dengan berita acara lain. Nomor &amp; Tanggal BAST ini otomatis dipakai di Perintah Bayar setelah disimpan (klik Update atau Simpan PDF).</p><span class="st" id="baStat"></span>'
       +'<button type="button" id="baReset" style="margin-top:8px;padding:6px 12px;border-radius:8px;background:#e6e9ef;color:#1d1d1f;font-size:13px;font-weight:600">Kembalikan ke data otomatis</button></div>'
       +'<div class="xf-g">'+BAF.map(function(d){
         var k=d[0];
