@@ -330,14 +330,23 @@ td.rin{min-width:260px}
 .xbox{background:#fff;border-radius:18px;box-shadow:var(--shadow);width:min(900px,100%);max-height:94vh;max-height:94dvh;display:flex;flex-direction:column;overflow:hidden}
 .xbody{background:#dfe0e6;padding:14px;overflow:auto;min-height:0;flex:1}
 .xbox .mf{justify-content:center;gap:12px}
+.fbox .mf{justify-content:center;gap:12px}
 .xbox .mf .btn{position:relative;width:44px;height:44px;min-width:0;padding:0;border-radius:12px}
+.fbox .mf .btn{position:relative;width:44px;height:44px;min-width:0;padding:0;border-radius:12px}
 .xbox .mf .btn svg{width:20px;height:20px}
+.fbox .mf .btn svg{width:20px;height:20px}
 .xbox .mf .btn span:not([data-i]){display:none}
+.fbox .mf .btn span:not([data-i]){display:none}
 .xbox .mf .btn,.xbox .mf .btn.pri{background:var(--track);color:var(--text);box-shadow:none;transition:background .15s,color .15s,transform .15s}
+.fbox .mf .btn,.fbox .mf .btn.pri{background:var(--track);color:var(--text);box-shadow:none;transition:background .15s,color .15s,transform .15s}
 .xbox .mf .btn:hover,.xbox .mf .btn:focus-visible{background:var(--accent);color:#fff}
+.fbox .mf .btn:hover,.fbox .mf .btn:focus-visible{background:var(--accent);color:#fff}
 .xbox .mf #expTutup:hover,.xbox .mf #expTutup:focus-visible{background:var(--red)}
+.fbox .mf #fotoTutup:hover,.fbox .mf #fotoTutup:focus-visible{background:var(--red)}
 .xbox .mf .btn::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%) translateY(4px);background:#1d1d1f;color:#fff;font-size:12px;font-weight:600;line-height:1;padding:6px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:5}
+.fbox .mf .btn::after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%) translateY(4px);background:#1d1d1f;color:#fff;font-size:12px;font-weight:600;line-height:1;padding:6px 10px;border-radius:7px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s,transform .15s;z-index:5}
 .xbox .mf .btn:hover::after,.xbox .mf .btn:focus-visible::after{opacity:1;transform:translateX(-50%) translateY(0)}
+.fbox .mf .btn:hover::after,.fbox .mf .btn:focus-visible::after{opacity:1;transform:translateX(-50%) translateY(0)}
 #mDoc{z-index:95}
 .dbox{background:#fff;border-radius:18px;box-shadow:var(--shadow);width:min(520px,100%);max-height:92dvh;display:flex;flex-direction:column;overflow:hidden}
 .dlist{padding:14px 18px 18px;display:grid;gap:8px;overflow:auto}
@@ -477,6 +486,34 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 @media (max-width:1100px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:520px){.stats{gap:8px}.sc{gap:10px;padding:12px}.sc .si{width:36px;height:36px;border-radius:10px}.sc .si svg{width:18px;height:18px}.sc .sv{font-size:17px}.sc .sl{font-size:11px}}
 @media (prefers-reduced-motion:reduce){.sc{transition:none}}
+/* Modal Photo Barang/Kegiatan */
+#mFoto{z-index:100}#mCam{z-index:105}
+.fbox{background:#fff;border-radius:18px;box-shadow:var(--shadow);width:min(760px,100%);max-height:94dvh;display:flex;flex-direction:column;overflow:hidden}
+.fbody{padding:14px 22px 18px;overflow:auto;min-height:0;flex:1}
+.fno{font-size:14px;margin-bottom:14px}.fno b{font-weight:600}
+.fslot{margin-bottom:22px}.fslot:last-child{margin-bottom:0}
+.fframe{position:relative;aspect-ratio:2.2/1;border:1.5px solid #1d1d1f;border-radius:4px;background:#f6f6f8;overflow:hidden;display:grid;place-items:center}
+.fframe img{display:none;width:100%;height:100%;object-fit:contain;background:#fff}
+.fempty{font-size:13px;color:var(--muted)}
+.fslot.bad .fframe{border-color:var(--err);box-shadow:0 0 0 3px rgba(215,0,21,.18)}
+.fx{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:rgba(29,29,31,.72);color:#fff}
+.fx[hidden]{display:none}.fx:hover{background:var(--red)}.fx svg{width:15px;height:15px}
+.frow{display:flex;align-items:center;gap:10px;margin-top:8px}
+.fcam{flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;background:var(--track);color:var(--text);transition:background .15s,color .15s}
+.fcam:hover{background:var(--accent);color:#fff}.fcam svg{width:24px;height:24px}
+.frow .btn{flex:none;padding:10px 14px;font-size:13px}
+.fcapi{flex:1;min-width:0;text-align:center;font:inherit;font-size:15px;color:var(--text);background:transparent;border:0;border-bottom:1px dashed var(--field-line);border-radius:0;padding:8px 6px}
+.fcapi:focus{outline:none;border-bottom-color:var(--accent)}
+.fslot.badn .fcapi{border-bottom-color:var(--err)}
+.fmsg{display:none;font-size:12px;font-weight:600;color:var(--err);text-align:center;margin-top:4px}
+.fslot.bad .fmsg,.fslot.badn .fmsg{display:block}
+.cbox{background:#111;border-radius:18px;box-shadow:var(--shadow);width:min(720px,100%);overflow:hidden}
+.cbox video{display:block;width:100%;max-height:70dvh;background:#000;object-fit:contain}
+.cbar{display:flex;align-items:center;justify-content:center;gap:18px;padding:14px;background:#111}
+.cbar .btn{color:#fff;background:rgba(255,255,255,.16)}
+.shut{width:62px;height:62px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,.45);box-shadow:0 0 0 2px #fff inset;transition:transform .12s}
+.shut:active{transform:scale(.9)}
+@media (max-width:520px){.fbody{padding:12px 14px 16px}.frow{flex-wrap:wrap}.frow .fcapi{flex:1 0 100%;order:3}}
 </style>
 </head>
 <body>
@@ -563,6 +600,50 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   </div>
 </div>
 
+<div class="ov" id="mFoto" aria-hidden="true">
+  <div class="fbox" role="dialog" aria-modal="true" aria-labelledby="fotoT">
+    <div class="mh">
+      <div><h2 id="fotoT">Photo Barang/Kegiatan</h2><p>Unggah photo barang atau kegiatan untuk surat order ini</p></div>
+      <button type="button" class="mx" id="fotoClose" aria-label="Tutup"><span data-i="close"></span></button>
+    </div>
+    <div class="fbody">
+      <p class="fno">Keterangan Nomor Order : <b id="fotoNo"></b></p>
+      <div class="fslot" data-s="0">
+        <div class="fframe"><img alt=""><span class="fempty">Belum ada photo</span><button type="button" class="fx" data-act="clear" hidden title="Hapus photo" aria-label="Hapus photo"><span data-i="close"></span></button></div>
+        <div class="frow">
+          <button type="button" class="fcam" data-act="cam" title="Buka kamera" aria-label="Buka kamera"><span data-i="cam"></span></button>
+          <button type="button" class="btn" data-act="file"><span data-i="upl"></span>Upload File</button>
+          <input class="fcapi" maxlength="120" placeholder="Keterangan Nama Barang" aria-label="Keterangan nama barang" autocomplete="off">
+        </div>
+        <div class="fmsg" role="alert"></div>
+        <input type="file" accept="image/*" hidden>
+      </div>
+      <div class="fslot" data-s="1">
+        <div class="fframe"><img alt=""><span class="fempty">Belum ada photo</span><button type="button" class="fx" data-act="clear" hidden title="Hapus photo" aria-label="Hapus photo"><span data-i="close"></span></button></div>
+        <div class="frow">
+          <button type="button" class="fcam" data-act="cam" title="Buka kamera" aria-label="Buka kamera"><span data-i="cam"></span></button>
+          <button type="button" class="btn" data-act="file"><span data-i="upl"></span>Upload File</button>
+          <input class="fcapi" maxlength="120" placeholder="Keterangan Nama Barang" aria-label="Keterangan nama barang" autocomplete="off">
+        </div>
+        <div class="fmsg" role="alert"></div>
+        <input type="file" accept="image/*" hidden>
+      </div>
+    </div>
+    <div class="mf">
+      <button type="button" class="btn" id="fotoBack" data-tip="Kembali" aria-label="Kembali"><span data-i="back"></span></button>
+      <button type="button" class="btn" id="fotoTutup" data-tip="Tutup" aria-label="Tutup"><span data-i="close"></span></button>
+      <button type="button" class="btn pri" id="fotoSave" data-tip="Simpan" aria-label="Simpan"><span data-i="save"></span><span id="fotoSaveTx">Simpan</span></button>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="mCam" aria-hidden="true">
+  <div class="cbox" role="dialog" aria-modal="true" aria-label="Kamera">
+    <video id="camVid" autoplay playsinline muted></video>
+    <div class="cbar"><button type="button" class="btn" id="camNo">Batal</button><button type="button" class="shut" id="camShot" aria-label="Ambil photo"></button></div>
+  </div>
+</div>
+
 <div class="ov" id="mExp" aria-hidden="true">
   <div class="xbox" role="dialog" aria-modal="true" aria-labelledby="expT">
     <div class="mh">
@@ -639,7 +720,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     bag:'<path d="M6 7h12l1 13H5zM9 7a3 3 0 0 1 6 0"/>',
     clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     wallet:'<path d="M3 7a2 2 0 0 1 2-2h12v4M3 7v11a2 2 0 0 0 2 2h14a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1H5a2 2 0 0 1-2-2z"/><circle cx="16.5" cy="14.5" r="1.2"/>',
-    tick:'<path d="M5 12.5l4.5 4.5L19 7.5"/>'
+    tick:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+    cam:'<path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 011 1v9a1 1 0 01-1 1H4a1 1 0 01-1-1V9a1 1 0 011-1z"/><circle cx="12" cy="13" r="3.5"/>',
+    upl:'<path d="M12 16V5M7 10l5-5 5 5M5 20h14"/>',
+    img:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/>'
   };
   function svg(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+P[n]+'</svg>';}
   document.querySelectorAll('[data-i]').forEach(function(e){e.innerHTML=svg(e.dataset.i);});
@@ -803,7 +887,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
   /* ---------- Modal form ---------- */
   var mform=$('mForm'),formFrom=null;
-  function lockBody(){document.body.style.overflow=(mform.classList.contains('open')||$('mExp').classList.contains('open')||$('mDoc').classList.contains('open')||$('mDel').classList.contains('open')||$('mPick').classList.contains('open'))?'hidden':'';}
+  function lockBody(){document.body.style.overflow=(mform.classList.contains('open')||$('mExp').classList.contains('open')||$('mDoc').classList.contains('open')||$('mFoto').classList.contains('open')||$('mDel').classList.contains('open')||$('mPick').classList.contains('open'))?'hidden':'';}
   function nomorBaru(){
     var th=new Date().getFullYear(),n=rows.length+1;
     return String(n).padStart(3,'0')+' / ORD / 421.5 SMKN1SIMTER/ '+th;
@@ -961,7 +1045,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   var stBd=document.createElement('div');stBd.className='stbd';document.body.insertBefore(stBd,stMenu);
   function stClose(){stMenu.classList.remove('open');stBd.classList.remove('open');if(stBtn){stBtn.setAttribute('aria-expanded','false');}stBtn=null;stRow=null;}
   /* Cek apakah berkas sudah ada di tabel database (dicocokkan lewat surat_order_id surat order pada card) */
-  var ST_DOCS=[['Perintah Bayar','perintah_bayar'],['Kwitansi','kuitansi'],['Berita Acara Serah Terima','bast'],['Tagihan','tagihan'],['Faktur Perincian','faktur_perincian'],['Nota','nota']];
+  var ST_DOCS=[['Perintah Bayar','perintah_bayar'],['Kwitansi','kuitansi'],['Berita Acara Serah Terima','bast'],['Tagihan','tagihan'],['Faktur Perincian','faktur_perincian'],['Nota','nota'],['Photo Barang','foto_barang']];
   function stCek(r){
     return Promise.all(ST_DOCS.map(function(d){
       return sb.from(d[1]).select('surat_order_id').eq('surat_order_id',r.id).limit(1).then(function(res){
@@ -1277,6 +1361,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   $('dlist').innerHTML=DOCS.map(function(d){
     return '<button type="button" class="dbtn'+(d[2]?'':' soon')+'" data-d="'+d[0]+'"><span class="di">'+svg('doc')+'</span><span class="tx">'+d[1]+'</span>'+(d[2]?'<span class="dst wt" data-k="'+d[0]+'">Memeriksa…</span>':'<em>Segera</em>')+'</button>';
   }).join('');
+  $('dlist').insertAdjacentHTML('beforeend','<button type="button" class="dbtn" data-d="foto"><span class="di">'+svg('img')+'</span><span class="tx">Photo Barang/Kegiatan</span><span class="dst wt" data-k="foto">Memeriksa…</span></button>');
   function docOpen(r,btn){
     docRow=r;docFrom=btn||docFrom;
     $('docSub').textContent=r.nomor+' · '+r.kepada_toko;
@@ -1285,7 +1370,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     docStat(r);
   }
   /* Keterangan: apakah data berkas sudah tersimpan di database Supabase */
-  var DOC_TBL={pb:'perintah_bayar',kw:'kuitansi',ba:'bast',tg:'tagihan',fp:'faktur_perincian',nt:'nota'};
+  var DOC_TBL={pb:'perintah_bayar',kw:'kuitansi',ba:'bast',tg:'tagihan',fp:'faktur_perincian',nt:'nota',foto:'foto_barang'};
   function docMark(k,v){
     var el=$('dlist').querySelector('.dst[data-k="'+k+'"]');if(!el)return;
     el.removeAttribute('title');el.removeAttribute('aria-label');
@@ -1312,6 +1397,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   mdoc.addEventListener('mousedown',function(e){if(e.target===mdoc)docClose();});
   $('dlist').addEventListener('click',function(e){
     var b=e.target.closest('[data-d]');if(!b||!docRow)return;
+    if(b.dataset.d==='foto'){fotoOpen();return;}
     if(b.dataset.d==='so'||b.dataset.d==='pb'||b.dataset.d==='kw'||b.dataset.d==='ba'||b.dataset.d==='tg'||b.dataset.d==='fp'||b.dataset.d==='nt'){
       mdoc.classList.remove('open');mdoc.setAttribute('aria-hidden','true');
       expOpen(docRow,docFrom,b.dataset.d);
@@ -1319,6 +1405,200 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       var n=DOCS.filter(function(d){return d[0]===b.dataset.d;})[0][1];
       toast('Template '+n+' belum dibuat','err');
     }
+  });
+
+
+  /* ---------- Photo Barang/Kegiatan ----------
+     Tabel (jalankan sekali di SQL Editor Supabase):
+     create table if not exists public.foto_barang(
+       id bigint generated always as identity primary key,
+       surat_order_id text not null, nomor text, judul text not null check (length(btrim(judul))>0),
+       file_path text not null, file_url text, created_at timestamptz default now());
+     alter table public.foto_barang enable row level security;
+     create policy "foto_barang_all" on public.foto_barang for all to anon using(true) with check(true);
+     File disimpan di bucket "aset", folder foto-barang/. Tersedia 2 slot photo per surat order. */
+  var mfoto=$('mFoto'),fotoBusy=false,slots=[],camIdx=-1,camStream=null;
+  function newSlot(){return {id:null,path:null,url:null,judul:'',orig:'',file:null,prev:null};}
+  function slotEl(i){return mfoto.querySelector('.fslot[data-s="'+i+'"]');}
+  function fotoRender(){
+    slots.forEach(function(s,i){
+      var el=slotEl(i),im=el.querySelector('img'),src=s.prev||s.url;
+      if(src){im.src=src;im.style.display='block';}else{im.removeAttribute('src');im.style.display='none';}
+      el.querySelector('.fempty').style.display=src?'none':'';
+      el.querySelector('[data-act="clear"]').hidden=!src;
+      el.querySelector('.fcapi').value=s.judul;
+      el.classList.remove('bad','badn');
+    });
+  }
+  function fotoLoad(r){
+    sb.from('foto_barang').select('id,judul,file_path,file_url').eq('surat_order_id',String(r.id)).order('created_at',{ascending:true}).limit(2).then(function(res){
+      if(docRow!==r||res.error)return;
+      docMark('foto',!!(res.data&&res.data.length));   /* centang hijau di daftar berkas */
+      slots.forEach(function(s){if(s.prev)URL.revokeObjectURL(s.prev);});
+      slots=[newSlot(),newSlot()];
+      (res.data||[]).forEach(function(x,i){slots[i]={id:x.id,path:x.file_path,url:x.file_url,judul:x.judul||'',orig:(x.judul||'').trim(),file:null,prev:null};});
+      fotoRender();
+    },function(){});
+  }
+  function fotoOpen(){
+    if(!docRow)return;
+    $('fotoNo').textContent=docRow.nomor||'-';
+    slots=[newSlot(),newSlot()];fotoRender();
+    mfoto.classList.add('open');mfoto.setAttribute('aria-hidden','false');lockBody();
+    fotoLoad(docRow);
+  }
+  function fotoClose(){
+    if(fotoBusy)return;
+    camClose();
+    slots.forEach(function(s){if(s.prev)URL.revokeObjectURL(s.prev);});
+    mfoto.classList.remove('open');mfoto.setAttribute('aria-hidden','true');lockBody();
+  }
+  /* Sama seperti modal Nota: Kembali = ke daftar berkas, Tutup / X = tutup semua */
+  function fotoCloseAll(){if(fotoBusy)return;fotoClose();docClose();}
+  $('fotoBack').addEventListener('click',fotoClose);
+  $('fotoClose').addEventListener('click',fotoCloseAll);$('fotoTutup').addEventListener('click',fotoCloseAll);
+  mfoto.addEventListener('mousedown',function(e){if(e.target===mfoto)fotoCloseAll();});
+
+  /* Kompres photo: hasil maksimal 30 KB (JPEG, ukuran piksel & kualitas diturunkan bertahap) */
+  var FOTO_MAX=30*1024;
+  function viaImg(f){return new Promise(function(res,rej){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){URL.revokeObjectURL(u);res(im);};im.onerror=function(){URL.revokeObjectURL(u);rej(new Error('Gambar tidak dapat dibaca'));};im.src=u;});}
+  function loadBmp(f){return window.createImageBitmap?createImageBitmap(f,{imageOrientation:'from-image'}).catch(function(){return viaImg(f);}):viaImg(f);}
+  function toBlob(c,q){return new Promise(function(res){c.toBlob(res,'image/jpeg',q);});}
+  async function kompres(f){
+    var bmp=await loadBmp(f),w0=bmp.width||bmp.naturalWidth,h0=bmp.height||bmp.naturalHeight,dim=1280,best=null;
+    for(var round=0;round<8;round++){
+      var sc=Math.min(1,dim/Math.max(w0,h0)),w=Math.max(1,Math.round(w0*sc)),h=Math.max(1,Math.round(h0*sc));
+      var c=document.createElement('canvas');c.width=w;c.height=h;
+      var x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(bmp,0,0,w,h);
+      for(var q=0.8;q>=0.34;q-=0.1){
+        var bl=await toBlob(c,q);
+        if(bl&&(!best||bl.size<best.size))best=bl;
+        if(bl&&bl.size<=FOTO_MAX){if(bmp.close)bmp.close();return bl;}
+      }
+      dim=Math.round(dim*0.75);
+    }
+    if(bmp.close)bmp.close();
+    return best;
+  }
+  async function setFile(i,f){
+    if(!f)return;
+    if(!/^image\//.test(f.type)){toast('File harus berupa gambar','err');return;}
+    if(f.size>25*1024*1024){toast('Ukuran photo asli maksimal 25 MB','err');return;}
+    toast('Mengompres photo…');
+    var bl;
+    try{bl=await kompres(f);}catch(err){toast('Gambar tidak dapat diproses','err');return;}
+    if(!bl||bl.size>FOTO_MAX){toast('Photo tidak dapat dikompres hingga 30 KB','err');return;}
+    var nf=new File([bl],(f.name||'photo').replace(/\.[^.]+$/,'')+'.jpg',{type:'image/jpeg'});
+    var s=slots[i];if(s.prev)URL.revokeObjectURL(s.prev);
+    s.file=nf;s.prev=URL.createObjectURL(nf);
+    var el=slotEl(i),im=el.querySelector('img');
+    im.src=s.prev;im.style.display='block';el.querySelector('.fempty').style.display='none';
+    el.querySelector('[data-act="clear"]').hidden=false;el.classList.remove('bad','badn');
+    if(!s.judul.trim())el.querySelector('.fcapi').focus();
+    toast('Photo dikompres menjadi '+(bl.size/1024).toFixed(1).replace('.',',')+' KB','ok');
+  }
+  mfoto.addEventListener('input',function(e){
+    var c=e.target.closest('.fcapi');if(!c)return;
+    var el=c.closest('.fslot');slots[+el.dataset.s].judul=c.value;el.classList.remove('bad','badn');
+  });
+  mfoto.addEventListener('change',function(e){
+    var inp=e.target;if(inp.type!=='file')return;
+    var el=inp.closest('.fslot');if(!el)return;
+    setFile(+el.dataset.s,inp.files[0]);inp.value='';
+  });
+  mfoto.addEventListener('click',async function(e){
+    var b=e.target.closest('[data-act]');if(!b||fotoBusy)return;
+    var el=b.closest('.fslot'),i=+el.dataset.s,s=slots[i];
+    if(b.dataset.act==='file'){el.querySelector('input[type="file"]').click();}
+    else if(b.dataset.act==='cam'){fotoCam(i);}
+    else if(b.dataset.act==='clear'){
+      if(s.file){URL.revokeObjectURL(s.prev);s.file=null;s.prev=null;fotoRender();}
+      else if(s.id&&confirm('Hapus photo ini dari surat order?')){
+        fotoBusy=true;
+        try{
+          if(s.path){var rm=await sb.storage.from('aset').remove([s.path]);if(rm.error)throw rm.error;}
+          var d=await sb.from('foto_barang').delete().eq('id',s.id);if(d.error)throw d.error;
+          toast('Photo dihapus','ok');
+        }catch(err){toast('Gagal menghapus: '+((err&&err.message)||'coba lagi'),'err');}
+        fotoBusy=false;fotoLoad(docRow);
+      }
+    }
+  });
+
+  /* Kamera */
+  function camClose(){
+    if(camStream){camStream.getTracks().forEach(function(t){t.stop();});camStream=null;}
+    $('camVid').srcObject=null;
+    var m=$('mCam');m.classList.remove('open');m.setAttribute('aria-hidden','true');
+  }
+  async function fotoCam(i){
+    camIdx=i;
+    if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){
+      /* Perangkat/browser tanpa akses kamera langsung: pakai kamera bawaan lewat input file */
+      var t=document.createElement('input');t.type='file';t.accept='image/*';t.setAttribute('capture','environment');
+      t.onchange=function(){setFile(i,t.files[0]);};t.click();return;
+    }
+    try{
+      camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});
+      $('camVid').srcObject=camStream;
+      var m=$('mCam');m.classList.add('open');m.setAttribute('aria-hidden','false');
+    }catch(err){toast('Kamera tidak dapat dibuka. Izinkan akses kamera atau gunakan Upload File','err');}
+  }
+  $('camNo').addEventListener('click',camClose);
+  $('mCam').addEventListener('mousedown',function(e){if(e.target===$('mCam'))camClose();});
+  $('camShot').addEventListener('click',function(){
+    var v=$('camVid');if(!v.videoWidth){toast('Kamera belum siap','err');return;}
+    var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;
+    c.getContext('2d').drawImage(v,0,0,c.width,c.height);
+    var i=camIdx;
+    c.toBlob(function(bl){
+      if(!bl){toast('Gagal mengambil photo','err');return;}
+      setFile(i,new File([bl],'kamera_'+Date.now()+'.jpg',{type:'image/jpeg'}));camClose();
+    },'image/jpeg',.9);
+  });
+
+  /* Simpan */
+  $('fotoSave').addEventListener('click',async function(){
+    if(fotoBusy||!docRow)return;
+    var r=docRow,work=[],noName=false,noPhoto=false,firstCap=null;
+    slots.forEach(function(s,i){
+      var judul=s.judul.trim(),el=slotEl(i),msg=el.querySelector('.fmsg'),has=!!(s.file||s.id);
+      el.classList.remove('bad','badn');
+      if(has&&!judul){            /* ada photo, nama barang kosong */
+        el.classList.add('badn');msg.textContent='Keterangan nama barang tidak boleh kosong.';
+        noName=true;if(!firstCap)firstCap=el.querySelector('.fcapi');
+      }else if(!has&&judul){      /* nama barang diisi, photo belum dipilih */
+        el.classList.add('bad');msg.textContent='Photo belum dipilih.';noPhoto=true;
+      }else if(has&&(s.file||judul!==s.orig))work.push(i);
+    });
+    if(noName||noPhoto){
+      toast(noName?'Keterangan nama barang wajib diisi untuk setiap photo':'Pilih photo terlebih dahulu','err');
+      if(firstCap)firstCap.focus();
+      return;
+    }
+    if(!work.length){toast('Tidak ada perubahan untuk disimpan','err');return;}
+    fotoBusy=true;$('fotoSave').disabled=true;$('fotoSaveTx').textContent='Menyimpan…';
+    try{
+      for(var k=0;k<work.length;k++){
+        var i=work[k],s=slots[i],judul=s.judul.trim();
+        if(s.file){
+          var m=/\.([a-z0-9]+)$/i.exec(s.file.name),ext=m?m[1].toLowerCase():'jpg';
+          var path='foto-barang/'+String(r.id).replace(/[^a-zA-Z0-9_-]/g,'')+'_'+Date.now()+'_'+i+'.'+ext;
+          var up=await sb.storage.from('aset').upload(path,s.file,{contentType:s.file.type,upsert:false});
+          if(up.error)throw up.error;
+          var url=sb.storage.from('aset').getPublicUrl(path).data.publicUrl;
+          var q=s.id?await sb.from('foto_barang').update({judul:judul,file_path:path,file_url:url}).eq('id',s.id)
+                    :await sb.from('foto_barang').insert({surat_order_id:String(r.id),nomor:r.nomor||null,judul:judul,file_path:path,file_url:url});
+          if(q.error){await sb.storage.from('aset').remove([path]);throw q.error;}
+          if(s.id&&s.path)await sb.storage.from('aset').remove([s.path]);
+        }else{
+          var u=await sb.from('foto_barang').update({judul:judul}).eq('id',s.id);if(u.error)throw u.error;
+        }
+      }
+      toast('Photo berhasil disimpan','ok');
+    }catch(err){toast('Gagal menyimpan photo: '+((err&&err.message)||'coba lagi'),'err');}
+    fotoBusy=false;$('fotoSave').disabled=false;$('fotoSaveTx').textContent='Simpan';
+    fotoLoad(r);
   });
 
   var mexp=$('mExp'),expRow=null,expFrom=null,expType='so',pbV=null;
@@ -3080,6 +3360,8 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   document.addEventListener('keydown',function(e){
     if(e.key!=='Escape')return;
     if(mpick.classList.contains('open'))pickClose();
+    else if($('mCam').classList.contains('open'))camClose();
+    else if($('mFoto').classList.contains('open'))fotoCloseAll();
     else if($('mExp').classList.contains('open'))expClose();
     else if($('mDoc').classList.contains('open'))docClose();
     else if(mdel.classList.contains('open'))delClose();else if(mform.classList.contains('open'))closeForm();
