@@ -356,6 +356,7 @@ body{padding-bottom:calc(30px + env(safe-area-inset-bottom))}
         <div class="hp" aria-hidden="true"><label for="website">Jangan diisi</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
       </div>
       <div class="mf">
+        <button type="button" class="btn" id="btnCancel">Cancel</button>
         <button type="submit" class="btn pri" id="btnSave"><span data-i="save"></span><span id="btnSaveTx">Kirim Data</span></button>
       </div>
     </form>
@@ -625,6 +626,18 @@ body{padding-bottom:calc(30px + env(safe-area-inset-bottom))}
     }).then(function(){busy=false;$('btnSave').disabled=false;$('btnSaveTx').textContent='Kirim Data';});
   });
   $('btnAgain').addEventListener('click',tampilForm);
+
+  /* Cancel = tutup tab halaman ini */
+  $('btnCancel').addEventListener('click',function(){
+    if(busy)return;
+    window.close();
+    /* Browser hanya mengizinkan close() untuk tab yang dibuka lewat skrip/link.
+       Jika tab tidak tertutup, kembali ke halaman sebelumnya atau kosongkan halaman. */
+    setTimeout(function(){
+      if(history.length>1){history.back();}
+      else{location.replace('about:blank');}
+    },200);
+  });
 
   /* Enter = pindah ke kolom berikutnya; kolom terakhir = kirim */
   frm.addEventListener('keydown',function(e){
