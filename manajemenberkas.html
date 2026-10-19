@@ -8,22 +8,30 @@
 <!--
   SQL (jalankan sekali di SQL Editor Supabase):
 
-  create table if not exists public.manajemen_berkas (
+  create table if not exists public.arsip (
     id bigint generated always as identity primary key,
-    nama text not null,
-    kategori text,
-    tanggal date,
-    keterangan text,
-    file_name text,
-    file_path text not null,
-    file_url text,
-    file_type text,
-    file_size bigint,
+    nomor_order text not null,
+    tanggal_order date not null,
+    uraian text not null,
+    nama_penerima text not null,
+    nama_toko text not null,
+    jumlah_transaksi bigint not null default 0,
+    lokasi_simpan text,
+    surat_order_path text, surat_order_url text, surat_order_name text,
+    perintah_bayar_path text, perintah_bayar_url text, perintah_bayar_name text,
+    kwitansi_path text, kwitansi_url text, kwitansi_name text,
+    bast_path text, bast_url text, bast_name text,
+    tagihan_path text, tagihan_url text, tagihan_name text,
+    faktur_perincian_path text, faktur_perincian_url text, faktur_perincian_name text,
+    nota_path text, nota_url text, nota_name text,
+    photo_kegiatan_path text, photo_kegiatan_url text, photo_kegiatan_name text,
     created_at timestamptz default now()
   );
-  alter table public.manajemen_berkas enable row level security;
-  create policy "manajemen_berkas_all" on public.manajemen_berkas
+  alter table public.arsip enable row level security;
+  create policy "arsip_all" on public.arsip
     for all to anon using (true) with check (true);
+
+  File PDF disimpan di bucket "aset", folder berkas/ (bucket yang sama dengan halaman lain).
 -->
 <style>
 :root{
@@ -107,7 +115,7 @@ h1{font-size:clamp(26px,4.5vw,36px);letter-spacing:-.025em;line-height:1.1}
 .sel{width:auto}
 .search input:focus,.sel:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,122,255,.25)}
 .tbl-wrap{overflow-x:auto;border-radius:12px;box-shadow:0 0 0 .5px var(--line);background:var(--card)}
-table{width:100%;border-collapse:collapse;font-size:14px;min-width:820px}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:1100px}
 th{text-align:left;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;padding:11px 12px;background:rgba(240,240,246,.9);border-bottom:.5px solid var(--line);white-space:nowrap}
 td{padding:11px 12px;border-bottom:.5px solid var(--line);vertical-align:middle}
 tr:last-child td{border-bottom:0}
@@ -168,6 +176,79 @@ td.nm{font-weight:600}td.mut{color:var(--muted)}
 @media (max-width:520px){.sch-name small{display:none}.acct div{display:none}.acct{padding:3px}.d{width:62px;padding:6px 2px;font-size:10.5px}.d .ic{width:36px;height:36px}.wrap{padding:16px 5px}.nav{padding-left:5px;padding-right:5px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 @media print{.nav,.dock,.toast,.ov{display:none!important}}
+
+/* Slot upload PDF */
+.mini.gr{background:var(--track);color:var(--text)}.mini.gr:hover{background:rgba(120,120,128,.3)}
+.sec{margin-top:6px;padding-top:14px;border-top:.5px solid var(--line);font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em}
+.sec small{display:block;font-size:12px;font-weight:500;text-transform:none;letter-spacing:0;margin-top:2px}
+.f input[readonly]{background:var(--track);color:var(--muted);cursor:not-allowed}
+.grid>*{min-width:0}
+.mform{width:min(720px,100%)}
+.bks{display:flex;flex-wrap:wrap;gap:4px;min-width:150px}
+.bk{display:inline-grid;place-items:center;min-width:30px;height:24px;padding:0 6px;border-radius:7px;font-size:11px;font-weight:800;letter-spacing:.02em;background:var(--track);color:#9a9aa0}
+a.bk{background:rgba(40,200,64,.16);color:#1a8a31}a.bk:hover{background:#28c840;color:#fff}
+.cnt{display:block;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px}
+td.uraian{min-width:200px;max-width:280px}
+td.uraian div{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+.aksi{flex-wrap:nowrap}
+.mini.ed{background:rgba(10,122,255,.12);color:#0062d6}.mini.ed:hover{background:var(--accent);color:#fff}
+/* Suggestion Nomor Order */
+.sgwrap{position:relative}
+.sglist{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:30;display:none;max-height:240px;overflow-y:auto;padding:4px;border-radius:12px;background:#fff;box-shadow:var(--shadow);overscroll-behavior:contain}
+.sglist.open{display:block}
+.sgi{padding:9px 12px;border-radius:9px;cursor:pointer;min-width:0}
+.sgi .n{display:block;font-size:14px;font-weight:600;overflow-wrap:anywhere}
+.sgi .s{display:block;font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sgi.on,.sgi:hover{background:rgba(10,122,255,.1)}
+.sgi mark{background:rgba(10,122,255,.2);color:inherit;border-radius:3px;padding:0 1px}
+.sgm{padding:10px 12px;font-size:13px;color:var(--muted)}
+/* Upload Berkas: label pill di kiri, kotak file lebar di kanan */
+.uh{font-size:20px;font-weight:800;letter-spacing:-.01em;margin-bottom:2px}
+.ubox-wrap{display:grid;gap:16px;margin-top:10px;padding:16px;border:1.5px solid var(--text);border-radius:6px;background:#fff}
+.urow{display:grid;grid-template-columns:210px minmax(0,1fr);gap:14px;align-items:center;min-width:0}
+.upill{--pb:#8d9bb0;--pt:#f3f6fa;--pc:#c3cedd;appearance:none;-webkit-appearance:none;border:0;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;min-height:44px;padding:8px 16px;border-radius:99px;
+  font-size:13.5px;font-weight:800;line-height:1.25;color:#1d1d1f;background:linear-gradient(180deg,var(--pt) 0%,var(--pc) 100%);
+  box-shadow:0 4px 0 var(--pb),0 8px 14px rgba(30,40,70,.24),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -2px 3px rgba(0,0,0,.08);
+  transition:transform .08s ease,box-shadow .08s ease,filter .15s}
+.upill svg{flex:none;width:17px;height:17px;color:#0a7aff}
+.upill:hover{filter:brightness(1.05) saturate(1.1);transform:translateY(-1px);box-shadow:0 5px 0 var(--pb),0 11px 16px rgba(30,40,70,.26),inset 0 1px 0 rgba(255,255,255,.95),inset 0 -2px 3px rgba(0,0,0,.08)}
+.upill:active{transform:translateY(3px);box-shadow:0 1px 0 var(--pb),0 3px 5px rgba(30,40,70,.25),inset 0 2px 4px rgba(0,0,0,.12)}
+.urow.has .upill{--pt:#9cecb2;--pc:#43c266;--pb:#2a8f49;color:#053b1a}.urow.has .upill svg{color:#05601f}
+.urow.new .upill{--pt:#86c1ff;--pc:#2f7df0;--pb:#1d58b8;color:#fff;text-shadow:0 1px 1px rgba(0,0,0,.25)}.urow.new .upill svg{color:#fff}
+.urow.bad .upill{--pt:#ffb3ab;--pc:#e5503f;--pb:#a62a1c;color:#fff}.urow.bad .upill svg{color:#fff}
+/* Ikon mata: lihat preview */
+.eye{flex:none;width:42px;min-height:38px;display:grid;place-items:center;border-radius:10px;color:#fff;background:linear-gradient(180deg,#5eead4,#0d9488);box-shadow:0 3px 0 #0b6b62,0 6px 10px rgba(13,148,136,.3),inset 0 1px 0 rgba(255,255,255,.55);transition:transform .08s,box-shadow .08s,filter .15s}
+.eye svg{width:20px;height:20px}
+.eye:hover{filter:brightness(1.07);transform:translateY(-1px)}
+.eye:active{transform:translateY(2px);box-shadow:0 1px 0 #0b6b62,0 2px 4px rgba(13,148,136,.3)}
+.eye.off{pointer-events:none;cursor:not-allowed;color:#a9a9b0;background:#e4e4e9;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.ufield{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch;min-width:0}
+.ubox{flex:1 1 150px;min-width:0;min-height:38px;display:flex;align-items:center;gap:8px;padding:8px 12px;text-align:left;border:1px solid #555;border-radius:4px;background:#fff;font-size:13.5px;color:var(--muted);transition:border-color .15s,box-shadow .15s,background .15s}
+.ubox svg{flex:none;width:16px;height:16px;color:var(--accent)}
+.ubox .sm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ubox:hover{background:#f7faff}
+.urow.has .ubox{border-color:#28c840}.urow.has .ubox svg{color:#1a8a31}
+.ubox:hover{border-color:var(--accent)}
+.ua [hidden],.ua[hidden]{display:none!important}
+.urow.has .ubox,.urow.new .ubox{color:var(--text);font-weight:600}
+.urow.new .ubox{border-color:var(--accent);box-shadow:0 0 0 2px rgba(10,122,255,.18)}
+.urow.bad .ubox{border-color:var(--err)}
+.ua{display:flex;gap:6px;flex:none}
+.ua .mini{display:inline-flex;align-items:center;justify-content:center;padding:0 14px;min-height:38px;font-size:12.5px;border-radius:8px}
+@media (max-width:600px){.urow{grid-template-columns:minmax(0,1fr);gap:6px}.upill{justify-content:flex-start;min-height:40px;padding:6px 16px}.ubox-wrap{padding:12px;gap:14px}}
+
+/* Modal pilihan sumber berkas (PDF / Kamera) */
+.pkcard{width:min(400px,100%)}
+.pkgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.pkopt{appearance:none;-webkit-appearance:none;display:flex;flex-direction:column;align-items:center;gap:6px;padding:18px 10px 14px;border-radius:16px;text-align:center;background:var(--track);color:var(--text);border:1.5px solid transparent;transition:transform .12s,border-color .15s,background .15s}
+.pkopt:hover{background:#eef5ff;border-color:var(--accent);transform:translateY(-2px)}
+.pkopt:active{transform:translateY(1px)}
+.pkopt .ic{width:52px;height:52px;border-radius:15px;display:grid;place-items:center;color:#fff;box-shadow:0 4px 10px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.35)}
+.pkopt .ic svg{width:26px;height:26px}
+.pkopt b{font-size:15px}
+.pkopt small{font-size:11.5px;line-height:1.3;color:var(--muted)}
+@media (max-width:360px){.pkgrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -184,57 +265,53 @@ td.nm{font-weight:600}td.mut{color:var(--muted)}
   <div class="head">
     <div>
       <h1>Manajemen Berkas</h1>
-      <p>Simpan berkas yang telah selesai dengan mengunggah file ke penyimpanan.</p>
+      <p>Arsipkan data transaksi beserta berkas PDF yang telah selesai.</p>
     </div>
-    <span class="chip" id="chip">0 berkas</span>
+    <span class="chip" id="chip">0 data</span>
   </div>
 
   <section class="panel box" aria-labelledby="listTitle">
     <div class="list-head">
-      <div><h2 id="listTitle">Daftar Berkas</h2><p class="sub" id="listSub">Memuat data…</p></div>
+      <div><h2 id="listTitle">Daftar Arsip Berkas</h2><p class="sub" id="listSub">Memuat data…</p></div>
       <div class="filters">
-        <select class="sel" id="fKat" aria-label="Filter kategori"><option value="">Semua kategori</option></select>
-        <label class="search"><span data-i="search"></span><input type="search" id="q" placeholder="Cari nama berkas…" aria-label="Cari berkas"></label>
+        <select class="sel" id="fKat" aria-label="Filter kelengkapan"><option value="">Semua data</option><option value="lengkap">Berkas lengkap</option><option value="belum">Belum lengkap</option></select>
+        <label class="search"><span data-i="search"></span><input type="search" id="q" placeholder="Cari nomor, uraian, toko…" aria-label="Cari arsip"></label>
       </div>
     </div>
     <div class="tbl-wrap">
       <table>
         <thead><tr>
-          <th class="c">No</th><th class="c">Tipe</th><th>Nama Berkas</th><th>Kategori</th><th>Tanggal</th><th>Ukuran</th><th>Keterangan</th><th class="r">Aksi</th>
+          <th class="c">ID</th><th>Nomor Order</th><th>Tanggal Order</th><th>Uraian</th><th>Penerima / Toko</th><th class="r">Jumlah Transaksi</th><th>Lokasi Simpan</th><th>Berkas PDF</th><th class="r">Aksi</th>
         </tr></thead>
-        <tbody id="tb"><tr><td colspan="8" class="state">Memuat data…</td></tr></tbody>
+        <tbody id="tb"><tr><td colspan="9" class="state">Memuat data…</td></tr></tbody>
       </table>
     </div>
   </section>
 </main>
 
-<!-- Modal upload -->
+<!-- Modal tambah / ubah -->
 <div class="ov" id="mUp" role="dialog" aria-modal="true" aria-labelledby="upT">
   <div class="mform">
-    <form id="frm" novalidate>
+    <form id="frm" novalidate autocomplete="off">
       <div class="mh">
-        <div><h2 id="upT">Upload Berkas</h2><p>Unggah berkas yang telah selesai untuk disimpan.</p></div>
+        <div><h2 id="upT">Tambah Arsip Berkas</h2><p id="upSub">Isi data transaksi, lalu unggah berkas PDF yang sudah ada.</p></div>
         <button type="button" class="mx" id="upX" aria-label="Tutup"><span data-i="close"></span></button>
       </div>
       <div class="mb">
         <div class="grid">
-          <div class="f full"><label for="nama">Nama Berkas<i>*</i></label><input id="nama" maxlength="150" placeholder="Contoh: Berkas Belanja ATK Oktober 2026" autocomplete="off"><div class="msg">Nama berkas wajib diisi.</div></div>
-          <div class="f"><label for="kat">Kategori<i>*</i></label>
-            <select id="kat"><option value="">Pilih kategori</option><option>Surat Order</option><option>Berita Acara</option><option>Tanda Terima</option><option>Faktur / Nota</option><option>Photo Kegiatan</option><option>Laporan</option><option>Lainnya</option></select>
-            <div class="msg">Pilih kategori berkas.</div></div>
-          <div class="f"><label for="tgl">Tanggal<i>*</i></label><input type="date" id="tgl"><div class="msg">Tanggal wajib diisi.</div></div>
-          <div class="f full"><label for="ket">Keterangan<span class="opt">(opsional)</span></label><textarea id="ket" maxlength="500" placeholder="Catatan singkat tentang berkas ini"></textarea></div>
-          <div class="f full"><label>File Berkas<i>*</i></label>
-            <div class="drop" id="drop" tabindex="0" role="button" aria-label="Pilih file berkas">
-              <div class="ph" id="ph"><span data-i="upload"></span><b id="fname">Klik atau seret file ke sini</b><span id="fmeta">PDF, gambar, Word, atau Excel · maks. 10 MB</span></div>
-            </div>
-            <input type="file" id="file" hidden accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx">
-            <div class="msg" id="fmsg">File berkas wajib dipilih.</div>
-            <div class="bar" id="bar"><i></i></div>
-          </div>
+          <div class="f"><label for="idv">ID</label><input id="idv" readonly value="Otomatis"></div>
+          <div class="f"><label for="nomor">Nomor Order<i>*</i></label><div class="sgwrap"><input id="nomor" maxlength="80" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sgNomor" placeholder="Ketik untuk mencari nomor…"><div class="sglist" id="sgNomor" role="listbox"></div></div><div class="msg">Nomor order wajib diisi.</div></div>
+          <div class="f"><label for="tgl">Tanggal Order<i>*</i></label><input type="date" id="tgl"><div class="msg">Tanggal order wajib diisi.</div></div>
+          <div class="f"><label for="jml">Jumlah Transaksi (Rp)<i>*</i></label><input id="jml" inputmode="numeric" placeholder="0"><div class="msg">Jumlah transaksi wajib diisi.</div></div>
+          <div class="f full"><label for="uraian">Uraian<i>*</i></label><textarea id="uraian" maxlength="300" placeholder="Contoh: Belanja Alat/Bahan untuk Kegiatan Kantor"></textarea><div class="msg">Uraian wajib diisi.</div></div>
+          <div class="f"><label for="penerima">Nama Penerima<i>*</i></label><input id="penerima" maxlength="120"><div class="msg">Nama penerima wajib diisi.</div></div>
+          <div class="f"><label for="toko">Nama Toko<i>*</i></label><input id="toko" maxlength="120"><div class="msg">Nama toko wajib diisi.</div></div>
+          <div class="f full"><label for="lokasi">Lokasi Simpan Berkas<span class="opt">(opsional)</span></label><input id="lokasi" maxlength="150" placeholder="Contoh: Lemari B · Rak 2 · Map Oktober 2026"></div>
+          <div class="full ugrp"><h3 class="uh">Upload Berkas</h3><p class="sub">Pilih file PDF atau ambil foto dengan kamera. Foto otomatis diubah menjadi PDF, dan semua berkas yang lebih dari 20 KB otomatis dikompres hingga maks. 20 KB (halaman diubah menjadi gambar, jadi teksnya tidak bisa diseleksi). Semua opsional dan bisa dilengkapi nanti lewat tombol Ubah.</p>
+            <div class="ubox-wrap" id="slots"></div><div class="bar" id="bar"><i></i></div></div>
         </div>
       </div>
-      <div class="mf"><button type="button" class="btn" id="upNo">Batal</button><button type="submit" class="btn pri" id="upGo"><span data-i="save"></span>Simpan</button></div>
+      <div class="mf"><button type="button" class="btn" id="upNo">Batal</button><button type="submit" class="btn pri" id="upGo"><span data-i="save"></span><span id="upGoTx">Simpan</span></button></div>
     </form>
   </div>
 </div>
@@ -242,18 +319,32 @@ td.nm{font-weight:600}td.mut{color:var(--muted)}
 <!-- Modal hapus -->
 <div class="ov" id="mDel" role="dialog" aria-modal="true" aria-labelledby="delT">
   <div class="mcard">
-    <h3 id="delT">Hapus Berkas?</h3>
+    <h3 id="delT">Hapus Arsip?</h3>
     <p id="delP"></p>
     <div class="acts"><button type="button" class="btn" id="delNo">Batal</button><button type="button" class="btn red" id="delYes">Hapus</button></div>
   </div>
 </div>
+
+<!-- Modal pilih sumber berkas -->
+<div class="ov" id="mPick" style="z-index:95" role="dialog" aria-modal="true" aria-labelledby="pkT">
+  <div class="mcard pkcard">
+    <h3 id="pkT">Pilih Sumber Berkas</h3>
+    <p id="pkP">Pilih cara menambahkan berkas.</p>
+    <div class="pkgrid">
+      <button type="button" class="pkopt" id="pkPdf"><span class="ic" style="background:linear-gradient(160deg,#ff8a7a,#e5382a)" data-i="pdf"></span><b>PDF</b><small>Pilih file dari perangkat</small></button>
+      <button type="button" class="pkopt" id="pkCam"><span class="ic" style="background:linear-gradient(160deg,#60a5fa,#2563eb)" data-i="camera"></span><b>Kamera</b><small>Foto, otomatis jadi PDF 20 KB</small></button>
+    </div>
+    <div class="acts"><button type="button" class="btn" id="pkNo">Batal</button></div>
+  </div>
+</div>
+<input type="file" id="camIn" accept="image/*" capture="environment" hidden>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div class="dock">
   <nav aria-label="Menu halaman manajemen berkas">
     <a class="d" href="adminbendahara.html"><span class="ic" style="background:linear-gradient(160deg,#94a3b8,#475569)" data-i="grid"></span>Beranda</a>
-    <button type="button" class="d" id="btnNew"><span class="ic" style="background:linear-gradient(160deg,#2dd4bf,#0f766e)" data-i="plus"></span>Upload Berkas</button>
+    <button type="button" class="d" id="btnNew"><span class="ic" style="background:linear-gradient(160deg,#2dd4bf,#0f766e)" data-i="plus"></span>Tambah Berkas</button>
     <button type="button" class="d" id="btnRefresh"><span class="ic" style="background:linear-gradient(160deg,#60a5fa,#2563eb)" data-i="refresh"></span>Refresh</button>
   </nav>
 </div>
@@ -268,6 +359,9 @@ td.nm{font-weight:600}td.mut{color:var(--muted)}
     search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
     plus:'<path d="M12 5v14M5 12h14"/>',
     upload:'<path d="M12 16V5M7 10l5-5 5 5M5 20h14"/>',
+    pdf:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M8 17v-5h1.8a1.4 1.4 0 0 1 0 2.8H8"/>',
+    camera:'<path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/>',
+    eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
     refresh:'<path d="M20 11a8 8 0 0 0-14.9-3M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 19v-4h-4"/>'
   };
   function svg(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+P[n]+'</svg>';}
@@ -277,21 +371,22 @@ td.nm{font-weight:600}td.mut{color:var(--muted)}
   var tt;
   function toast(t,type){var el=$('toast');el.textContent=t;el.className='toast show '+(type||'');clearTimeout(tt);tt=setTimeout(function(){el.className='toast';},3600);}
   function errMsg(e){
-    if(e&&(e.code==='PGRST205'||e.code==='42P01'))return 'Tabel "manajemen_berkas" belum ada. Jalankan SQL pembuatan tabel di SQL Editor Supabase.';
+    if(e&&(e.code==='PGRST205'||e.code==='42P01'))return 'Tabel "arsip" belum ada. Jalankan SQL pembuatan tabel di SQL Editor Supabase.';
+    if(e&&e.code==='42703')return 'Kolom tabel "arsip" belum lengkap. Jalankan ulang SQL pembuatan tabel.';
     return (e&&e.message)||'coba lagi';
   }
   function tgl(s){if(!s)return '-';var d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});}
   function ukuran(b){b=Number(b)||0;if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1).replace('.',',')+' KB';return (b/1048576).toFixed(1).replace('.',',')+' MB';}
   function extOf(n){var m=/\.([a-z0-9]+)$/i.exec(n||'');return m?m[1].toLowerCase():'';}
-  function extCls(x){if(x==='pdf')return 'pdf';if(/^(jpg|jpeg|png|webp)$/.test(x))return 'img';if(/^docx?$/.test(x))return 'doc';if(/^xlsx?$/.test(x))return 'xls';return '';}
+  function rp(n){return 'Rp '+(Number(n)||0).toLocaleString('id-ID');}
 
   /* ---------- Supabase (sama dengan halaman lain) ---------- */
   var SB_URL='https://jnbhjmmmyqbcxaojbdlb.supabase.co';
   var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuYmhqbW1teXFiY3hhb2piZGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNDcwMzMsImV4cCI6MjEwNzcyMzAzM30.KP1-LCQJ9MJlxFbQlqLfAtqLiv3uybRdbJ2AVLb9phw';
-  var TABLE='manajemen_berkas',BUCKET='aset',FOLDER='berkas',MAX=10*1024*1024;
-  var OK_EXT=['pdf','jpg','jpeg','png','webp','doc','docx','xls','xlsx'];
+  var TABLE='arsip',BUCKET='aset',FOLDER='berkas',MAX=20*1024;
+  var DOCS=[['surat_order','Surat Order','SO'],['perintah_bayar','Perintah Bayar','PB'],['kwitansi','Kwitansi','KW'],['bast','Berita Acara Serah Terima','BA'],['tagihan','Tagihan','TG'],['faktur_perincian','Faktur Perincian','FP'],['nota','Nota','NT'],['photo_kegiatan','Photo Kegiatan','FK']];
   var sb=window.supabase.createClient(SB_URL,SB_KEY);
-  var rows=[],delRow=null,busy=false,picked=null;
+  var rows=[],delRow=null,editRow=null,busy=false,sl={};
 
   async function muatSekolah(){
     var r=await sb.from('identitas_sekolah').select('nama,kabupaten,provinsi,logo_url').eq('id',1).maybeSingle();
@@ -302,36 +397,42 @@ td.nm{font-weight:600}td.mut{color:var(--muted)}
   }
 
   /* ---------- Daftar ---------- */
+  function jmlBerkas(x){return DOCS.filter(function(d){return x[d[0]+'_url'];}).length;}
   async function muat(){
-    $('tb').innerHTML='<tr><td colspan="8" class="state">Memuat data…</td></tr>';
+    $('tb').innerHTML='<tr><td colspan="9" class="state">Memuat data…</td></tr>';
     var r=await sb.from(TABLE).select('*').order('created_at',{ascending:false});
-    if(r.error){$('tb').innerHTML='<tr><td colspan="8" class="state">'+esc(errMsg(r.error))+'</td></tr>';$('listSub').textContent='Gagal memuat data';return;}
+    if(r.error){$('tb').innerHTML='<tr><td colspan="9" class="state">'+esc(errMsg(r.error))+'</td></tr>';$('listSub').textContent='Gagal memuat data';return;}
     rows=r.data||[];
-    var ks=[];rows.forEach(function(x){if(x.kategori&&ks.indexOf(x.kategori)<0)ks.push(x.kategori);});
-    var cur=$('fKat').value;
-    $('fKat').innerHTML='<option value="">Semua kategori</option>'+ks.sort().map(function(k){return '<option>'+esc(k)+'</option>';}).join('');
-    $('fKat').value=ks.indexOf(cur)>=0?cur:'';
-    var tot=rows.reduce(function(a,x){return a+(Number(x.file_size)||0);},0);
-    $('chip').textContent=rows.length+' berkas · '+ukuran(tot);
+    var pdf=rows.reduce(function(a,x){return a+jmlBerkas(x);},0);
+    $('chip').textContent=rows.length+' data · '+pdf+' berkas PDF';
     render();
   }
   function render(){
     var q=$('q').value.trim().toLowerCase(),k=$('fKat').value;
     var list=rows.filter(function(x){
-      if(k&&x.kategori!==k)return false;
-      return !q||[x.nama,x.kategori,x.keterangan,x.file_name].join(' ').toLowerCase().indexOf(q)>=0;
+      var n=jmlBerkas(x);
+      if(k==='lengkap'&&n<DOCS.length)return false;
+      if(k==='belum'&&n>=DOCS.length)return false;
+      return !q||[x.id,x.nomor_order,x.uraian,x.nama_penerima,x.nama_toko,x.lokasi_simpan].join(' ').toLowerCase().indexOf(q)>=0;
     });
-    $('listSub').textContent=rows.length?list.length+' dari '+rows.length+' berkas':'Belum ada berkas';
-    if(!list.length){$('tb').innerHTML='<tr><td colspan="8" class="state">'+(rows.length?'Tidak ada berkas yang cocok.':'Belum ada berkas. Klik “Upload Berkas” untuk menambah.')+'</td></tr>';return;}
-    $('tb').innerHTML=list.map(function(x,i){
-      var e=extOf(x.file_name);
-      return '<tr><td class="c mut">'+(i+1)+'</td>'
-        +'<td><div class="ext '+extCls(e)+'">'+esc((e||'file').toUpperCase().slice(0,4))+'</div></td>'
-        +'<td class="nm">'+esc(x.nama)+'<div class="sub" style="font-weight:400;word-break:break-all">'+esc(x.file_name)+'</div></td>'
-        +'<td>'+(x.kategori?'<span class="tag">'+esc(x.kategori)+'</span>':'-')+'</td>'
-        +'<td>'+esc(tgl(x.tanggal))+'</td><td class="mut">'+esc(ukuran(x.file_size))+'</td>'
-        +'<td class="mut" style="min-width:160px">'+(esc(x.keterangan)||'-')+'</td>'
-        +'<td class="r"><span class="aksi"><a class="mini op" target="_blank" rel="noopener" href="'+esc(x.file_url)+'">Buka</a>'
+    $('listSub').textContent=rows.length?list.length+' dari '+rows.length+' data':'Belum ada data';
+    if(!list.length){$('tb').innerHTML='<tr><td colspan="9" class="state">'+(rows.length?'Tidak ada data yang cocok.':'Belum ada data. Klik “Tambah Berkas” untuk menambah.')+'</td></tr>';return;}
+    $('tb').innerHTML=list.map(function(x){
+      var n=jmlBerkas(x);
+      var chips=DOCS.map(function(d){
+        var u=x[d[0]+'_url'];
+        return u?'<a class="bk" target="_blank" rel="noopener" href="'+esc(u)+'" title="'+esc(d[1])+' · buka PDF">'+d[2]+'</a>'
+                :'<span class="bk" title="'+esc(d[1])+' · belum diunggah">'+d[2]+'</span>';
+      }).join('');
+      return '<tr><td class="c mut">'+esc(x.id)+'</td>'
+        +'<td class="nm">'+esc(x.nomor_order)+'</td>'
+        +'<td>'+esc(tgl(x.tanggal_order))+'</td>'
+        +'<td class="uraian"><div>'+esc(x.uraian)+'</div></td>'
+        +'<td>'+esc(x.nama_penerima)+'<div class="sub">'+esc(x.nama_toko)+'</div></td>'
+        +'<td class="r num">'+esc(rp(x.jumlah_transaksi))+'</td>'
+        +'<td class="mut" style="min-width:130px">'+(esc(x.lokasi_simpan)||'-')+'</td>'
+        +'<td><span class="cnt">'+n+' dari '+DOCS.length+' berkas</span><div class="bks">'+chips+'</div></td>'
+        +'<td class="r"><span class="aksi"><button type="button" class="mini ed" data-ed="'+esc(x.id)+'">Ubah</button>'
         +'<button type="button" class="mini dl" data-del="'+esc(x.id)+'">Hapus</button></span></td></tr>';
     }).join('');
   }
@@ -339,64 +440,381 @@ td.nm{font-weight:600}td.mut{color:var(--muted)}
   $('fKat').addEventListener('change',render);
   $('btnRefresh').addEventListener('click',function(){muat();toast('Data diperbarui','ok');});
 
-  /* ---------- Upload ---------- */
-  var mUp=$('mUp'),frm=$('frm');
-  function resetFile(){picked=null;$('file').value='';$('fname').textContent='Klik atau seret file ke sini';$('fmeta').textContent='PDF, gambar, Word, atau Excel · maks. 10 MB';$('drop').classList.remove('bad');$('fmsg').style.display='none';}
-  function bukaUp(){
-    frm.reset();resetFile();
-    frm.querySelectorAll('.f.bad').forEach(function(f){f.classList.remove('bad');});
-    $('tgl').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
-    mUp.classList.add('open');setTimeout(function(){$('nama').focus();},50);
+  /* ---------- Slot upload PDF ---------- */
+  $('slots').innerHTML=DOCS.map(function(d){
+    return '<div class="urow" id="slot-'+d[0]+'" data-k="'+d[0]+'">'
+      +'<button type="button" class="upill pk" aria-label="Pilih PDF '+esc(d[1])+'">'+svg('upload')+'<span>'+esc(d[1])+'</span></button>'
+      +'<div class="ufield"><button type="button" class="ubox pk" aria-label="Pilih PDF '+esc(d[1])+'">'+svg('upload')+'<span class="sm"></span></button>'
+      +'<div class="ua"><a class="eye lh off" target="_blank" rel="noopener" title="Lihat preview PDF" aria-label="Lihat preview PDF">'+svg('eye')+'</a>'
+      +'<button type="button" class="mini dl rm" hidden>Hapus</button></div></div>'
+      +'<input type="file" accept="application/pdf,.pdf" hidden></div>';
+  }).join('');
+  function renderSlot(k){
+    var s=sl[k],el=$('slot-'+k),sm=el.querySelector('.sm'),lh=el.querySelector('.lh'),rm=el.querySelector('.rm');
+    el.classList.remove('has','new','bad');lh.classList.add('off');lh.removeAttribute('href');rm.hidden=true;
+    if(s.file){
+      el.classList.add('new');sm.textContent=s.file.name+' · '+ukuran(s.file.size)+(s.note?' · '+s.note:'')+(s.cur?' (mengganti file lama)':'');
+      lh.classList.remove('off');lh.href=s.prev;rm.hidden=false;rm.textContent='Batal';
+    }else if(s.cur&&!s.del){
+      el.classList.add('has');sm.textContent=(s.cur.name||'berkas.pdf')+' · tersimpan';
+      lh.classList.remove('off');lh.href=s.cur.url;rm.hidden=false;rm.textContent='Hapus';
+    }else if(s.del){
+      sm.textContent='Akan dihapus saat disimpan';rm.hidden=false;rm.textContent='Batal hapus';
+    }else{
+      sm.textContent='Klik untuk memilih PDF atau foto kamera…';
+    }
   }
-  function tutupUp(){if(busy)return;mUp.classList.remove('open');}
-  $('btnNew').addEventListener('click',bukaUp);
+  function resetSlots(row){
+    DOCS.forEach(function(d){
+      var k=d[0],u=row&&row[k+'_url'];
+      if(sl[k]&&sl[k].prev)URL.revokeObjectURL(sl[k].prev);
+      sl[k]={cur:u?{path:row[k+'_path'],url:u,name:row[k+'_name']}:null,file:null,del:false,prev:null};
+      $('slot-'+k).querySelector('input').value='';
+      renderSlot(k);
+    });
+  }
+  function slotBad(k,msg){renderSlot(k);$('slot-'+k).classList.add('bad');toast(msg,'err');}
+  $('slots').addEventListener('click',function(e){
+    var el=e.target.closest('.urow');if(!el)return;var k=el.dataset.k,s=sl[k];
+    if(e.target.closest('.pk')){bukaPick(k);return;}
+    if(e.target.closest('.rm')){
+      if(s.file){if(s.prev)URL.revokeObjectURL(s.prev);s.file=null;s.prev=null;s.note=null;el.querySelector('input').value='';}
+      else if(s.del){s.del=false;}
+      else{s.del=true;}
+      renderSlot(k);
+    }
+  });
+  /* ---------- Kompres PDF otomatis (maks. 20 KB) ----------
+     Tiap halaman dirender (pdf.js), diperkecil & dikompres JPEG bertahap sampai total <= 20 KB, lalu dirakit lagi menjadi PDF. */
+  var MAXIN=15*1024*1024,PDFJS_V='3.11.174',pdfjsP=null,compressing=0,ENC=new TextEncoder();
+  function loadPdfjs(){
+    if(window.pdfjsLib)return Promise.resolve(window.pdfjsLib);
+    if(pdfjsP)return pdfjsP;
+    pdfjsP=new Promise(function(res,rej){
+      var sc=document.createElement('script');
+      sc.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+PDFJS_V+'/pdf.min.js';
+      sc.onload=function(){
+        if(!window.pdfjsLib){pdfjsP=null;rej(new Error('Pustaka PDF tidak termuat'));return;}
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/'+PDFJS_V+'/pdf.worker.min.js';
+        res(window.pdfjsLib);
+      };
+      sc.onerror=function(){pdfjsP=null;rej(new Error('Pustaka kompresi PDF gagal dimuat, periksa koneksi internet'));};
+      document.head.appendChild(sc);
+    });
+    return pdfjsP;
+  }
+  /* Rakit PDF sederhana: 1 gambar JPEG per halaman */
+  function buildPdf(pages){
+    var parts=[],offs=[],len=0,N=pages.length,kids=[];
+    function put(x){if(typeof x==='string')x=ENC.encode(x);parts.push(x);len+=x.length;}
+    function begin(n){offs[n]=len;put(n+' 0 obj\n');}
+    for(var i=0;i<N;i++)kids.push((3+3*i)+' 0 R');
+    put('%PDF-1.4\n');
+    begin(1);put('<</Type/Catalog/Pages 2 0 R>>\nendobj\n');
+    begin(2);put('<</Type/Pages/Kids ['+kids.join(' ')+']/Count '+N+'>>\nendobj\n');
+    pages.forEach(function(p,i){
+      var pg=3+3*i,ct=pg+1,im=pg+2,cs='q '+p.pw+' 0 0 '+p.ph+' 0 0 cm /Im0 Do Q';
+      begin(pg);put('<</Type/Page/Parent 2 0 R/MediaBox[0 0 '+p.pw+' '+p.ph+']/Resources<</XObject<</Im0 '+im+' 0 R>>>>/Contents '+ct+' 0 R>>\nendobj\n');
+      begin(ct);put('<</Length '+cs.length+'>>\nstream\n'+cs+'\nendstream\nendobj\n');
+      begin(im);put('<</Type/XObject/Subtype/Image/Width '+p.w+'/Height '+p.h+'/ColorSpace/DeviceRGB/BitsPerComponent 8/Filter/DCTDecode/Length '+p.data.length+'>>\nstream\n');
+      put(p.data);put('\nendstream\nendobj\n');
+    });
+    var xr=len,M=3+3*N,x='xref\n0 '+M+'\n0000000000 65535 f \n';
+    for(var n=1;n<M;n++)x+=('0000000000'+offs[n]).slice(-10)+' 00000 n \n';
+    put(x+'trailer\n<</Size '+M+'/Root 1 0 R>>\nstartxref\n'+xr+'\n%%EOF');
+    var out=new Uint8Array(len),pos=0;
+    parts.forEach(function(c){out.set(c,pos);pos+=c.length;});
+    return out;
+  }
+  function toJpeg(cv,q){return new Promise(function(res){cv.toBlob(function(b){if(!b){res(null);return;}b.arrayBuffer().then(function(a){res(new Uint8Array(a));});},'image/jpeg',q);});}
+  function toGray(cx,w,h){var im=cx.getImageData(0,0,w,h),d=im.data;for(var i=0;i<d.length;i+=4){var g=(d[i]*0.299+d[i+1]*0.587+d[i+2]*0.114)|0;d[i]=d[i+1]=d[i+2]=g;}cx.putImageData(im,0,0);}
+  async function kompresPdf(file,onProg){
+    var lib=await loadPdfjs();
+    var doc=await lib.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+    var n=doc.numPages,R=900,base=[];
+    if(n>12)throw new Error('PDF '+n+' halaman terlalu banyak untuk dikompres ke 20 KB (maks. 12 halaman)');
+    for(var i=1;i<=n;i++){
+      onProg('Membaca halaman '+i+' dari '+n+'…');
+      var pg=await doc.getPage(i),v1=pg.getViewport({scale:1}),vp=pg.getViewport({scale:R/Math.max(v1.width,v1.height)});
+      var cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(vp.width));cv.height=Math.max(1,Math.round(vp.height));
+      var cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);
+      await pg.render({canvasContext:cx,viewport:vp}).promise;
+      base.push({cv:cv,pw:Math.round(v1.width*10)/10,ph:Math.round(v1.height*10)/10});
+    }
+    var dims=[900,780,660,560,470,390,320,260,210],qs=[.6,.45,.32,.22],best=null,step=0;
+    for(var di=0;di<dims.length&&!best;di++){
+      for(var qi=0;qi<qs.length&&!best;qi++){
+        step++;onProg('Mengompres PDF… ('+step+'/'+(dims.length*qs.length)+')');
+        await new Promise(function(r){setTimeout(r,0);});   /* beri napas ke UI */
+        var out=[],tot=900+300*n,ok=true;
+        for(var j=0;j<n&&ok;j++){
+          var b=base[j],k=dims[di]/R,w=Math.max(1,Math.round(b.cv.width*k)),h=Math.max(1,Math.round(b.cv.height*k));
+          var c2=document.createElement('canvas');c2.width=w;c2.height=h;
+          var x2=c2.getContext('2d');x2.imageSmoothingQuality='high';x2.fillStyle='#fff';x2.fillRect(0,0,w,h);x2.drawImage(b.cv,0,0,w,h);
+          if(di>=3)toGray(x2,w,h);   /* ukuran kecil: hitam-putih agar lebih hemat */
+          var d=await toJpeg(c2,qs[qi]);
+          if(!d){ok=false;break;}
+          tot+=d.length;if(tot>MAX){ok=false;break;}
+          out.push({w:w,h:h,pw:b.pw,ph:b.ph,data:d});
+        }
+        if(ok){var pdf=buildPdf(out);if(pdf.length<=MAX)best=pdf;}
+      }
+    }
+    if(doc.destroy)doc.destroy();
+    if(!best)throw new Error('isi PDF terlalu banyak/rumit untuk dimuat dalam 20 KB');
+    return best;
+  }
+
+  $('slots').addEventListener('change',async function(e){
+    var inp=e.target;if(inp.type!=='file')return;
+    var el=inp.closest('.urow'),k=el.dataset.k,f=inp.files[0],nm=DOCS.filter(function(d){return d[0]===k;})[0][1];
+    if(!f)return;
+    if(extOf(f.name)!=='pdf'||(f.type&&f.type!=='application/pdf')){inp.value='';slotBad(k,'Hanya file PDF yang diperbolehkan ('+nm+')');return;}
+    if(f.size>MAXIN){inp.value='';slotBad(k,'Ukuran file asli '+ukuran(f.size)+' terlalu besar (maks. 15 MB) ('+nm+')');return;}
+    var s=sl[k],tok=(s.tok||0)+1,file=f,note='';s.tok=tok;
+    if(f.size>MAX){
+      compressing++;$('upGo').disabled=true;
+      el.classList.remove('has','new','bad');
+      var sm=el.querySelector('.sm');sm.textContent='Mengompres PDF…';
+      try{
+        var bytes=await kompresPdf(f,function(t){if(sl[k]===s&&s.tok===tok)sm.textContent=t;});
+        file=new File([bytes],f.name,{type:'application/pdf'});note='dikompres dari '+ukuran(f.size);
+      }catch(err){
+        compressing--;if(!compressing&&!busy)$('upGo').disabled=false;
+        inp.value='';
+        if(sl[k]===s&&s.tok===tok)slotBad(k,'Gagal mengompres '+nm+': '+errMsg(err));
+        return;
+      }
+      compressing--;if(!compressing&&!busy)$('upGo').disabled=false;
+    }
+    if(sl[k]!==s||s.tok!==tok)return;   /* file dipilih ulang / form ditutup saat proses */
+    if(s.prev)URL.revokeObjectURL(s.prev);
+    s.file=file;s.note=note;s.prev=URL.createObjectURL(file);s.del=false;renderSlot(k);
+  });
+
+  /* ---------- Modal pilihan sumber: PDF / Kamera ---------- */
+  var mPick=$('mPick'),pickKey=null,camKey=null;
+  function bukaPick(k){
+    pickKey=k;
+    var nm=DOCS.filter(function(d){return d[0]===k;})[0][1];
+    $('pkP').innerHTML='Berkas: <b>'+esc(nm)+'</b>';
+    mPick.classList.add('open');
+    $('pkPdf').focus();
+  }
+  function tutupPick(){mPick.classList.remove('open');}
+  $('pkNo').addEventListener('click',tutupPick);
+  mPick.addEventListener('mousedown',function(e){if(e.target===mPick)tutupPick();});
+  $('pkPdf').addEventListener('click',function(){
+    var k=pickKey;tutupPick();if(!k)return;
+    $('slot-'+k).querySelector('input').click();
+  });
+  $('pkCam').addEventListener('click',function(){
+    var k=pickKey;tutupPick();if(!k)return;
+    camKey=k;$('camIn').value='';$('camIn').click();   /* di ponsel langsung membuka kamera */
+  });
+
+  /* Foto -> PDF (maks. 20 KB): 1 foto = 1 halaman, diperkecil & dikompres JPEG bertahap */
+  async function muatFoto(file){
+    if(window.createImageBitmap){
+      try{return await createImageBitmap(file,{imageOrientation:'from-image'});}catch(e){}
+    }
+    return await new Promise(function(res,rej){
+      var u=URL.createObjectURL(file),im=new Image();
+      im.onload=function(){URL.revokeObjectURL(u);res(im);};
+      im.onerror=function(){URL.revokeObjectURL(u);rej(new Error('format foto tidak didukung browser'));};
+      im.src=u;
+    });
+  }
+  async function fotoKePdf(file,onProg){
+    var img=await muatFoto(file),iw=img.width||img.naturalWidth,ih=img.height||img.naturalHeight;
+    if(!iw||!ih)throw new Error('foto tidak terbaca');
+    var long=Math.max(iw,ih),A=842,pw,ph;   /* sisi panjang halaman = 842 pt (A4) */
+    if(iw>=ih){pw=A;ph=Math.round(A*ih/iw*10)/10;}else{ph=A;pw=Math.round(A*iw/ih*10)/10;}
+    var dims=[900,780,660,560,470,390,320,260,210,160],qs=[.6,.45,.32,.22],best=null,step=0;
+    for(var di=0;di<dims.length&&!best;di++){
+      var sc=Math.min(1,dims[di]/long),w=Math.max(1,Math.round(iw*sc)),h=Math.max(1,Math.round(ih*sc));
+      var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+      var cx=cv.getContext('2d');cx.imageSmoothingQuality='high';cx.fillStyle='#fff';cx.fillRect(0,0,w,h);cx.drawImage(img,0,0,w,h);
+      if(di>=2)toGray(cx,w,h);   /* foto berwarna sulit muat 20 KB: hitam-putih lebih hemat */
+      for(var qi=0;qi<qs.length&&!best;qi++){
+        step++;onProg('Mengubah foto menjadi PDF… ('+step+')');
+        await new Promise(function(r){setTimeout(r,0);});
+        var d=await toJpeg(cv,qs[qi]);if(!d)continue;
+        if(900+300+d.length>MAX)continue;
+        var pdf=buildPdf([{w:w,h:h,pw:pw,ph:ph,data:d}]);
+        if(pdf.length<=MAX)best=pdf;
+      }
+    }
+    if(img.close)img.close();
+    if(!best)throw new Error('foto terlalu rumit untuk dimuat dalam 20 KB');
+    return best;
+  }
+  function stamp(){var d=new Date(),p=function(n){return ('0'+n).slice(-2);};return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes())+p(d.getSeconds());}
+  $('camIn').addEventListener('change',async function(e){
+    var inp=e.target,f=inp.files&&inp.files[0],k=camKey;
+    if(!f||!k)return;
+    var el=$('slot-'+k),s=sl[k],nm=DOCS.filter(function(d){return d[0]===k;})[0][1];
+    if(f.type&&f.type.indexOf('image/')!==0){inp.value='';slotBad(k,'Hasil kamera bukan gambar ('+nm+')');return;}
+    var tok=(s.tok||0)+1,sm=el.querySelector('.sm'),file;s.tok=tok;
+    compressing++;$('upGo').disabled=true;
+    el.classList.remove('has','new','bad');sm.textContent='Mengubah foto menjadi PDF…';
+    try{
+      var bytes=await fotoKePdf(f,function(t){if(sl[k]===s&&s.tok===tok)sm.textContent=t;});
+      file=new File([bytes],'Foto-'+nm.replace(/[^a-z0-9]+/ig,'-')+'-'+stamp()+'.pdf',{type:'application/pdf'});
+    }catch(err){
+      compressing--;if(!compressing&&!busy)$('upGo').disabled=false;
+      inp.value='';
+      if(sl[k]===s&&s.tok===tok)slotBad(k,'Gagal mengubah foto '+nm+': '+errMsg(err));
+      return;
+    }
+    compressing--;if(!compressing&&!busy)$('upGo').disabled=false;
+    inp.value='';
+    if(sl[k]!==s||s.tok!==tok)return;   /* form ditutup / dipilih ulang saat proses */
+    if(s.prev)URL.revokeObjectURL(s.prev);
+    s.file=file;s.note='foto kamera, '+ukuran(f.size)+' → PDF';s.prev=URL.createObjectURL(file);s.del=false;renderSlot(k);
+  });
+
+  /* ---------- Form tambah / ubah ---------- */
+  var mUp=$('mUp'),frm=$('frm');
+  /* ---------- Suggestion Nomor Order (dari tabel transaksi_selesai, kolom nomor) ---------- */
+  var sgData=[],sgState='idle',sgIdx=-1,sgShown=[],sgQuiet=false;
+  async function sgLoad(){
+    sgState='loading';
+    var r=await sb.from('transaksi_selesai').select('nomor,tanggal,kepada_toko,uraian,total,pemilik').order('tanggal',{ascending:false});
+    if(r.error)r=await sb.from('transaksi_selesai').select('nomor,tanggal,kepada_toko,uraian,total').order('tanggal',{ascending:false});
+    if(r.error)r=await sb.from('transaksi_selesai').select('nomor');   /* kolom lain tidak ada: cukup nomor */
+    if(r.error){sgState='error';sgData=[];console.warn('transaksi_selesai:',r.error);}
+    else{
+      var seen={};
+      sgData=(r.data||[]).filter(function(x){var n=String(x.nomor==null?'':x.nomor).trim();if(!n||seen[n])return false;seen[n]=1;x.nomor=n;return true;});
+      sgState='ok';
+    }
+    if(document.activeElement===$('nomor'))sgRender();
+  }
+  function sgHide(){$('sgNomor').classList.remove('open');$('nomor').setAttribute('aria-expanded','false');sgIdx=-1;}
+  function sgHl(t,q){var i=q?t.toLowerCase().indexOf(q):-1;return i<0?esc(t):esc(t.slice(0,i))+'<mark>'+esc(t.slice(i,i+q.length))+'</mark>'+esc(t.slice(i+q.length));}
+  function sgRender(){
+    var q=$('nomor').value.trim().toLowerCase(),box=$('sgNomor');
+    sgIdx=-1;sgShown=[];   /* kosong = tampilkan daftar terbaru */
+    if(sgState==='loading'||sgState==='idle')box.innerHTML='<div class="sgm">Memuat nomor order…</div>';
+    else if(sgState==='error')box.innerHTML='<div class="sgm">Gagal memuat data transaksi selesai.</div>';
+    else{
+      sgShown=sgData.filter(function(x){return !q||x.nomor.toLowerCase().indexOf(q)>=0;}).slice(0,8);
+      box.innerHTML=sgShown.length?sgShown.map(function(x,i){
+        var sub=[x.kepada_toko,x.tanggal?tgl(x.tanggal):''].filter(Boolean).join(' · ');
+        return '<div class="sgi" role="option" data-i="'+i+'"><span class="n">'+sgHl(x.nomor,q)+'</span>'+(sub?'<span class="s">'+esc(sub)+'</span>':'')+'</div>';
+      }).join(''):'<div class="sgm">'+(q?'Tidak ada nomor yang cocok di transaksi selesai.':'Belum ada data di transaksi selesai.')+'</div>';
+    }
+    box.classList.add('open');$('nomor').setAttribute('aria-expanded','true');
+  }
+  function sgMark(){
+    var els=$('sgNomor').querySelectorAll('.sgi');
+    els.forEach(function(el,i){el.classList.toggle('on',i===sgIdx);if(i===sgIdx)el.scrollIntoView({block:'nearest'});});
+  }
+  function sgPick(i){
+    var x=sgShown[i];if(!x)return;
+    $('nomor').value=x.nomor;
+    /* Isi otomatis dari transaksi selesai (lokasi simpan & upload berkas tidak disentuh) */
+    var isi=[['tgl',x.tanggal?String(x.tanggal).slice(0,10):''],['uraian',x.uraian],['penerima',x.pemilik],['toko',x.kepada_toko],['jml',x.total!=null&&x.total!==''?fmtJml(Math.round(Number(x.total))):'']],n=0;
+    isi.forEach(function(p){var v=p[1];if(v!=null&&String(v).trim()!==''){$(p[0]).value=(p[0]==='jml')?v:String(v).trim();n++;}});
+    ['nomor','tgl','uraian','penerima','toko','jml'].forEach(function(id){bad(id,false);});
+    sgHide();$('lokasi').focus();
+    if(n)toast('Data terisi otomatis dari transaksi selesai','ok');
+  }
+  $('nomor').addEventListener('input',sgRender);
+  $('nomor').addEventListener('focus',function(){if(sgQuiet){sgQuiet=false;return;}sgRender();});   /* fokus tanpa mengetik: daftar langsung muncul */
+  $('nomor').addEventListener('click',function(){if(!$('sgNomor').classList.contains('open'))sgRender();});
+  $('nomor').addEventListener('blur',sgHide);
+  $('nomor').addEventListener('keydown',function(e){
+    var open=$('sgNomor').classList.contains('open');
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+      if(!open){sgRender();}
+      if(!sgShown.length)return;
+      e.preventDefault();
+      sgIdx=e.key==='ArrowDown'?(sgIdx+1)%sgShown.length:(sgIdx<=0?sgShown.length-1:sgIdx-1);
+      sgMark();
+    }else if(e.key==='Enter'&&open&&sgIdx>=0){e.preventDefault();sgPick(sgIdx);}
+    else if(e.key==='Escape'&&open){e.stopPropagation();sgHide();}
+  });
+  $('sgNomor').addEventListener('mousedown',function(e){
+    var it=e.target.closest('.sgi');e.preventDefault();   /* cegah input kehilangan fokus sebelum terpilih */
+    if(it)sgPick(+it.dataset.i);
+  });
+
+  function today(){return new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);}
+  function fmtJml(v){var d=String(v==null?'':v).replace(/\D/g,'').replace(/^0+(?=\d)/,'');return d?Number(d).toLocaleString('id-ID'):'';}
+  function numJml(){return Number($('jml').value.replace(/\D/g,''))||0;}
+  $('jml').addEventListener('input',function(){this.value=fmtJml(this.value);});
+  function bukaUp(row){
+    editRow=row||null;frm.reset();
+    frm.querySelectorAll('.f.bad').forEach(function(f){f.classList.remove('bad');});
+    $('upT').textContent=row?'Ubah Arsip Berkas':'Tambah Arsip Berkas';
+    $('upSub').textContent=row?'Perbarui data atau tambahkan berkas PDF yang belum diunggah.':'Isi data transaksi, lalu unggah berkas PDF yang sudah ada.';
+    $('upGoTx').textContent=row?'Simpan Perubahan':'Simpan';
+    $('idv').value=row?row.id:'Otomatis';
+    $('nomor').value=row?row.nomor_order||'':'';sgHide();sgLoad();
+    $('tgl').value=row?row.tanggal_order||today():today();
+    $('jml').value=row?fmtJml(row.jumlah_transaksi):'';
+    $('uraian').value=row?row.uraian||'':'';
+    $('penerima').value=row?row.nama_penerima||'':'';
+    $('toko').value=row?row.nama_toko||'':'';
+    $('lokasi').value=row?row.lokasi_simpan||'':'';
+    resetSlots(row);
+    mUp.classList.add('open');setTimeout(function(){sgQuiet=true;$('nomor').focus();sgQuiet=false;},50);
+  }
+  function revokeAll(){DOCS.forEach(function(d){var s=sl[d[0]];if(s&&s.prev){URL.revokeObjectURL(s.prev);s.prev=null;}});}
+  function tutupUp(){if(busy)return;mUp.classList.remove('open');editRow=null;revokeAll();sgHide();}
+  $('btnNew').addEventListener('click',function(){bukaUp(null);});
   $('upX').addEventListener('click',tutupUp);$('upNo').addEventListener('click',tutupUp);
   mUp.addEventListener('mousedown',function(e){if(e.target===mUp)tutupUp();});
 
-  function pilih(f){
-    if(!f)return;
-    var e=extOf(f.name);
-    if(OK_EXT.indexOf(e)<0){resetFile();$('fmsg').textContent='Format file tidak didukung.';$('fmsg').style.display='block';$('drop').classList.add('bad');return;}
-    if(f.size>MAX){resetFile();$('fmsg').textContent='Ukuran file melebihi 10 MB.';$('fmsg').style.display='block';$('drop').classList.add('bad');return;}
-    picked=f;$('fname').textContent=f.name;$('fmeta').textContent=ukuran(f.size)+' · klik untuk mengganti';
-    $('drop').classList.remove('bad');$('fmsg').style.display='none';
-    if(!$('nama').value.trim())$('nama').value=f.name.replace(/\.[^.]+$/,'');
-  }
-  var drop=$('drop');
-  drop.addEventListener('click',function(){$('file').click();});
-  drop.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();$('file').click();}});
-  $('file').addEventListener('change',function(){pilih(this.files[0]);});
-  ['dragenter','dragover'].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.add('over');});});
-  ['dragleave','drop'].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.remove('over');});});
-  drop.addEventListener('drop',function(e){pilih(e.dataTransfer.files[0]);});
-
   function bad(id,on){$(id).closest('.f').classList.toggle('bad',on);return on;}
+  function safeName(s){return String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'order';}
   frm.addEventListener('submit',async function(ev){
     ev.preventDefault();if(busy)return;
-    var nama=$('nama').value.trim(),kat=$('kat').value,tg=$('tgl').value;
-    var b1=bad('nama',!nama),b2=bad('kat',!kat),b3=bad('tgl',!tg),b4=!picked;
-    if(b4){$('fmsg').textContent='File berkas wajib dipilih.';$('fmsg').style.display='block';$('drop').classList.add('bad');}
-    if(b1||b2||b3||b4){toast('Lengkapi data berkas terlebih dahulu','err');return;}
+    if(compressing){toast('Tunggu proses kompresi PDF selesai','err');return;}
+    var v={nomor:$('nomor').value.trim(),tgl:$('tgl').value,jml:numJml(),uraian:$('uraian').value.trim(),pen:$('penerima').value.trim(),toko:$('toko').value.trim()};
+    var errs=[bad('nomor',!v.nomor),bad('tgl',!v.tgl),bad('jml',!$('jml').value.trim()),bad('uraian',!v.uraian),bad('penerima',!v.pen),bad('toko',!v.toko)];
+    if(errs.some(Boolean)){toast('Lengkapi data yang wajib diisi','err');return;}
     busy=true;$('upGo').disabled=true;$('bar').style.display='block';
-    var e=extOf(picked.name),safe=picked.name.replace(/\.[^.]+$/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'berkas';
-    var path=FOLDER+'/'+Date.now()+'_'+safe+'.'+e;
+    var data={nomor_order:v.nomor,tanggal_order:v.tgl,uraian:v.uraian,nama_penerima:v.pen,nama_toko:v.toko,jumlah_transaksi:v.jml,lokasi_simpan:$('lokasi').value.trim()||null};
+    var uploaded=[],old=[],edit=editRow;
     try{
-      var up=await sb.storage.from(BUCKET).upload(path,picked,{contentType:picked.type||undefined,upsert:false});
-      if(up.error)throw up.error;
-      var url=sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
-      var ins=await sb.from(TABLE).insert({nama:nama,kategori:kat,tanggal:tg,keterangan:$('ket').value.trim()||null,
-        file_name:picked.name,file_path:path,file_url:url,file_type:picked.type||e,file_size:picked.size});
-      if(ins.error){await sb.storage.from(BUCKET).remove([path]);throw ins.error;}
-      busy=false;mUp.classList.remove('open');toast('Berkas berhasil disimpan','ok');muat();
-    }catch(err){toast('Gagal menyimpan: '+errMsg(err),'err');}
+      for(var i=0;i<DOCS.length;i++){
+        var k=DOCS[i][0],s=sl[k];
+        if(s.file){
+          var path=FOLDER+'/'+Date.now()+'_'+k+'_'+safeName(v.nomor)+'.pdf';
+          var up=await sb.storage.from(BUCKET).upload(path,s.file,{contentType:'application/pdf',upsert:false});
+          if(up.error)throw new Error(DOCS[i][1]+': '+errMsg(up.error));
+          uploaded.push(path);
+          data[k+'_path']=path;data[k+'_url']=sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;data[k+'_name']=s.file.name;
+          if(s.cur&&s.cur.path)old.push(s.cur.path);
+        }else if(s.del&&s.cur){
+          data[k+'_path']=null;data[k+'_url']=null;data[k+'_name']=null;
+          if(s.cur.path)old.push(s.cur.path);
+        }
+      }
+      var q=edit?await sb.from(TABLE).update(data).eq('id',edit.id).select():await sb.from(TABLE).insert(data).select();
+      if(q.error)throw q.error;
+      if(!q.data||!q.data.length)throw new Error('Data tidak tersimpan. Periksa policy RLS tabel arsip.');
+      if(old.length){try{await sb.storage.from(BUCKET).remove(old);}catch(e){}}
+      busy=false;mUp.classList.remove('open');editRow=null;revokeAll();
+      toast(edit?'Perubahan berhasil disimpan':'Arsip berkas berhasil disimpan','ok');muat();
+    }catch(err){
+      if(uploaded.length){try{await sb.storage.from(BUCKET).remove(uploaded);}catch(e){}}   /* batalkan file yang sudah terunggah */
+      toast('Gagal menyimpan: '+errMsg(err),'err');
+    }
     busy=false;$('upGo').disabled=false;$('bar').style.display='none';
   });
 
-  /* ---------- Hapus ---------- */
+  /* ---------- Ubah & Hapus ---------- */
   $('tb').addEventListener('click',function(e){
+    var ed=e.target.closest('[data-ed]');
+    if(ed){var r=rows.filter(function(x){return String(x.id)===ed.dataset.ed;})[0];if(r)bukaUp(r);return;}
     var b=e.target.closest('[data-del]');if(!b)return;
     delRow=rows.filter(function(x){return String(x.id)===b.dataset.del;})[0];if(!delRow)return;
-    $('delP').innerHTML='Berkas <b>'+esc(delRow.nama)+'</b> beserta file-nya akan dihapus permanen dan tidak dapat dikembalikan.';
+    var n=jmlBerkas(delRow);
+    $('delP').innerHTML='Arsip order <b>'+esc(delRow.nomor_order)+'</b>'+(n?' beserta '+n+' berkas PDF-nya':'')+' akan dihapus permanen dan tidak dapat dikembalikan.';
     $('mDel').classList.add('open');
   });
   function tutupDel(){if(busy)return;$('mDel').classList.remove('open');delRow=null;}
@@ -405,14 +823,16 @@ td.nm{font-weight:600}td.mut{color:var(--muted)}
   $('delYes').addEventListener('click',async function(){
     if(!delRow||busy)return;busy=true;this.disabled=true;
     try{
-      if(delRow.file_path){var rm=await sb.storage.from(BUCKET).remove([delRow.file_path]);if(rm.error)throw rm.error;}
-      var d=await sb.from(TABLE).delete().eq('id',delRow.id);if(d.error)throw d.error;
-      busy=false;$('mDel').classList.remove('open');delRow=null;toast('Berkas dihapus','ok');muat();
+      var paths=DOCS.map(function(d){return delRow[d[0]+'_path'];}).filter(Boolean);
+      if(paths.length){var rm=await sb.storage.from(BUCKET).remove(paths);if(rm.error)throw rm.error;}
+      var d=await sb.from(TABLE).delete().eq('id',delRow.id).select();if(d.error)throw d.error;
+      if(!d.data||!d.data.length)throw new Error('Data tidak terhapus. Periksa policy RLS (DELETE).');
+      busy=false;$('mDel').classList.remove('open');delRow=null;toast('Arsip dihapus','ok');muat();
     }catch(err){toast('Gagal menghapus: '+errMsg(err),'err');}
     busy=false;this.disabled=false;
   });
 
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'){tutupUp();tutupDel();}});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(mPick.classList.contains('open')){tutupPick();return;}tutupUp();tutupDel();}});
   muatSekolah();muat();
 })();
 </script>
