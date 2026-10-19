@@ -215,6 +215,21 @@ td.al{min-width:220px;color:var(--muted)}
 .f select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,122,255,.25)}
 .f.bad select{border-color:var(--err)}
 .f select:invalid,.f select option[value=""]{color:var(--muted)}
+/* Lihat produk toko */
+.mini.pv{background:rgba(31,162,60,.14);color:#167a2e}.mini.pv:hover{background:#1fa23c;color:#fff}
+.pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.pv-card{display:flex;flex-direction:column;min-width:0;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--line),0 4px 14px rgba(30,30,80,.08)}
+.pv-img{position:relative;aspect-ratio:4/3;display:grid;place-items:center;font-size:38px;font-weight:800;color:rgba(255,255,255,.9);background:linear-gradient(150deg,#a5b4fc,#c4b0fb 55%,#f9c4de)}
+.pv-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
+.pv-body{display:flex;flex-direction:column;gap:4px;padding:10px 12px 12px;flex:1;min-width:0}
+.pv-kd{align-self:flex-start;font-size:11.5px;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:7px;background:rgba(10,122,255,.1);color:#0a4fa8}
+.pv-body h4{font-size:15px;line-height:1.25;overflow-wrap:anywhere}
+.pv-body p{font-size:13px;color:var(--muted);white-space:pre-line;overflow-wrap:anywhere}
+.pv-price{margin-top:auto;padding-top:6px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px}
+.pv-price b{font-size:15px;color:#0a4fa8}
+.pv-st{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:rgba(31,162,60,.14);color:#167a2e}.pv-st.out{background:rgba(255,69,58,.14);color:#c4281f}
+#mProd .mb p.state{padding:40px 12px}
+@media (max-width:520px){.pv-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.pv-body{padding:8px 10px 10px}.pv-body h4{font-size:14px}}
 </style>
 </head>
 <body>
@@ -375,6 +390,14 @@ td.al{min-width:220px;color:var(--muted)}
     <h3 id="delT">Hapus data penerima?</h3>
     <p id="delP"></p>
     <div class="acts"><button type="button" class="btn" id="delNo">Batal</button><button type="button" class="btn red" id="delYes">Hapus</button></div>
+  </div>
+</div>
+
+<!-- Lihat produk toko -->
+<div class="ov" id="mProd" aria-hidden="true">
+  <div class="mform" role="dialog" aria-modal="true" aria-labelledby="prT">
+    <div class="mh"><div style="min-width:0"><h2 id="prT" style="overflow-wrap:anywhere">Produk toko</h2><p id="prSub"></p></div><button type="button" class="mx" id="prX" aria-label="Tutup"><span data-i="close"></span></button></div>
+    <div class="mb" id="prBody"></div>
   </div>
 </div>
 
@@ -564,7 +587,7 @@ td.al{min-width:220px;color:var(--muted)}
 
   /* ---------- Modal form: baru / ubah ---------- */
   var mform=$('mForm'),formFrom=null;
-  function lockBody(){document.body.style.overflow=(mform.classList.contains('open')||$('mDel').classList.contains('open')||$('mShare').classList.contains('open'))?'hidden':'';}
+  function lockBody(){document.body.style.overflow=(mform.classList.contains('open')||$('mDel').classList.contains('open')||$('mShare').classList.contains('open')||$('mProd').classList.contains('open'))?'hidden':'';}
   function formBaru(){
     editRow=null;frm.reset();logoUIReset();setIdToko(genIdToko());
     $('id').value='Otomatis';uDirty=false;pDirty=false;pwShow(false);
@@ -613,7 +636,7 @@ td.al{min-width:220px;color:var(--muted)}
       n++;
       var th=r.logo_url?'<span class="thumb"><img alt="" loading="lazy" src="'+esc(r.logo_url)+'"></span>':'<span class="thumb" aria-hidden="true">'+esc(inisial(r.nama_toko||r.nama_pemilik))+'</span>';
       return '<tr><td class="c">'+th+'</td><td class="c id">'+esc(r.id)+'</td><td class="c idt">'+(r.id_toko?esc(r.id_toko):'<span class="nil">-</span>')+'</td><td class="nm">'+esc(r.nama_pemilik)+'</td><td>'+esc(r.nama_toko)+'</td><td class="jt">'+(r.jenis_toko?esc(r.jenis_toko):'<span class="nil">-</span>')+'</td><td class="npwp">'+(r.npwp?esc(r.npwp):'<span class="nil">-</span>')+'</td><td class="npwp">'+(r.telepon?esc(r.telepon):'<span class="nil">-</span>')+'</td><td class="npwp">'+(r.no_rekening?esc(r.no_rekening):'<span class="nil">-</span>')+'</td><td class="npwp">'+(r.username?esc(r.username):'<span class="nil">-</span>')+'</td><td class="al">'+esc(r.alamat)+'</td>'
-        +'<td class="r"><div class="aksi"><button type="button" class="mini ed" data-ed="'+i+'">Ubah</button><button type="button" class="mini dl" data-dl="'+i+'">Hapus</button></div></td></tr>';
+        +'<td class="r"><div class="aksi"><button type="button" class="mini ed" data-ed="'+i+'">Ubah</button><button type="button" class="mini pv" data-pr="'+i+'">Lihat Produk</button><button type="button" class="mini dl" data-dl="'+i+'">Hapus</button></div></td></tr>';
     }).join('');
     $('tb').innerHTML=h||'<tr><td colspan="12" class="state">'+(rows.length?'Tidak ada data yang cocok dengan pencarian.':'Belum ada data penerima. Klik Input Data Penerima di menu bawah untuk menambah.')+'</td></tr>';
     $('listSub').textContent=rows.length?(q?n+' dari '+rows.length+' penerima':rows.length+' penerima tersimpan'):'Belum ada data';
@@ -633,6 +656,7 @@ td.al{min-width:220px;color:var(--muted)}
   $('tb').addEventListener('click',function(e){
     var b=e.target.closest('button');if(!b)return;
     if(b.dataset.ed!==undefined){var r=rows[+b.dataset.ed];if(r)formEdit(r,b);}
+    else if(b.dataset.pr!==undefined){var pr=rows[+b.dataset.pr];if(pr)prOpen(pr,b);}
     else if(b.dataset.dl!==undefined){var d=rows[+b.dataset.dl];if(d)delOpen(d,b);}
   });
 
@@ -750,6 +774,44 @@ td.al{min-width:220px;color:var(--muted)}
     });
   });
 
+  /* ---------- Lihat produk toko (tabel produk, berdasarkan Id Toko) ---------- */
+  var mprod=$('mProd'),prFrom=null;
+  function rpProd(v){return v==null||v===''?'Harga belum diisi':'Rp '+Number(v).toLocaleString('id-ID');}
+  function pvCard(p){
+    var ini=(String(p.nama||'?').trim().charAt(0)||'?').toUpperCase();
+    return '<article class="pv-card"><div class="pv-img">'+esc(ini)+(p.gambar_url?'<img alt="" loading="lazy" src="'+esc(p.gambar_url)+'" onerror="this.remove()">':'')+'</div>'
+      +'<div class="pv-body">'+(p.kode_produk?'<span class="pv-kd">'+esc(p.kode_produk)+'</span>':'')+'<h4>'+esc(p.nama)+'</h4><p>'+esc(p.keterangan||'Tanpa keterangan')+'</p>'
+      +'<div class="pv-price"><b>'+rpProd(p.harga)+'</b>'+(p.stok==null?'':'<span class="pv-st'+(p.stok>0?'':' out')+'">'+(p.stok>0?'Stok '+esc(p.stok):'Habis')+'</span>')+'</div></div></article>';
+  }
+  function prClose(){
+    mprod.classList.remove('open');mprod.setAttribute('aria-hidden','true');lockBody();
+    if(prFrom&&prFrom.focus)prFrom.focus();
+  }
+  var prBusy=false;
+  async function prOpen(r,btn){
+    if(prBusy)return;
+    if(!r.id_toko){toast('Toko ini tidak aktif','err');return;}
+    prFrom=btn;prBusy=true;
+    var lama=btn.textContent;btn.disabled=true;btn.textContent='Memuat…';
+    try{
+      var q=await sb.from('produk').select('*').eq('id_toko',r.id_toko).order('created_at',{ascending:false});
+      if(q.error)throw q.error;
+      var d=q.data||[];
+      if(!d.length){toast('Toko ini tidak aktif','err');return;}   /* tidak ada produk di tabel produk */
+      $('prT').textContent='Produk '+(r.nama_toko||r.nama_pemilik||'toko');
+      $('prSub').textContent='Id Toko: '+r.id_toko+', '+d.length+' produk';
+      $('prBody').innerHTML='<div class="pv-grid">'+d.map(pvCard).join('')+'</div>';
+      mprod.classList.add('open');mprod.setAttribute('aria-hidden','false');lockBody();$('prX').focus();
+    }catch(err){
+      console.error(err);
+      toast(err&&(err.code==='PGRST205'||err.code==='42P01')?'Tabel "produk" belum ada. Jalankan produk.sql di SQL Editor Supabase.':'Gagal memuat produk: '+errMsg(err),'err');
+    }finally{
+      prBusy=false;btn.disabled=false;btn.textContent=lama;
+    }
+  }
+  $('prX').addEventListener('click',prClose);
+  mprod.addEventListener('mousedown',function(e){if(e.target===mprod)prClose();});
+
   /* ---------- Hapus ---------- */
   var mdel=$('mDel'),delRow=null,delFrom=null,delBusy=false;
   function delOpen(r,btn){
@@ -766,7 +828,8 @@ td.al{min-width:220px;color:var(--muted)}
   mdel.addEventListener('mousedown',function(e){if(e.target===mdel)delClose();});
   document.addEventListener('keydown',function(e){
     if(e.key!=='Escape')return;
-    if($('mShare').classList.contains('open'))shClose();
+    if($('mProd').classList.contains('open'))prClose();
+    else if($('mShare').classList.contains('open'))shClose();
     else if(mdel.classList.contains('open'))delClose();
     else if(mform.classList.contains('open'))closeForm();
   });
