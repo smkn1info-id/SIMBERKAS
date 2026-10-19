@@ -189,7 +189,12 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
   }
 
   function keluar(){try{sessionStorage.removeItem(KEY);}catch(e){}location.replace(HALAMAN_LOGIN);}
-  $('dOut').addEventListener('click',keluar);
+  /* LogOut = hapus sesi lalu tutup tab; jika browser menolak menutup, arahkan ke halaman login */
+  $('dOut').addEventListener('click',function(){
+    try{sessionStorage.removeItem(KEY);}catch(e){}
+    window.close();
+    setTimeout(function(){location.replace(HALAMAN_LOGIN);},200);
+  });
 
   var produk=[],ID_TOKO='';
   function gambar(p,cls){return '<div class="ph">'+esc(ini(p.nama))+(p.gambar_url?'<img alt="" loading="lazy" src="'+esc(p.gambar_url)+'" onerror="this.remove()">':'')+'</div>';}
