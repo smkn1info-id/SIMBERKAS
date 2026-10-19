@@ -59,7 +59,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .pb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:3px;flex:1}
 .pb h3{font-size:16px;letter-spacing:-.01em;line-height:1.25}
 .pb>*{flex-shrink:0}
-.pb .d{display:block;font-size:13px;color:var(--muted);white-space:pre-line;overflow:visible;max-height:none;overflow-wrap:anywhere}
+.pb .d{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden;max-width:none;text-align:left;font-size:13px;line-height:1.35;color:var(--muted);white-space:pre-line;overflow-wrap:anywhere}
 .pr{margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .pr b{font-size:17px;color:#0a4fa8}
 .st{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:rgba(31,162,60,.14);color:#167a2e}.st.out{background:rgba(255,69,58,.14);color:#c4281f}
@@ -73,7 +73,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .md{position:relative;background:#fff;border-radius:20px;box-shadow:var(--shadow);width:min(560px,100%);max-height:92vh;overflow:auto;animation:pop .2s}
 @keyframes pop{from{transform:scale(.95);opacity:0}}
 .md .ph{aspect-ratio:16/10;border-radius:20px 20px 0 0}.md .pb{padding:18px 22px 22px;gap:8px}.md h3{font-size:22px}
-.md .pb .d{display:block;font-size:15px;color:var(--text);white-space:pre-line;overflow:visible;max-height:none}
+.md .pb .d{display:block;-webkit-line-clamp:unset;line-clamp:unset;max-width:none;text-align:left;font-size:15px;color:var(--text);white-space:pre-line;overflow:visible;max-height:none}
 .x{position:absolute;top:10px;right:10px;z-index:2;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:18px;background:rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:120;max-width:min(92vw,420px);padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;color:#fff;background:rgba(215,0,21,.95);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}.toast.show{opacity:1;transform:translate(-50%,0)}
 @media (max-width:520px){.wrap{padding:16px 10px}.id{padding:18px 16px 6px}.info{padding:12px 16px 18px}.logo{width:80px;height:80px;font-size:30px;border-radius:20px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.btn span{display:none}.btn{padding:9px 11px}.pb{padding:10px 11px 12px}.pb h3{font-size:14px}.pr b{font-size:14px}}
@@ -82,6 +82,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .us{margin-top:8px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px}.us>.btn{justify-content:center;width:100%}
 .usp{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;min-width:0;padding:12px;border-radius:14px;background:#f6f6fa}.usp[hidden]{display:none}.usp label{font-size:13px;font-weight:600}
 .stp-row{display:flex;gap:8px;align-items:center}
+.usp .uh{width:100%;min-width:0;font:inherit;font-size:18px;font-weight:700;border:1px solid rgba(0,0,0,.18);border-radius:10px;padding:10px 12px;background:#fff}.usp .uh:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,122,255,.25)}
 .stp-row{min-width:0}.stp-row input{flex:1 1 0;width:0;min-width:0;text-align:center;font:inherit;font-size:20px;font-weight:700;border:1px solid rgba(0,0,0,.18);border-radius:10px;padding:8px;background:#fff}
 .stp-row input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,122,255,.25)}
 .stp{flex:none;width:48px;height:48px;border-radius:12px;font-size:24px;font-weight:700;background:var(--track)}
@@ -208,9 +209,9 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
   function isiModal(p){
     curP=p;
     $('mbody').innerHTML=gambar(p)+'<div class="pb">'+kode(p)+'<h3 id="mt">'+esc(p.nama)+'</h3><div class="pr" style="margin:0"><b style="font-size:20px">'+rp(p.harga)+'</b>'+stok(p)+'</div><p class="d">'+esc(p.keterangan||'Tanpa keterangan')+'</p>'+
-    '<div class="us"><button type="button" class="btn pri" id="usBtn">Update Stok</button>'+
-    '<div class="usp" id="usp" hidden><label for="usIn">Stok baru</label><div class="stp-row"><button type="button" class="stp" data-d="-1" aria-label="Kurangi stok">\u2212</button><input id="usIn" inputmode="numeric" size="1" maxlength="6" autocomplete="off"><button type="button" class="stp" data-d="1" aria-label="Tambah stok">+</button></div>'+
-    '<div class="row"><button type="button" class="btn" id="usBatal">Batal</button><button type="button" class="btn pri" id="usSave">Simpan stok</button></div></div></div></div>';
+    '<div class="us"><button type="button" class="btn pri" id="usBtn">Update Stok &amp; Harga</button>'+
+    '<div class="usp" id="usp" hidden><label for="uhIn">Harga baru (Rp)</label><input id="uhIn" class="uh" inputmode="numeric" maxlength="12" placeholder="50000" autocomplete="off"><label for="usIn">Stok baru</label><div class="stp-row"><button type="button" class="stp" data-d="-1" aria-label="Kurangi stok">\u2212</button><input id="usIn" inputmode="numeric" size="1" maxlength="6" autocomplete="off"><button type="button" class="stp" data-d="1" aria-label="Tambah stok">+</button></div>'+
+    '<div class="row"><button type="button" class="btn" id="usBatal">Batal</button><button type="button" class="btn pri" id="usSave">Simpan</button></div></div></div></div>';
   }
   $('grid').addEventListener('click',function(e){
     var b=e.target.closest('.p');if(!b)return;
@@ -220,24 +221,25 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
   async function simpanStok(){
     if(stokBusy||!curP)return;
     var v=$('usIn').value;if(v===''){toast('Masukkan jumlah stok');$('usIn').focus();return;}
+    var hv=$('uhIn').value,h=hv===''?null:Number(hv);
     var n=Number(v),btn=$('usSave');stokBusy=true;btn.disabled=true;btn.textContent='Menyimpan\u2026';
     try{
-      var r=await sb.from(T_PRODUK).update({stok:n}).eq('id',curP.id).eq('id_toko',ID_TOKO).select('id');
+      var r=await sb.from(T_PRODUK).update({stok:n,harga:h}).eq('id',curP.id).eq('id_toko',ID_TOKO).select('id');
       if(r.error)throw r.error;
-      if(!r.data||!r.data.length)throw {message:'Izin ubah stok belum aktif. Jalankan ulang produk.sql di SQL Editor Supabase.'};
-      curP.stok=n;isiModal(curP);render();toast('Stok berhasil diperbarui','ok');
-    }catch(err){console.error(err);toast('Gagal memperbarui stok: '+pesanErr(err));btn.disabled=false;btn.textContent='Simpan stok';}
+      if(!r.data||!r.data.length)throw {message:'Izin ubah produk belum aktif. Jalankan ulang produk.sql di SQL Editor Supabase.'};
+      curP.stok=n;curP.harga=h;isiModal(curP);render();toast('Stok & harga berhasil diperbarui','ok');
+    }catch(err){console.error(err);toast('Gagal memperbarui: '+pesanErr(err));btn.disabled=false;btn.textContent='Simpan';}
     finally{stokBusy=false;}
   }
   $('mbody').addEventListener('click',function(e){
     var t=e.target.closest('button');if(!t||!curP)return;
-    if(t.id==='usBtn'){var pn=$('usp');pn.hidden=!pn.hidden;if(!pn.hidden){$('usIn').value=curP.stok==null?0:curP.stok;$('usIn').focus();$('usIn').select();}}
+    if(t.id==='usBtn'){var pn=$('usp');pn.hidden=!pn.hidden;if(!pn.hidden){$('uhIn').value=curP.harga==null?'':curP.harga;$('usIn').value=curP.stok==null?0:curP.stok;$('uhIn').focus();$('uhIn').select();}}
     else if(t.id==='usBatal')$('usp').hidden=true;
     else if(t.classList.contains('stp'))$('usIn').value=Math.max(0,Math.min(999999,Number($('usIn').value||0)+Number(t.dataset.d)));
     else if(t.id==='usSave')simpanStok();
   });
-  $('mbody').addEventListener('input',function(e){if(e.target.id==='usIn')e.target.value=e.target.value.replace(/\D/g,'');});
-  $('mbody').addEventListener('keydown',function(e){if(e.target.id==='usIn'&&e.key==='Enter'){e.preventDefault();simpanStok();}});
+  $('mbody').addEventListener('input',function(e){if(e.target.id==='usIn'||e.target.id==='uhIn')e.target.value=e.target.value.replace(/\D/g,'');});
+  $('mbody').addEventListener('keydown',function(e){if((e.target.id==='usIn'||e.target.id==='uhIn')&&e.key==='Enter'){e.preventDefault();simpanStok();}});
   function bukaM(id){var o=$(id);o.classList.add('open');o.setAttribute('aria-hidden','false');}
   function tutup(){document.querySelectorAll('.ov.open').forEach(function(o){o.classList.remove('open');o.setAttribute('aria-hidden','true');});}
   document.querySelectorAll('.ov').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)tutup();});});
