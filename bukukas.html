@@ -387,6 +387,17 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   .ov{padding:5px}
   .xbody{padding:5px}
 }
+/* Modal Input Surat Order: semua input tidak boleh melebihi lebar modal; hanya tabel Rincian Barang yang boleh digeser */
+#mForm .mform,#mForm form,#mForm .mb{min-width:0;max-width:100%}
+#mForm .mb{overflow-x:hidden}
+#mForm .grid{grid-template-columns:minmax(0,1fr)}
+@media (min-width:641px){#mForm .grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#mForm .grid>*{min-width:0}
+#mForm .f input,#mForm .f textarea,#mForm .f select,#mForm .pick{width:100%;max-width:100%;min-width:0;box-sizing:border-box}
+#mForm .f input[type=date]{-webkit-appearance:none;appearance:none;display:block;min-height:42px}
+#mForm .f label{overflow-wrap:anywhere}
+#mForm .tot{min-width:0}#mForm .tot em{overflow-wrap:anywhere;min-width:0}
+#mForm .iscroll{display:block;width:100%;max-width:100%;min-width:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
 
 /* ===== Card Surat Order — soft & modern, border tipis ===== */
 .card{--c1:#3b82f6;--c2:#93c5fd;--tint:rgba(59,130,246,.06);--bd:rgba(59,130,246,.22);position:relative;border-radius:18px;
