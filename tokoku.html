@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Toko Saya — SimberKas</title>
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+:root{--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;--text:#1d1d1f;--muted:#6e6e73;--accent:#0a7aff;--green:#1fa23c;--red:#ff453a;
+--glass:rgba(255,255,255,.74);--line:rgba(0,0,0,.1);--track:rgba(120,120,128,.16);--wall:linear-gradient(135deg,#9cbcff 0%,#c4b0fb 40%,#f9c4de 72%,#fde3bd 100%);
+--shadow:0 14px 40px rgba(30,30,80,.2),0 0 0 .5px rgba(0,0,0,.14);color-scheme:light}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);color:var(--text);background:var(--wall) fixed;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:calc(112px + env(safe-area-inset-bottom))}
+img{max-width:100%}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
+[hidden]{display:none!important}
+.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:8px 20px;padding-top:calc(8px + env(safe-area-inset-top));background:rgba(255,255,255,.62);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-bottom:.5px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em}
+.brand i{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;background:linear-gradient(160deg,#4da3ff,#0a5fe0);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 2px 6px rgba(0,0,0,.22)}
+.brand svg,.btn svg{width:19px;height:19px}.sp{flex:1}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:11px;font-size:14px;font-weight:600;background:var(--track);transition:transform .15s,background .15s}
+.btn:hover{transform:translateY(-1px);background:rgba(120,120,128,.26)}
+.btn.pri{color:#fff;background:linear-gradient(160deg,#4da3ff,#0a5fe0);box-shadow:0 4px 12px rgba(10,98,224,.35)}
+.wrap{max-width:1120px;margin:0 auto;padding:24px 16px}
+.panel{background:var(--glass);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);border-radius:20px;box-shadow:var(--shadow)}
+
+/* Etalase toko: kanopi bergaris di atas kartu identitas */
+.shop{overflow:hidden}
+.awn{height:58px;background:repeating-linear-gradient(90deg,#0a7aff 0 44px,#fff 44px 88px);position:relative}
+.awn{-webkit-mask:radial-gradient(circle at 22px calc(100% - 22px),#000 21px,transparent 22px) 0 100%/44px 100% repeat-x,linear-gradient(#000,#000) 0 0/100% calc(100% - 22px) no-repeat;mask:radial-gradient(circle at 22px calc(100% - 22px),#000 21px,transparent 22px) 0 100%/44px 100% repeat-x,linear-gradient(#000,#000) 0 0/100% calc(100% - 22px) no-repeat}
+.id{display:flex;gap:20px;align-items:center;padding:22px 26px 8px;flex-wrap:wrap}
+.logo{flex:none;width:104px;height:104px;border-radius:24px;display:grid;place-items:center;font-size:40px;font-weight:800;color:#fff;overflow:hidden;background:linear-gradient(160deg,#c084fc,#7c3aed);box-shadow:0 0 0 4px #fff,0 10px 24px rgba(60,30,120,.28)}
+.logo img{width:100%;height:100%;object-fit:cover;background:#fff}
+.id h1{font-size:clamp(26px,4.6vw,40px);letter-spacing:-.03em;line-height:1.08}
+.id p{color:var(--muted);font-size:15px;margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.chip{font-size:13px;font-weight:600;padding:5px 12px;border-radius:99px;background:rgba(10,122,255,.1);color:#0a4fa8}
+.chip.k{font-weight:800;letter-spacing:.12em}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;padding:14px 26px 26px}
+.t{padding:12px 14px;border-radius:14px;background:rgba(255,255,255,.7);box-shadow:0 0 0 .5px var(--line);min-width:0}
+.t small{display:block;font-size:12px;color:var(--muted);font-weight:600}
+.t b{display:block;font-size:15px;word-break:break-word}
+.t a{color:var(--accent)}
+
+.sec{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:12px;margin:30px 4px 14px}
+.sec h2{font-size:24px;letter-spacing:-.02em;line-height:1.1}.sec p{font-size:13px;color:var(--muted)}
+.search{position:relative;width:min(300px,100%)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted)}
+.search input{width:100%;font:inherit;font-size:14px;background:rgba(255,255,255,.9);border:1px solid rgba(0,0,0,.14);border-radius:11px;padding:10px 12px 10px 34px}
+.search input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,122,255,.25)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px}
+.p{display:flex;flex-direction:column;text-align:left;background:rgba(255,255,255,.88);border-radius:18px;overflow:hidden;box-shadow:0 0 0 .5px var(--line),0 6px 18px rgba(30,30,80,.08);transition:transform .18s,box-shadow .18s}
+.p:hover{transform:translateY(-4px);box-shadow:0 0 0 .5px var(--line),0 16px 30px rgba(30,30,80,.18)}
+.ph{position:relative;aspect-ratio:4/3;display:grid;place-items:center;font-size:44px;font-weight:800;color:rgba(255,255,255,.9);background:linear-gradient(150deg,#a5b4fc,#c4b0fb 55%,#f9c4de)}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
+.pb{padding:12px 14px 15px;display:flex;flex-direction:column;gap:3px;flex:1}
+.pb h3{font-size:16px;letter-spacing:-.01em;line-height:1.25}
+.pb>*{flex-shrink:0}
+.pb .d{display:block;font-size:13px;color:var(--muted);white-space:pre-line;overflow:visible;max-height:none;overflow-wrap:anywhere}
+.pr{margin-top:auto;padding-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pr b{font-size:17px;color:#0a4fa8}
+.st{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:rgba(31,162,60,.14);color:#167a2e}.st.out{background:rgba(255,69,58,.14);color:#c4281f}
+.state{grid-column:1/-1;text-align:center;color:var(--muted);padding:44px 16px;border-radius:18px;background:rgba(255,255,255,.6)}
+.state b{display:block;color:var(--text);font-size:17px;margin-bottom:4px}
+.sk{aspect-ratio:3/4;border-radius:18px;background:linear-gradient(90deg,rgba(255,255,255,.5),rgba(255,255,255,.85),rgba(255,255,255,.5)) 0 0/200% 100%;animation:sh 1.3s infinite}
+@keyframes sh{to{background-position:-200% 0}}
+.gate{min-height:70vh;display:grid;place-items:center;text-align:center;color:var(--muted);padding:20px}.gate .btn{margin-top:14px}
+
+.ov{position:fixed;inset:0;z-index:90;display:none;place-items:center;padding:16px;background:rgba(0,0,0,.4);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}.ov.open{display:grid}
+.md{position:relative;background:#fff;border-radius:20px;box-shadow:var(--shadow);width:min(560px,100%);max-height:92vh;overflow:auto;animation:pop .2s}
+@keyframes pop{from{transform:scale(.95);opacity:0}}
+.md .ph{aspect-ratio:16/10;border-radius:20px 20px 0 0}.md .pb{padding:18px 22px 22px;gap:8px}.md h3{font-size:22px}
+.md .pb .d{display:block;font-size:15px;color:var(--text);white-space:pre-line;overflow:visible;max-height:none}
+.x{position:absolute;top:10px;right:10px;z-index:2;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:18px;background:rgba(255,255,255,.9);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:120;max-width:min(92vw,420px);padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;color:#fff;background:rgba(215,0,21,.95);opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:520px){.wrap{padding:16px 10px}.id{padding:18px 16px 6px}.info{padding:12px 16px 18px}.logo{width:80px;height:80px;font-size:30px;border-radius:20px}.grid{grid-template-columns:repeat(2,1fr);gap:10px}.btn span{display:none}.btn{padding:9px 11px}.pb{padding:10px 11px 12px}.pb h3{font-size:14px}.pr b{font-size:14px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+.toast.ok{background:rgba(31,162,60,.95)}
+.us{margin-top:8px;display:grid;gap:10px}.us>.btn{justify-content:center;width:100%}
+.usp{display:grid;gap:10px;padding:12px;border-radius:14px;background:#f6f6fa}.usp[hidden]{display:none}.usp label{font-size:13px;font-weight:600}
+.stp-row{display:flex;gap:8px;align-items:center}
+.stp-row input{flex:1;min-width:0;text-align:center;font:inherit;font-size:20px;font-weight:700;border:1px solid rgba(0,0,0,.18);border-radius:10px;padding:8px;background:#fff}
+.stp-row input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,122,255,.25)}
+.stp{flex:none;width:48px;height:48px;border-radius:12px;font-size:24px;font-weight:700;background:var(--track)}
+.usp .row{display:flex;gap:8px}.usp .row .btn{flex:1;justify-content:center}
+
+.kd{align-self:flex-start;font-size:11.5px;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:7px;background:rgba(10,122,255,.1);color:#0a4fa8;font-variant-numeric:tabular-nums}
+.f input[readonly]{background:var(--track);color:#0a4fa8;font-weight:800;letter-spacing:.1em;cursor:default}.f .hint{font-size:12px;color:var(--muted);margin-top:4px}
+.id>div:last-child{flex:1 1 240px;min-width:0}.id h1,.pb h3,.d,.t b,.o p{overflow-wrap:anywhere}
+.md{max-height:92vh;max-height:92dvh}
+/* Menu footer sticky: 3 menu sama lebar, tidak ada yang terpotong */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;align-items:flex-start;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.86);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);border-top:.5px solid var(--line);box-shadow:0 -4px 20px rgba(30,30,80,.12)}
+.d{flex:1 1 0;max-width:190px;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;border-radius:16px;font-size:12px;font-weight:600;line-height:1.2;text-align:center;transition:background .15s,transform .15s}
+.d:hover{background:var(--track);transform:translateY(-3px)}
+.d .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.35)}.d .ic svg{width:22px;height:22px}
+@media (max-width:380px){.d{font-size:11px;padding:6px 2px}.d .ic{width:38px;height:38px}}
+/* Modal form */
+.mh{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px 12px;border-bottom:.5px solid var(--line)}.mh h3{font-size:18px}
+.mh .x{position:static;flex:none;background:var(--track);box-shadow:none}
+.fm{display:flex;flex-direction:column;overflow:hidden}.fm .mb{flex:1;min-height:0;overflow-y:auto;padding:16px 18px;display:grid;gap:14px;align-content:start}
+.mf{flex:none;display:flex;gap:10px;justify-content:flex-end;padding:12px 18px calc(12px + env(safe-area-inset-bottom));border-top:.5px solid var(--line);background:#f6f6fa}.mf .btn{justify-content:center;flex:1 1 0;max-width:180px}
+.f label{display:block;font-size:13px;font-weight:600;margin-bottom:5px}.f i{color:#d70015;font-style:normal}
+.f input,.f textarea{width:100%;font:inherit;font-size:16px;background:#fff;border:1px solid rgba(0,0,0,.18);border-radius:10px;padding:10px 12px}
+.f textarea{min-height:84px;resize:vertical}.f input:focus,.f textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,122,255,.25)}
+.f.bad input{border-color:#d70015}.f .msg{display:none;font-size:12px;color:#d70015;font-weight:600;margin-top:4px}.f.bad .msg{display:block}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.pick{display:grid;place-items:center;min-height:120px;border:1.5px dashed rgba(0,0,0,.22);border-radius:14px;cursor:pointer;overflow:hidden;color:var(--muted);font-size:13px;text-align:center;padding:10px}
+.pick img{display:none;max-height:180px;object-fit:contain}.pick.has img{display:block}.pick.has span{display:none}
+.o{padding:12px 14px;border-radius:14px;background:#f6f6fa;display:grid;gap:3px}.o div{display:flex;justify-content:space-between;align-items:center;gap:8px}.o small{color:var(--muted)}.o p{font-size:14px}
+@media print{.nav,.toast,.ov,.dock{display:none!important}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="brand"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9a2.7 2.7 0 005.3 0 2.7 2.7 0 005.4 0A2.7 2.7 0 0020 9M9.5 20v-5h5v5"/></svg></i>Toko Saya</div>
+  <span class="sp"></span>
+</header>
+
+<div class="gate" id="gate"><div><b id="gateT">Memeriksa akses…</b><p id="gateP"></p></div></div>
+
+<main class="wrap" id="main" hidden>
+  <section class="panel shop" aria-label="Identitas toko">
+    <div class="awn" aria-hidden="true"></div>
+    <div class="id">
+      <div class="logo" id="logo"></div>
+      <div>
+        <h1 id="nm"></h1><p id="ow"></p>
+        <div class="chips"><span class="chip" id="jn"></span><span class="chip k" id="kd"></span></div>
+      </div>
+    </div>
+    <div class="info" id="info"></div>
+  </section>
+
+  <div class="sec">
+    <div><h2>Produk</h2><p id="cnt">Memuat produk…</p></div>
+    <label class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input id="q" type="search" placeholder="Cari nama, ID, atau keterangan produk" aria-label="Cari produk"></label>
+  </div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="ov" id="ov" aria-hidden="true"><div class="md" role="dialog" aria-modal="true" aria-labelledby="mt"><button class="x" id="mx" type="button" aria-label="Tutup">✕</button><div id="mbody"></div></div></div>
+<nav class="dock" id="dock" hidden aria-label="Menu toko">
+  <button class="d" id="dAdd" type="button"><span class="ic" style="background:linear-gradient(160deg,#5ad17a,#1fa23c)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span>+ Produk</button>
+  <button class="d" id="dOrd" type="button"><span class="ic" style="background:linear-gradient(160deg,#4da3ff,#0a5fe0)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg></span>Surat Order Masuk</button>
+  <button class="d" id="dOut" type="button"><span class="ic" style="background:linear-gradient(160deg,#ff7a70,#e0392f)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></svg></span>Log Out</button>
+</nav>
+
+<div class="ov" id="mp" aria-hidden="true"><form class="md fm" id="fp" novalidate autocomplete="off" aria-labelledby="mpt">
+  <div class="mh"><h3 id="mpt">Tambah produk</h3><button class="x" type="button" data-x aria-label="Tutup">✕</button></div>
+  <div class="mb">
+    <div class="f"><label for="pkode">ID produk</label><input id="pkode" readonly aria-describedby="pkh"><p class="hint" id="pkh">Dibuat otomatis: Id Toko + 5 angka acak</p></div>
+    <div class="f" id="pnf"><label for="pn">Nama produk<i>*</i></label><input id="pn" maxlength="120" placeholder="Contoh: Kertas HVS A4 70 gr"><p class="msg">Nama produk wajib diisi</p></div>
+    <div class="two"><div class="f"><label for="pharga">Harga (Rp)</label><input id="pharga" inputmode="numeric" maxlength="12" placeholder="50000"></div><div class="f"><label for="ps">Stok</label><input id="ps" inputmode="numeric" maxlength="6" placeholder="100"></div></div>
+    <div class="f"><label for="pk">Keterangan</label><textarea id="pk" maxlength="500" placeholder="Ukuran, bahan, merek, dll."></textarea></div>
+    <div class="f"><label for="pg">Gambar produk</label><label class="pick" id="pgl" for="pg"><img id="pgp" alt="Pratinjau gambar"><span>Ketuk untuk memilih gambar<br>PNG, JPG, atau WebP, maks. 2 MB</span></label><input id="pg" type="file" accept="image/png,image/jpeg,image/webp" hidden></div>
+  </div>
+  <div class="mf"><button type="button" class="btn" data-x>Batal</button><button type="submit" class="btn pri" id="psave">Simpan produk</button></div>
+</form></div>
+
+<div class="ov" id="mo" aria-hidden="true"><div class="md fm" role="dialog" aria-modal="true" aria-labelledby="mot">
+  <div class="mh"><h3 id="mot">Surat order masuk</h3><button class="x" type="button" data-x aria-label="Tutup">✕</button></div>
+  <div class="mb" id="olist"></div>
+</div></div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+  var SB_URL='https://jnbhjmmmyqbcxaojbdlb.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuYmhqbW1teXFiY3hhb2piZGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNDcwMzMsImV4cCI6MjEwNzcyMzAzM30.KP1-LCQJ9MJlxFbQlqLfAtqLiv3uybRdbJ2AVLb9phw';
+  var T_PENERIMA='penerima',T_PRODUK='produk';          /* nama tabel */
+  var HALAMAN_LOGIN='inputpenerima.html',KEY='tokoku_session';
+  var sb=window.supabase.createClient(SB_URL,SB_KEY);
+  var $=function(i){return document.getElementById(i);};
+  function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function rp(v){return v==null||v===''?'Harga belum diisi':'Rp '+Number(v).toLocaleString('id-ID');}
+  var tt;function toast(m,t){var e=$('toast');e.textContent=m;e.className='toast show '+(t||'');clearTimeout(tt);tt=setTimeout(function(){e.className='toast';},4200);}
+  function ini(n){return (String(n||'?').trim().charAt(0)||'?').toUpperCase();}
+  function pesanErr(e){
+    if(e&&(e.code==='PGRST205'||e.code==='42P01'))return 'Tabel "'+T_PRODUK+'" belum ada. Jalankan produk.sql di SQL Editor Supabase.';
+    if(e&&(e.code==='PGRST204'||e.code==='42703'))return 'Kolom kode_produk belum ada. Jalankan ulang produk.sql di SQL Editor Supabase.';
+    if(e&&(e.code==='42501'||/row-level security|policy/i.test(e.message||'')))return 'Akses ditolak. Jalankan ulang produk.sql di SQL Editor Supabase.';
+    return (e&&e.message)||'Coba lagi';
+  }
+
+  function keluar(){try{sessionStorage.removeItem(KEY);}catch(e){}location.replace(HALAMAN_LOGIN);}
+  $('dOut').addEventListener('click',keluar);
+
+  var produk=[],ID_TOKO='';
+  function gambar(p,cls){return '<div class="ph">'+esc(ini(p.nama))+(p.gambar_url?'<img alt="" loading="lazy" src="'+esc(p.gambar_url)+'" onerror="this.remove()">':'')+'</div>';}
+  function kode(p){return p.kode_produk?'<span class="kd">'+esc(p.kode_produk)+'</span>':'';}
+  function stok(p){return p.stok==null?'':'<span class="st'+(p.stok>0?'':' out')+'">'+(p.stok>0?'Stok '+p.stok:'Habis')+'</span>';}
+
+  function render(){
+    var q=$('q').value.trim().toLowerCase(),g=$('grid');
+    var list=produk.filter(function(p){return !q||((p.nama||'')+' '+(p.keterangan||'')+' '+(p.kode_produk||'')).toLowerCase().indexOf(q)>=0;});
+    $('cnt').textContent=produk.length?(q?list.length+' dari '+produk.length+' produk':produk.length+' produk di toko Anda'):'Belum ada produk';
+    if(!list.length){g.innerHTML='<div class="state"><b>'+(produk.length?'Produk tidak ditemukan':'Belum ada produk')+'</b>'+(produk.length?'Coba kata kunci lain.':'Produk yang ditambahkan ke toko Anda akan tampil di sini.')+'</div>';return;}
+    g.innerHTML=list.map(function(p,i){
+      return '<button type="button" class="p" data-i="'+produk.indexOf(p)+'">'+gambar(p)+'<div class="pb">'+kode(p)+'<h3>'+esc(p.nama)+'</h3><span class="d">'+esc(p.keterangan||'Tanpa keterangan')+'</span><div class="pr"><b>'+rp(p.harga)+'</b>'+stok(p)+'</div></div></button>';
+    }).join('');
+  }
+  var curP=null,stokBusy=false;
+  function isiModal(p){
+    curP=p;
+    $('mbody').innerHTML=gambar(p)+'<div class="pb">'+kode(p)+'<h3 id="mt">'+esc(p.nama)+'</h3><div class="pr" style="margin:0"><b style="font-size:20px">'+rp(p.harga)+'</b>'+stok(p)+'</div><p class="d">'+esc(p.keterangan||'Tanpa keterangan')+'</p>'+
+    '<div class="us"><button type="button" class="btn pri" id="usBtn">Update Stok</button>'+
+    '<div class="usp" id="usp" hidden><label for="usIn">Stok baru</label><div class="stp-row"><button type="button" class="stp" data-d="-1" aria-label="Kurangi stok">\u2212</button><input id="usIn" inputmode="numeric" maxlength="6" autocomplete="off"><button type="button" class="stp" data-d="1" aria-label="Tambah stok">+</button></div>'+
+    '<div class="row"><button type="button" class="btn" id="usBatal">Batal</button><button type="button" class="btn pri" id="usSave">Simpan stok</button></div></div></div></div>';
+  }
+  $('grid').addEventListener('click',function(e){
+    var b=e.target.closest('.p');if(!b)return;
+    isiModal(produk[+b.dataset.i]);
+    $('ov').classList.add('open');$('ov').setAttribute('aria-hidden','false');$('mx').focus();
+  });
+  async function simpanStok(){
+    if(stokBusy||!curP)return;
+    var v=$('usIn').value;if(v===''){toast('Masukkan jumlah stok');$('usIn').focus();return;}
+    var n=Number(v),btn=$('usSave');stokBusy=true;btn.disabled=true;btn.textContent='Menyimpan\u2026';
+    try{
+      var r=await sb.from(T_PRODUK).update({stok:n}).eq('id',curP.id).eq('id_toko',ID_TOKO).select('id');
+      if(r.error)throw r.error;
+      if(!r.data||!r.data.length)throw {message:'Izin ubah stok belum aktif. Jalankan ulang produk.sql di SQL Editor Supabase.'};
+      curP.stok=n;isiModal(curP);render();toast('Stok berhasil diperbarui','ok');
+    }catch(err){console.error(err);toast('Gagal memperbarui stok: '+pesanErr(err));btn.disabled=false;btn.textContent='Simpan stok';}
+    finally{stokBusy=false;}
+  }
+  $('mbody').addEventListener('click',function(e){
+    var t=e.target.closest('button');if(!t||!curP)return;
+    if(t.id==='usBtn'){var pn=$('usp');pn.hidden=!pn.hidden;if(!pn.hidden){$('usIn').value=curP.stok==null?0:curP.stok;$('usIn').focus();$('usIn').select();}}
+    else if(t.id==='usBatal')$('usp').hidden=true;
+    else if(t.classList.contains('stp'))$('usIn').value=Math.max(0,Math.min(999999,Number($('usIn').value||0)+Number(t.dataset.d)));
+    else if(t.id==='usSave')simpanStok();
+  });
+  $('mbody').addEventListener('input',function(e){if(e.target.id==='usIn')e.target.value=e.target.value.replace(/\D/g,'');});
+  $('mbody').addEventListener('keydown',function(e){if(e.target.id==='usIn'&&e.key==='Enter'){e.preventDefault();simpanStok();}});
+  function bukaM(id){var o=$(id);o.classList.add('open');o.setAttribute('aria-hidden','false');}
+  function tutup(){document.querySelectorAll('.ov.open').forEach(function(o){o.classList.remove('open');o.setAttribute('aria-hidden','true');});}
+  document.querySelectorAll('.ov').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)tutup();});});
+  document.querySelectorAll('[data-x]').forEach(function(b){b.addEventListener('click',tutup);});
+  $('mx').addEventListener('click',tutup);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')tutup();});
+
+  /* ---- + Produk ---- */
+  var gfile=null,gurl='',sibuk=false,BUCKET='aset';
+  /* ID produk: Id Toko + '-' + 5 angka acak, contoh NJYT-48213 */
+  function genKode(){
+    var n;try{n=crypto.getRandomValues(new Uint32Array(1))[0]%100000;}catch(e){n=Math.floor(Math.random()*100000);}
+    return ID_TOKO+'-'+('00000'+n).slice(-5);
+  }
+  function dupKode(e){return !!(e&&e.code==='23505'&&/kode_produk/i.test((e.message||'')+' '+(e.details||'')));}
+  function pgReset(){if(gurl)URL.revokeObjectURL(gurl);gfile=null;gurl='';$('pg').value='';$('pgp').removeAttribute('src');$('pgl').classList.remove('has');}
+  $('dAdd').addEventListener('click',function(){
+    if(!ID_TOKO)return toast('Id Toko belum tersedia. Hubungi admin sekolah.');
+    $('fp').reset();pgReset();$('pnf').classList.remove('bad');$('pkode').value=genKode();bukaM('mp');setTimeout(function(){$('pn').focus();},60);
+  });
+  ['pharga','ps'].forEach(function(i){$(i).addEventListener('input',function(){this.value=this.value.replace(/\D/g,'');});});
+  $('pn').addEventListener('input',function(){$('pnf').classList.remove('bad');});
+  $('pg').addEventListener('change',function(){
+    var f=this.files[0];if(!f)return;
+    if(['image/png','image/jpeg','image/webp'].indexOf(f.type)<0){toast('Format gambar harus PNG, JPG, atau WebP');this.value='';return;}
+    if(f.size>2*1024*1024){toast('Ukuran gambar maksimal 2 MB');this.value='';return;}
+    if(gurl)URL.revokeObjectURL(gurl);gfile=f;gurl=URL.createObjectURL(f);$('pgp').src=gurl;$('pgl').classList.add('has');
+  });
+  $('fp').addEventListener('submit',async function(e){
+    e.preventDefault();if(sibuk)return;
+    var nama=$('pn').value.trim();
+    if(!nama){$('pnf').classList.add('bad');$('pn').focus();return;}
+    sibuk=true;$('psave').disabled=true;$('psave').textContent='Menyimpan…';
+    var path=null;
+    try{
+      var row={id_toko:ID_TOKO,kode_produk:$('pkode').value,nama:nama,harga:$('pharga').value?Number($('pharga').value):null,stok:$('ps').value?Number($('ps').value):null,keterangan:$('pk').value.trim()||null};
+      if(gfile){
+        var ext=(gfile.name.split('.').pop()||'png').toLowerCase().replace(/[^a-z0-9]/g,'')||'png';
+        path='produk/'+ID_TOKO+'-'+Date.now()+'.'+ext;
+        var up=await sb.storage.from(BUCKET).upload(path,gfile,{contentType:gfile.type});
+        if(up.error)throw up.error;
+        row.gambar_url=sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+      }
+      var r;
+      for(var n=0;n<7;n++){
+        r=await sb.from(T_PRODUK).insert(row);
+        if(!dupKode(r.error))break;
+        row.kode_produk=genKode();$('pkode').value=row.kode_produk;   /* kode bentrok -> buat ulang */
+      }
+      if(r.error){if(path){try{await sb.storage.from(BUCKET).remove([path]);}catch(x){}}throw r.error;}
+      tutup();toast('Produk berhasil ditambahkan','ok');await muatProduk(ID_TOKO);
+    }catch(err){console.error(err);toast('Gagal menyimpan: '+pesanErr(err));}
+    finally{sibuk=false;$('psave').disabled=false;$('psave').textContent='Simpan produk';}
+  });
+
+  /* ---- Surat Order Masuk ---- */
+  $('dOrd').addEventListener('click',async function(){
+    var L=$('olist');L.innerHTML='<div class="state">Memuat surat order…</div>';bukaM('mo');
+    var r=await sb.from('surat_order').select('*').eq('id_toko',ID_TOKO).order('created_at',{ascending:false});
+    if(r.error){console.error(r.error);L.innerHTML='<div class="state"><b>Surat order belum bisa dimuat</b>'+esc(r.error.code==='PGRST205'?'Tabel "surat_order" belum ada. Jalankan produk.sql di SQL Editor Supabase.':pesanErr(r.error))+'</div>';return;}
+    if(!r.data.length){L.innerHTML='<div class="state"><b>Belum ada surat order</b>Surat order dari sekolah akan tampil di sini.</div>';return;}
+    L.innerHTML=r.data.map(function(o){
+      var tg=o.tanggal?new Date(o.tanggal).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}):'';
+      return '<div class="o"><div><b>'+esc(o.nomor_surat||'Surat order #'+o.id)+'</b><span class="st">'+esc(o.status||'Baru')+'</span></div><small>'+esc(tg)+'</small>'+(o.perihal?'<p>'+esc(o.perihal)+'</p>':'')+'</div>';
+    }).join('');
+  });
+  $('q').addEventListener('input',render);
+
+  function tampilToko(r){
+    $('nm').textContent=r.nama_toko||r.nama_pemilik;
+    $('ow').textContent='Pemilik: '+(r.nama_pemilik||'-');
+    $('jn').textContent=r.jenis_toko||'Jenis toko belum diisi';
+    $('kd').textContent=r.id_toko||'----';
+    document.title=(r.nama_toko||'Toko Saya')+' — SimberKas';
+    $('logo').innerHTML=r.logo_url?'<img alt="Logo '+esc(r.nama_toko)+'" src="'+esc(r.logo_url)+'" onerror="this.remove()">':esc(ini(r.nama_toko||r.nama_pemilik));
+    var wa=String(r.telepon||'').replace(/\D/g,'');if(wa.charAt(0)==='0')wa='62'+wa.slice(1);
+    var it=[['Tlp/WA',r.telepon?(wa?'<a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">'+esc(r.telepon)+'</a>':esc(r.telepon)):'-'],
+      ['No. rekening',esc(r.no_rekening||'-')],['NPWP',esc(r.npwp||'-')],['Username',esc(r.username)],['Alamat',esc(r.alamat||'-')]];
+    $('info').innerHTML=it.map(function(x){return '<div class="t"><small>'+x[0]+'</small><b>'+x[1]+'</b></div>';}).join('');
+  }
+
+  async function muatProduk(idToko){
+    $('grid').innerHTML='<div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div>';
+    var r=await sb.from(T_PRODUK).select('*').eq('id_toko',idToko).order('created_at',{ascending:false});
+    if(r.error){console.error(r.error);$('cnt').textContent='Gagal memuat';$('grid').innerHTML='<div class="state"><b>Produk belum bisa dimuat</b>'+esc(pesanErr(r.error))+'</div>';return;}
+    produk=r.data||[];render();
+  }
+
+  /* Akses hanya jika username + password ada di tabel penerima (dari tombol Lanjutkan di modal Buka Toko Anda) */
+  (async function(){
+    var S=null;try{S=JSON.parse(sessionStorage.getItem(KEY)||'null');}catch(e){}
+    if(!S||!S.u||!S.p)return keluar();
+    var r=await sb.from(T_PENERIMA).select('*').eq('username',S.u).eq('password',S.p).maybeSingle();
+    if(r.error){
+      $('gateT').textContent='Gagal memeriksa akses';$('gateP').textContent=pesanErr(r.error);
+      var b=document.createElement('button');b.className='btn pri';b.type='button';b.textContent='Coba lagi';b.onclick=function(){location.reload();};$('gateP').after(b);return;
+    }
+    if(!r.data)return keluar();
+    $('gate').hidden=true;$('main').hidden=false;$('dock').hidden=false;ID_TOKO=r.data.id_toko||'';
+    tampilToko(r.data);
+    if(r.data.id_toko)muatProduk(r.data.id_toko);else{$('cnt').textContent='Id Toko belum ada';$('grid').innerHTML='<div class="state"><b>Id Toko belum tersedia</b>Hubungi admin sekolah.</div>';}
+  })();
+})();
+</script>
+</body>
+</html>
