@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Manajemen Berkas — SimberKas</title>
+<link rel="icon" type="image/png" href="logo.png">
+<!--
+  SQL (jalankan sekali di SQL Editor Supabase):
+
+  create table if not exists public.manajemen_berkas (
+    id bigint generated always as identity primary key,
+    nama text not null,
+    kategori text,
+    tanggal date,
+    keterangan text,
+    file_name text,
+    file_path text not null,
+    file_url text,
+    file_type text,
+    file_size bigint,
+    created_at timestamptz default now()
+  );
+  alter table public.manajemen_berkas enable row level security;
+  create policy "manajemen_berkas_all" on public.manajemen_berkas
+    for all to anon using (true) with check (true);
+-->
+<style>
+:root{
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,Roboto,Helvetica,Arial,sans-serif;
+  --text:#1d1d1f;--muted:#6e6e73;--accent:#0a7aff;--green:#28c840;--orange:#ff9f0a;--red:#ff453a;--purple:#af52de;
+  --glass:rgba(255,255,255,.72);--card:rgba(255,255,255,.88);--line:rgba(0,0,0,.1);--bar:rgba(255,255,255,.6);--track:rgba(120,120,128,.16);
+  --field:rgba(255,255,255,.9);--field-line:rgba(0,0,0,.16);--err:#d70015;
+  --wall:linear-gradient(135deg,#9cbcff 0%,#c4b0fb 40%,#f9c4de 72%,#fde3bd 100%);
+  --shadow:0 14px 40px rgba(30,30,80,.2),0 0 0 .5px rgba(0,0,0,.14);
+  color-scheme:light;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow-x:hidden}
+body{font-family:var(--font);color:var(--text);background:var(--wall) fixed;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
+
+/* Navbar */
+.nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:12px;padding:8px 20px;padding-top:calc(8px + env(safe-area-inset-top));
+  background:var(--bar);backdrop-filter:saturate(180%) blur(24px);-webkit-backdrop-filter:saturate(180%) blur(24px);border-bottom:.5px solid var(--line)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:-.01em;min-width:0}
+.sch-logo{flex:none;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:#fff;overflow:hidden;
+  background:linear-gradient(160deg,#4da3ff,#0a5fe0);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 2px 6px rgba(0,0,0,.22)}
+.sch-logo svg{width:20px;height:20px}
+.sch-logo img{width:100%;height:100%;object-fit:contain}
+.sch-name{display:block;min-width:0;line-height:1.2}
+.sch-name b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sch-name small{display:block;font-size:11px;font-weight:500;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp{flex:1}
+.acct{display:flex;align-items:center;gap:10px;padding:4px 6px 4px 12px;border-radius:99px;background:var(--track)}
+.acct div{text-align:right;line-height:1.2}
+.acct b{display:block;font-size:13px}.acct small{font-size:11px;color:var(--muted)}
+.avatar{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff;background:linear-gradient(160deg,#4da3ff,#7c3aed)}
+
+/* Layout */
+.wrap{max-width:none;margin:0;padding:22px min(150px,12vw)}
+.head{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px;margin-bottom:18px}
+h1{font-size:clamp(26px,4.5vw,36px);letter-spacing:-.025em;line-height:1.1}
+.head p{color:var(--muted);font-size:14px;margin-top:4px}
+.chip{font-size:13px;font-weight:600;padding:6px 14px;border-radius:99px;background:var(--glass);box-shadow:0 0 0 .5px var(--line);display:inline-flex;align-items:center;gap:6px}
+.panel{background:var(--glass);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);border-radius:16px;box-shadow:var(--shadow)}
+.box{padding:20px}
+.box h2{font-size:18px;letter-spacing:-.01em}
+.sub{font-size:13px;color:var(--muted)}
+
+/* Form */
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.full{grid-column:1/-1}
+.f label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.f label i{font-style:normal;color:var(--err);margin-left:2px}
+.f .opt{font-style:normal;font-weight:500;color:var(--muted);margin-left:4px;font-size:12px}
+.f input,.f textarea,.f select{width:100%;font:inherit;font-size:15px;color:var(--text);background:var(--field);border:1px solid var(--field-line);border-radius:10px;padding:10px 12px;transition:border-color .15s,box-shadow .15s}
+.f textarea{resize:vertical;min-height:76px}
+.f input:focus,.f textarea:focus,.f select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,122,255,.25)}
+.f .msg{display:none;font-size:12px;color:var(--err);margin-top:4px;font-weight:600}
+.f.bad input,.f.bad textarea,.f.bad select{border-color:var(--err)}
+.f.bad .msg{display:block}
+.drop{display:grid;place-items:center;text-align:center;min-height:150px;border-radius:14px;border:1.5px dashed var(--field-line);background:var(--field);padding:16px;cursor:pointer;transition:border-color .15s,background .15s}
+.drop:hover,.drop.over{border-color:var(--accent);background:var(--track)}
+.drop.bad{border-color:var(--err)}
+.ph{color:var(--muted);font-size:13px}
+.ph svg{width:34px;height:34px;margin:0 auto 8px;display:block;color:var(--accent)}
+.ph b{display:block;color:var(--text);font-size:14px;word-break:break-all}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 18px;border-radius:11px;font-size:14px;font-weight:600;background:var(--track);transition:transform .15s,filter .15s}
+.btn:hover{transform:translateY(-1px)}
+.btn svg{width:17px;height:17px}
+.btn.pri{color:#fff;background:linear-gradient(160deg,#4da3ff,#0a5fe0);box-shadow:0 4px 12px rgba(10,98,224,.35),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn.red{color:#fff;background:var(--red)}
+.btn[disabled]{opacity:.5;pointer-events:none}
+
+/* List */
+.list-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+.filters{display:flex;flex-wrap:wrap;gap:10px}
+.search{position:relative;width:min(300px,100%)}
+.search svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--muted);pointer-events:none}
+.search input,.sel{width:100%;font:inherit;font-size:14px;color:var(--text);background:var(--field);border:1px solid var(--field-line);border-radius:10px;padding:9px 12px}
+.search input{padding-left:34px}
+.sel{width:auto}
+.search input:focus,.sel:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(10,122,255,.25)}
+.tbl-wrap{overflow-x:auto;border-radius:12px;box-shadow:0 0 0 .5px var(--line);background:var(--card)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:820px}
+th{text-align:left;font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.03em;padding:11px 12px;background:rgba(240,240,246,.9);border-bottom:.5px solid var(--line);white-space:nowrap}
+td{padding:11px 12px;border-bottom:.5px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:rgba(10,122,255,.05)}
+td.c,th.c{text-align:center}td.r,th.r{text-align:right}
+td.nm{font-weight:600}td.mut{color:var(--muted)}
+.ext{width:38px;height:38px;border-radius:9px;display:grid;place-items:center;font-size:11px;font-weight:800;color:#fff;margin:0 auto;background:#8e8e93}
+.ext.pdf{background:linear-gradient(160deg,#ff6b60,#d70015)}
+.ext.img{background:linear-gradient(160deg,#c084fc,#7c3aed)}
+.ext.doc{background:linear-gradient(160deg,#4da3ff,#0a5fe0)}
+.ext.xls{background:linear-gradient(160deg,#4ade80,#15803d)}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:99px;background:rgba(10,122,255,.12);color:#0062d6;white-space:nowrap}
+.state{text-align:center;color:var(--muted);padding:28px 12px}
+.aksi{display:inline-flex;gap:8px;justify-content:flex-end}
+.mini{font-size:13px;font-weight:600;padding:7px 14px;border-radius:9px;white-space:nowrap;display:inline-block;transition:background .15s,color .15s,transform .15s}
+.mini:active{transform:scale(.96)}
+.mini.op{background:var(--accent);color:#fff}.mini.op:hover{background:#0062d6}
+.mini.dl{background:rgba(255,69,58,.12);color:var(--red)}.mini.dl:hover{background:var(--red);color:#fff}
+
+/* Modal */
+.ov{position:fixed;inset:0;z-index:90;display:none;place-items:center;padding:16px;background:rgba(0,0,0,.35);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.ov.open{display:grid}
+.mcard{background:#fff;border-radius:16px;box-shadow:var(--shadow);padding:22px;width:min(420px,100%)}
+.mcard h3{font-size:17px;margin-bottom:6px}
+.mcard p{color:var(--muted);font-size:14px;margin-bottom:16px;word-break:break-word}
+.mcard p b{color:var(--text)}
+.acts{display:flex;justify-content:flex-end;gap:10px}
+.mform{background:#fff;border-radius:18px;box-shadow:var(--shadow);width:min(640px,100%);max-height:min(92dvh,800px);display:flex;flex-direction:column;overflow:hidden}
+.mform form{display:flex;flex-direction:column;min-height:0;flex:1}
+.mh{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:18px 22px 14px;border-bottom:.5px solid var(--line)}
+.mh h2{font-size:18px;letter-spacing:-.01em}
+.mh p{font-size:13px;color:var(--muted);margin-top:2px}
+.mx{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--track);color:var(--muted)}
+.mx:hover{color:var(--text)}.mx svg{width:16px;height:16px}
+.mb{padding:18px 22px;overflow-y:auto;min-height:0;flex:1}
+.mf{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:.5px solid var(--line);background:rgba(246,246,250,.95)}
+.mf .btn{min-width:120px}
+.bar{height:6px;border-radius:99px;background:var(--track);overflow:hidden;margin-top:12px;display:none}
+.bar i{display:block;height:100%;width:40%;border-radius:99px;background:var(--accent);animation:ld 1s infinite ease-in-out}
+@keyframes ld{0%{margin-left:-40%}100%{margin-left:100%}}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(112px + env(safe-area-inset-bottom));transform:translate(-50%,20px);z-index:120;max-width:min(92vw,420px);padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;color:#fff;background:#1d1d1fe6;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.ok{background:rgba(31,162,60,.95)}.toast.err{background:rgba(215,0,21,.95)}
+
+/* Dock */
+.dock{position:fixed!important;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom);background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(30px);-webkit-backdrop-filter:saturate(180%) blur(30px);border-top:.5px solid rgba(0,0,0,.1);box-shadow:0 -4px 20px rgba(30,30,80,.12);transform:translateZ(0)}
+.dock nav{width:100%;display:flex;justify-content:flex-start;gap:6px;padding:8px;overflow-x:auto;scrollbar-width:none}
+.dock nav::-webkit-scrollbar{display:none}
+.dock nav>:first-child{margin-left:auto}.dock nav>:last-child{margin-right:auto}
+.d{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:3px;width:92px;padding:8px 6px;border-radius:16px;font-size:12px;font-weight:600;line-height:1.2;text-align:center;transition:background .15s,transform .15s}
+.d:hover{background:var(--track);transform:translateY(-3px)}
+.d .ic{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;color:#fff;box-shadow:0 3px 8px rgba(0,0,0,.2),inset 0 1px 0 rgba(255,255,255,.35)}
+.d .ic svg{width:21px;height:21px}
+
+@media (max-width:640px){.grid{grid-template-columns:1fr}.mh,.mb,.mf{padding-left:16px;padding-right:16px}.ov{padding:10px}}
+@media (max-width:520px){.sch-name small{display:none}.acct div{display:none}.acct{padding:3px}.d{width:62px;padding:6px 2px;font-size:10.5px}.d .ic{width:36px;height:36px}.wrap{padding:16px 5px}.nav{padding-left:5px;padding-right:5px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media print{.nav,.dock,.toast,.ov{display:none!important}}
+</style>
+</head>
+<body>
+<header class="nav">
+  <div class="brand">
+    <span class="sch-logo" id="navLogo" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M5 10v9h14v-9M9 19v-5h6v5"/></svg></span>
+    <span class="sch-name"><b id="navName">SMP Negeri 1 Contoh</b><small id="navSub">Kab. Contoh, Prov. Contoh</small></span>
+  </div>
+  <span class="sp"></span>
+  <div class="acct" aria-label="Akun masuk"><div><b>Admin Utama</b><small>Admin</small></div><span class="avatar">AU</span></div>
+</header>
+
+<main class="wrap">
+  <div class="head">
+    <div>
+      <h1>Manajemen Berkas</h1>
+      <p>Simpan berkas yang telah selesai dengan mengunggah file ke penyimpanan.</p>
+    </div>
+    <span class="chip" id="chip">0 berkas</span>
+  </div>
+
+  <section class="panel box" aria-labelledby="listTitle">
+    <div class="list-head">
+      <div><h2 id="listTitle">Daftar Berkas</h2><p class="sub" id="listSub">Memuat data…</p></div>
+      <div class="filters">
+        <select class="sel" id="fKat" aria-label="Filter kategori"><option value="">Semua kategori</option></select>
+        <label class="search"><span data-i="search"></span><input type="search" id="q" placeholder="Cari nama berkas…" aria-label="Cari berkas"></label>
+      </div>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th class="c">No</th><th class="c">Tipe</th><th>Nama Berkas</th><th>Kategori</th><th>Tanggal</th><th>Ukuran</th><th>Keterangan</th><th class="r">Aksi</th>
+        </tr></thead>
+        <tbody id="tb"><tr><td colspan="8" class="state">Memuat data…</td></tr></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+
+<!-- Modal upload -->
+<div class="ov" id="mUp" role="dialog" aria-modal="true" aria-labelledby="upT">
+  <div class="mform">
+    <form id="frm" novalidate>
+      <div class="mh">
+        <div><h2 id="upT">Upload Berkas</h2><p>Unggah berkas yang telah selesai untuk disimpan.</p></div>
+        <button type="button" class="mx" id="upX" aria-label="Tutup"><span data-i="close"></span></button>
+      </div>
+      <div class="mb">
+        <div class="grid">
+          <div class="f full"><label for="nama">Nama Berkas<i>*</i></label><input id="nama" maxlength="150" placeholder="Contoh: Berkas Belanja ATK Oktober 2026" autocomplete="off"><div class="msg">Nama berkas wajib diisi.</div></div>
+          <div class="f"><label for="kat">Kategori<i>*</i></label>
+            <select id="kat"><option value="">Pilih kategori</option><option>Surat Order</option><option>Berita Acara</option><option>Tanda Terima</option><option>Faktur / Nota</option><option>Photo Kegiatan</option><option>Laporan</option><option>Lainnya</option></select>
+            <div class="msg">Pilih kategori berkas.</div></div>
+          <div class="f"><label for="tgl">Tanggal<i>*</i></label><input type="date" id="tgl"><div class="msg">Tanggal wajib diisi.</div></div>
+          <div class="f full"><label for="ket">Keterangan<span class="opt">(opsional)</span></label><textarea id="ket" maxlength="500" placeholder="Catatan singkat tentang berkas ini"></textarea></div>
+          <div class="f full"><label>File Berkas<i>*</i></label>
+            <div class="drop" id="drop" tabindex="0" role="button" aria-label="Pilih file berkas">
+              <div class="ph" id="ph"><span data-i="upload"></span><b id="fname">Klik atau seret file ke sini</b><span id="fmeta">PDF, gambar, Word, atau Excel · maks. 10 MB</span></div>
+            </div>
+            <input type="file" id="file" hidden accept=".pdf,.jpg,.jpeg,.png,.webp,.doc,.docx,.xls,.xlsx">
+            <div class="msg" id="fmsg">File berkas wajib dipilih.</div>
+            <div class="bar" id="bar"><i></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="mf"><button type="button" class="btn" id="upNo">Batal</button><button type="submit" class="btn pri" id="upGo"><span data-i="save"></span>Simpan</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal hapus -->
+<div class="ov" id="mDel" role="dialog" aria-modal="true" aria-labelledby="delT">
+  <div class="mcard">
+    <h3 id="delT">Hapus Berkas?</h3>
+    <p id="delP"></p>
+    <div class="acts"><button type="button" class="btn" id="delNo">Batal</button><button type="button" class="btn red" id="delYes">Hapus</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="dock">
+  <nav aria-label="Menu halaman manajemen berkas">
+    <a class="d" href="adminbendahara.html"><span class="ic" style="background:linear-gradient(160deg,#94a3b8,#475569)" data-i="grid"></span>Beranda</a>
+    <button type="button" class="d" id="btnNew"><span class="ic" style="background:linear-gradient(160deg,#2dd4bf,#0f766e)" data-i="plus"></span>Upload Berkas</button>
+    <button type="button" class="d" id="btnRefresh"><span class="ic" style="background:linear-gradient(160deg,#60a5fa,#2563eb)" data-i="refresh"></span>Refresh</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+  var P={
+    grid:'<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+    save:'<path d="M5 3h11l3 3v15H5zM8 3v5h7V3M8 21v-7h8v7"/>',
+    close:'<path d="M6 6l12 12M18 6L6 18"/>',
+    search:'<circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    upload:'<path d="M12 16V5M7 10l5-5 5 5M5 20h14"/>',
+    refresh:'<path d="M20 11a8 8 0 0 0-14.9-3M4 5v4h4"/><path d="M4 13a8 8 0 0 0 14.9 3M20 19v-4h-4"/>'
+  };
+  function svg(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+P[n]+'</svg>';}
+  document.querySelectorAll('[data-i]').forEach(function(e){e.innerHTML=svg(e.dataset.i);});
+  var $=function(id){return document.getElementById(id);};
+  function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  var tt;
+  function toast(t,type){var el=$('toast');el.textContent=t;el.className='toast show '+(type||'');clearTimeout(tt);tt=setTimeout(function(){el.className='toast';},3600);}
+  function errMsg(e){
+    if(e&&(e.code==='PGRST205'||e.code==='42P01'))return 'Tabel "manajemen_berkas" belum ada. Jalankan SQL pembuatan tabel di SQL Editor Supabase.';
+    return (e&&e.message)||'coba lagi';
+  }
+  function tgl(s){if(!s)return '-';var d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});}
+  function ukuran(b){b=Number(b)||0;if(b<1024)return b+' B';if(b<1048576)return (b/1024).toFixed(1).replace('.',',')+' KB';return (b/1048576).toFixed(1).replace('.',',')+' MB';}
+  function extOf(n){var m=/\.([a-z0-9]+)$/i.exec(n||'');return m?m[1].toLowerCase():'';}
+  function extCls(x){if(x==='pdf')return 'pdf';if(/^(jpg|jpeg|png|webp)$/.test(x))return 'img';if(/^docx?$/.test(x))return 'doc';if(/^xlsx?$/.test(x))return 'xls';return '';}
+
+  /* ---------- Supabase (sama dengan halaman lain) ---------- */
+  var SB_URL='https://jnbhjmmmyqbcxaojbdlb.supabase.co';
+  var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpuYmhqbW1teXFiY3hhb2piZGxiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIxNDcwMzMsImV4cCI6MjEwNzcyMzAzM30.KP1-LCQJ9MJlxFbQlqLfAtqLiv3uybRdbJ2AVLb9phw';
+  var TABLE='manajemen_berkas',BUCKET='aset',FOLDER='berkas',MAX=10*1024*1024;
+  var OK_EXT=['pdf','jpg','jpeg','png','webp','doc','docx','xls','xlsx'];
+  var sb=window.supabase.createClient(SB_URL,SB_KEY);
+  var rows=[],delRow=null,busy=false,picked=null;
+
+  async function muatSekolah(){
+    var r=await sb.from('identitas_sekolah').select('nama,kabupaten,provinsi,logo_url').eq('id',1).maybeSingle();
+    if(r.error||!r.data)return;
+    if(r.data.nama)$('navName').textContent=r.data.nama;
+    $('navSub').textContent=[r.data.kabupaten,r.data.provinsi].filter(Boolean).join(', ');
+    if(r.data.logo_url)$('navLogo').innerHTML='<img alt="" src="'+esc(r.data.logo_url)+'">';
+  }
+
+  /* ---------- Daftar ---------- */
+  async function muat(){
+    $('tb').innerHTML='<tr><td colspan="8" class="state">Memuat data…</td></tr>';
+    var r=await sb.from(TABLE).select('*').order('created_at',{ascending:false});
+    if(r.error){$('tb').innerHTML='<tr><td colspan="8" class="state">'+esc(errMsg(r.error))+'</td></tr>';$('listSub').textContent='Gagal memuat data';return;}
+    rows=r.data||[];
+    var ks=[];rows.forEach(function(x){if(x.kategori&&ks.indexOf(x.kategori)<0)ks.push(x.kategori);});
+    var cur=$('fKat').value;
+    $('fKat').innerHTML='<option value="">Semua kategori</option>'+ks.sort().map(function(k){return '<option>'+esc(k)+'</option>';}).join('');
+    $('fKat').value=ks.indexOf(cur)>=0?cur:'';
+    var tot=rows.reduce(function(a,x){return a+(Number(x.file_size)||0);},0);
+    $('chip').textContent=rows.length+' berkas · '+ukuran(tot);
+    render();
+  }
+  function render(){
+    var q=$('q').value.trim().toLowerCase(),k=$('fKat').value;
+    var list=rows.filter(function(x){
+      if(k&&x.kategori!==k)return false;
+      return !q||[x.nama,x.kategori,x.keterangan,x.file_name].join(' ').toLowerCase().indexOf(q)>=0;
+    });
+    $('listSub').textContent=rows.length?list.length+' dari '+rows.length+' berkas':'Belum ada berkas';
+    if(!list.length){$('tb').innerHTML='<tr><td colspan="8" class="state">'+(rows.length?'Tidak ada berkas yang cocok.':'Belum ada berkas. Klik “Upload Berkas” untuk menambah.')+'</td></tr>';return;}
+    $('tb').innerHTML=list.map(function(x,i){
+      var e=extOf(x.file_name);
+      return '<tr><td class="c mut">'+(i+1)+'</td>'
+        +'<td><div class="ext '+extCls(e)+'">'+esc((e||'file').toUpperCase().slice(0,4))+'</div></td>'
+        +'<td class="nm">'+esc(x.nama)+'<div class="sub" style="font-weight:400;word-break:break-all">'+esc(x.file_name)+'</div></td>'
+        +'<td>'+(x.kategori?'<span class="tag">'+esc(x.kategori)+'</span>':'-')+'</td>'
+        +'<td>'+esc(tgl(x.tanggal))+'</td><td class="mut">'+esc(ukuran(x.file_size))+'</td>'
+        +'<td class="mut" style="min-width:160px">'+(esc(x.keterangan)||'-')+'</td>'
+        +'<td class="r"><span class="aksi"><a class="mini op" target="_blank" rel="noopener" href="'+esc(x.file_url)+'">Buka</a>'
+        +'<button type="button" class="mini dl" data-del="'+esc(x.id)+'">Hapus</button></span></td></tr>';
+    }).join('');
+  }
+  $('q').addEventListener('input',render);
+  $('fKat').addEventListener('change',render);
+  $('btnRefresh').addEventListener('click',function(){muat();toast('Data diperbarui','ok');});
+
+  /* ---------- Upload ---------- */
+  var mUp=$('mUp'),frm=$('frm');
+  function resetFile(){picked=null;$('file').value='';$('fname').textContent='Klik atau seret file ke sini';$('fmeta').textContent='PDF, gambar, Word, atau Excel · maks. 10 MB';$('drop').classList.remove('bad');$('fmsg').style.display='none';}
+  function bukaUp(){
+    frm.reset();resetFile();
+    frm.querySelectorAll('.f.bad').forEach(function(f){f.classList.remove('bad');});
+    $('tgl').value=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
+    mUp.classList.add('open');setTimeout(function(){$('nama').focus();},50);
+  }
+  function tutupUp(){if(busy)return;mUp.classList.remove('open');}
+  $('btnNew').addEventListener('click',bukaUp);
+  $('upX').addEventListener('click',tutupUp);$('upNo').addEventListener('click',tutupUp);
+  mUp.addEventListener('mousedown',function(e){if(e.target===mUp)tutupUp();});
+
+  function pilih(f){
+    if(!f)return;
+    var e=extOf(f.name);
+    if(OK_EXT.indexOf(e)<0){resetFile();$('fmsg').textContent='Format file tidak didukung.';$('fmsg').style.display='block';$('drop').classList.add('bad');return;}
+    if(f.size>MAX){resetFile();$('fmsg').textContent='Ukuran file melebihi 10 MB.';$('fmsg').style.display='block';$('drop').classList.add('bad');return;}
+    picked=f;$('fname').textContent=f.name;$('fmeta').textContent=ukuran(f.size)+' · klik untuk mengganti';
+    $('drop').classList.remove('bad');$('fmsg').style.display='none';
+    if(!$('nama').value.trim())$('nama').value=f.name.replace(/\.[^.]+$/,'');
+  }
+  var drop=$('drop');
+  drop.addEventListener('click',function(){$('file').click();});
+  drop.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();$('file').click();}});
+  $('file').addEventListener('change',function(){pilih(this.files[0]);});
+  ['dragenter','dragover'].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.add('over');});});
+  ['dragleave','drop'].forEach(function(n){drop.addEventListener(n,function(e){e.preventDefault();drop.classList.remove('over');});});
+  drop.addEventListener('drop',function(e){pilih(e.dataTransfer.files[0]);});
+
+  function bad(id,on){$(id).closest('.f').classList.toggle('bad',on);return on;}
+  frm.addEventListener('submit',async function(ev){
+    ev.preventDefault();if(busy)return;
+    var nama=$('nama').value.trim(),kat=$('kat').value,tg=$('tgl').value;
+    var b1=bad('nama',!nama),b2=bad('kat',!kat),b3=bad('tgl',!tg),b4=!picked;
+    if(b4){$('fmsg').textContent='File berkas wajib dipilih.';$('fmsg').style.display='block';$('drop').classList.add('bad');}
+    if(b1||b2||b3||b4){toast('Lengkapi data berkas terlebih dahulu','err');return;}
+    busy=true;$('upGo').disabled=true;$('bar').style.display='block';
+    var e=extOf(picked.name),safe=picked.name.replace(/\.[^.]+$/,'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,60)||'berkas';
+    var path=FOLDER+'/'+Date.now()+'_'+safe+'.'+e;
+    try{
+      var up=await sb.storage.from(BUCKET).upload(path,picked,{contentType:picked.type||undefined,upsert:false});
+      if(up.error)throw up.error;
+      var url=sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+      var ins=await sb.from(TABLE).insert({nama:nama,kategori:kat,tanggal:tg,keterangan:$('ket').value.trim()||null,
+        file_name:picked.name,file_path:path,file_url:url,file_type:picked.type||e,file_size:picked.size});
+      if(ins.error){await sb.storage.from(BUCKET).remove([path]);throw ins.error;}
+      busy=false;mUp.classList.remove('open');toast('Berkas berhasil disimpan','ok');muat();
+    }catch(err){toast('Gagal menyimpan: '+errMsg(err),'err');}
+    busy=false;$('upGo').disabled=false;$('bar').style.display='none';
+  });
+
+  /* ---------- Hapus ---------- */
+  $('tb').addEventListener('click',function(e){
+    var b=e.target.closest('[data-del]');if(!b)return;
+    delRow=rows.filter(function(x){return String(x.id)===b.dataset.del;})[0];if(!delRow)return;
+    $('delP').innerHTML='Berkas <b>'+esc(delRow.nama)+'</b> beserta file-nya akan dihapus permanen dan tidak dapat dikembalikan.';
+    $('mDel').classList.add('open');
+  });
+  function tutupDel(){if(busy)return;$('mDel').classList.remove('open');delRow=null;}
+  $('delNo').addEventListener('click',tutupDel);
+  $('mDel').addEventListener('mousedown',function(e){if(e.target===$('mDel'))tutupDel();});
+  $('delYes').addEventListener('click',async function(){
+    if(!delRow||busy)return;busy=true;this.disabled=true;
+    try{
+      if(delRow.file_path){var rm=await sb.storage.from(BUCKET).remove([delRow.file_path]);if(rm.error)throw rm.error;}
+      var d=await sb.from(TABLE).delete().eq('id',delRow.id);if(d.error)throw d.error;
+      busy=false;$('mDel').classList.remove('open');delRow=null;toast('Berkas dihapus','ok');muat();
+    }catch(err){toast('Gagal menghapus: '+errMsg(err),'err');}
+    busy=false;this.disabled=false;
+  });
+
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'){tutupUp();tutupDel();}});
+  muatSekolah();muat();
+})();
+</script>
+</body>
+</html>
