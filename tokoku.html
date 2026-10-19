@@ -110,6 +110,18 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 .two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}.two>*{min-width:0}
 .pick{display:grid;place-items:center;min-height:120px;border:1.5px dashed rgba(0,0,0,.22);border-radius:14px;cursor:pointer;overflow:hidden;color:var(--muted);font-size:13px;text-align:center;padding:10px}
 .pick img{display:none;max-height:180px;object-fit:contain}.pick.has img{display:block}.pick.has span{display:none}
+.pgw{position:relative}.pgw .pick{padding-right:58px}
+.pgcam{position:absolute;top:8px;right:8px;z-index:2;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(160deg,#4da3ff,#0a5fe0);box-shadow:0 4px 12px rgba(10,98,224,.35),inset 0 1px 0 rgba(255,255,255,.35);transition:transform .15s}
+.pgcam:hover{transform:scale(1.06)}.pgcam svg{width:22px;height:22px}
+/* Modal kamera */
+.cov{position:fixed;inset:0;z-index:110;display:none;place-items:center;padding:16px;background:rgba(0,0,0,.6);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}.cov.open{display:grid}
+.cm{background:#111;color:#fff;width:min(560px,100%);overflow:hidden;border-radius:20px;box-shadow:var(--shadow)}
+.cvw{position:relative;background:#000;display:grid;place-items:center;min-height:200px}
+.cvw video{display:block;width:100%;max-height:68vh;max-height:68dvh;object-fit:contain;background:#000}.cvw video.mir{transform:scaleX(-1)}
+.cerr{position:absolute;inset:0;display:grid;align-content:center;justify-items:center;gap:12px;padding:20px;text-align:center;font-size:14px;color:#fff;background:rgba(0,0,0,.88)}.cerr[hidden]{display:none}
+.cbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px calc(14px + env(safe-area-inset-bottom))}
+.cbar .btn,.cerr .btn{min-width:84px;color:#fff;background:rgba(255,255,255,.16)}
+.shut{flex:none;width:64px;height:64px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,.45);box-shadow:inset 0 0 0 3px #111}.shut:disabled{opacity:.4}
 .o{padding:12px 14px;border-radius:14px;background:#f6f6fa;display:grid;gap:3px}.o div{display:flex;justify-content:space-between;align-items:center;gap:8px}.o small{color:var(--muted)}.o p{font-size:14px}
 @media print{.nav,.toast,.ov,.dock{display:none!important}}
 </style>
@@ -156,10 +168,18 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
     <div class="f" id="pnf"><label for="pn">Nama produk<i>*</i></label><input id="pn" maxlength="120" placeholder="Contoh: Kertas HVS A4 70 gr"><p class="msg">Nama produk wajib diisi</p></div>
     <div class="two"><div class="f"><label for="pharga">Harga (Rp)</label><input id="pharga" inputmode="numeric" size="1" maxlength="12" placeholder="50000"></div><div class="f"><label for="ps">Stok</label><input id="ps" inputmode="numeric" size="1" maxlength="6" placeholder="100"></div></div>
     <div class="f"><label for="pk">Keterangan</label><textarea id="pk" maxlength="500" placeholder="Ukuran, bahan, merek, dll."></textarea></div>
-    <div class="f"><label for="pg">Gambar produk</label><label class="pick" id="pgl" for="pg"><img id="pgp" alt="Pratinjau gambar"><span>Ketuk untuk memilih gambar<br>PNG, JPG, atau WebP. Otomatis dikompres maks. 20 KB</span></label><input id="pg" type="file" accept="image/png,image/jpeg,image/webp" hidden><p class="hint" id="pgi" aria-live="polite"></p></div>
+    <div class="f"><label for="pg">Gambar produk</label><div class="pgw"><label class="pick" id="pgl" for="pg"><img id="pgp" alt="Pratinjau gambar"><span>Ketuk untuk upload file, atau pakai ikon kamera<br>PNG, JPG, atau WebP. Otomatis dikompres maks. 20 KB</span></label><button type="button" class="pgcam" id="pgCam" aria-label="Ambil foto dengan kamera" title="Ambil foto dengan kamera"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button></div><input id="pg" type="file" accept="image/png,image/jpeg,image/webp" hidden><input id="pgc" type="file" accept="image/*" capture="environment" hidden><p class="hint" id="pgi" aria-live="polite"></p></div>
   </div>
   <div class="mf"><button type="button" class="btn" data-x>Batal</button><button type="submit" class="btn pri" id="psave">Simpan produk</button></div>
 </form></div>
+
+<div class="cov" id="mcam" aria-hidden="true">
+  <div class="cm" role="dialog" aria-modal="true" aria-label="Ambil foto produk">
+    <div class="cvw"><video id="cvid" playsinline muted autoplay></video>
+      <div class="cerr" id="cerr" hidden><p id="cerrT"></p><label for="pgc" class="btn" id="cerrAlt">Pakai kamera bawaan</label></div></div>
+    <div class="cbar"><button type="button" class="btn" id="cCancel">Batal</button><button type="button" class="shut" id="cShot" aria-label="Ambil foto" disabled></button><button type="button" class="btn" id="cFlip" aria-label="Ganti kamera"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></button></div>
+  </div>
+</div>
 
 <div class="ov" id="mo" aria-hidden="true"><div class="md fm" role="dialog" aria-modal="true" aria-labelledby="mot">
   <div class="mh"><h3 id="mot">Surat order masuk</h3><button class="x" type="button" data-x aria-label="Tutup">✕</button></div>
@@ -250,7 +270,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
   document.querySelectorAll('.ov').forEach(function(o){o.addEventListener('click',function(e){if(e.target===o)tutup();});});
   document.querySelectorAll('[data-x]').forEach(function(b){b.addEventListener('click',tutup);});
   $('mx').addEventListener('click',tutup);
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')tutup();});
+  document.addEventListener('keydown',function(e){if(e.key!=='Escape')return;if(mcam.classList.contains('open'))camClose();else tutup();});
 
   /* ---- + Produk ---- */
   var gfile=null,gurl='',sibuk=false,BUCKET='aset';
@@ -261,7 +281,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
   }
   function dupKode(e){return !!(e&&e.code==='23505'&&/kode_produk/i.test((e.message||'')+' '+(e.details||'')));}
   var tokenG=0,kompresBusy=false,MAXB=20000;   /* 20 KB */
-  function pgReset(){tokenG++;kompresBusy=false;$('pgi').textContent='';if(gurl)URL.revokeObjectURL(gurl);gfile=null;gurl='';$('pg').value='';$('pgp').removeAttribute('src');$('pgl').classList.remove('has');}
+  function pgReset(){tokenG++;kompresBusy=false;$('pgi').textContent='';if(gurl)URL.revokeObjectURL(gurl);gfile=null;gurl='';$('pg').value='';$('pgc').value='';$('pgp').removeAttribute('src');$('pgl').classList.remove('has');}
   $('dAdd').addEventListener('click',function(){
     if(!ID_TOKO)return toast('Id Toko belum tersedia. Hubungi admin sekolah.');
     $('fp').reset();pgReset();$('pnf').classList.remove('bad');$('pkode').value=genKode();bukaM('mp');setTimeout(function(){$('pn').focus();},60);
@@ -287,10 +307,12 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
     }
     return best;
   }
-  $('pg').addEventListener('change',async function(){
-    var f=this.files[0];if(!f)return;
-    if(['image/png','image/jpeg','image/webp'].indexOf(f.type)<0){toast('Format gambar harus PNG, JPG, atau WebP');this.value='';return;}
-    if(f.size>25*1024*1024){toast('Ukuran file terlalu besar (maks. 25 MB)');this.value='';return;}
+  /* Gambar dari upload file ATAU kamera lewat jalur yang sama: dikompres sampai <= 20 KB */
+  async function terimaGambar(f,el){
+    var rst=function(){if(el)el.value='';};
+    if(!f)return;
+    if(['image/png','image/jpeg','image/webp'].indexOf(f.type)<0){toast('Format gambar harus PNG, JPG, atau WebP');rst();return;}
+    if(f.size>25*1024*1024){toast('Ukuran file terlalu besar (maks. 25 MB)');rst();return;}
     var my=++tokenG;kompresBusy=true;$('pgi').textContent='Mengompres gambar…';
     try{
       var b=await kompres(f,MAXB);
@@ -303,7 +325,50 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
       if(my!==tokenG)return;
       console.error(err);pgReset();toast(err.message||'Gagal mengompres gambar');
     }finally{if(my===tokenG)kompresBusy=false;}
+  }
+  $('pg').addEventListener('change',function(){terimaGambar(this.files[0],this);});
+  $('pgc').addEventListener('change',function(){terimaGambar(this.files[0],this);});
+
+  /* ---- Kamera perangkat ---- */
+  var mcam=$('mcam'),cStream=null,cFace='environment',cTok=0;
+  function camStop(){if(cStream){cStream.getTracks().forEach(function(t){t.stop();});cStream=null;}$('cvid').srcObject=null;}
+  function camClose(){cTok++;camStop();mcam.classList.remove('open');mcam.setAttribute('aria-hidden','true');$('cShot').disabled=true;try{$('pgCam').focus();}catch(e){}}
+  async function camStart(){
+    var my=++cTok;camStop();$('cerr').hidden=true;$('cShot').disabled=true;
+    try{
+      var st=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:cFace},width:{ideal:1280},height:{ideal:960}},audio:false});
+      if(my!==cTok){st.getTracks().forEach(function(t){t.stop();});return;}   /* modal sudah ditutup */
+      cStream=st;var v=$('cvid');v.srcObject=st;v.classList.toggle('mir',cFace==='user');
+      try{await v.play();}catch(e){}
+      $('cShot').disabled=false;
+    }catch(err){
+      if(my!==cTok)return;
+      console.error(err);
+      var n=err&&err.name;
+      $('cerrT').textContent=n==='NotAllowedError'||n==='SecurityError'?'Izin kamera ditolak. Izinkan akses kamera di pengaturan browser, lalu coba lagi.':n==='NotFoundError'||n==='OverconstrainedError'?'Kamera tidak ditemukan di perangkat ini.':'Kamera tidak bisa dibuka'+((err&&err.message)?': '+err.message:'.');
+      $('cerr').hidden=false;
+    }
+  }
+  $('pgCam').addEventListener('click',function(){
+    if(kompresBusy){toast('Tunggu, gambar sedang dikompres');return;}
+    /* browser tanpa getUserMedia / bukan HTTPS: pakai kamera bawaan lewat input capture */
+    if(!window.isSecureContext||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$('pgc').click();return;}
+    mcam.classList.add('open');mcam.setAttribute('aria-hidden','false');camStart();
   });
+  $('cCancel').addEventListener('click',camClose);
+  $('cerrAlt').addEventListener('click',camClose);
+  $('cFlip').addEventListener('click',function(){cFace=cFace==='user'?'environment':'user';camStart();});
+  $('cShot').addEventListener('click',function(){
+    var v=$('cvid');if(!cStream||!v.videoWidth)return;
+    var W=v.videoWidth,H=v.videoHeight,k=Math.min(1,1600/Math.max(W,H)),w=Math.round(W*k),h=Math.round(H*k);
+    var c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(v,0,0,w,h);
+    c.toBlob(function(b){
+      camClose();
+      if(!b){toast('Gagal mengambil foto');return;}
+      terimaGambar(b,null);   /* masuk ke kompresi 20 KB yang sama dengan upload file */
+    },'image/jpeg',0.92);
+  });
+  window.addEventListener('pagehide',camStop);
   $('fp').addEventListener('submit',async function(e){
     e.preventDefault();if(sibuk)return;
     var nama=$('pn').value.trim();
