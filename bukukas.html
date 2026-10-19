@@ -319,6 +319,45 @@ td.rin{min-width:260px}
 .pick .go{position:absolute;right:4px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:8px;display:grid;place-items:center;color:#fff;background:var(--accent);transition:background .15s}
 .pick .go:hover{background:#0062d6}.pick .go svg{width:17px;height:17px}
 #mPick{z-index:100}
+#mProdSO{z-index:102}
+.irbtns{display:flex;flex-wrap:wrap;gap:8px;margin-top:2px}.irbtns .btn.sm2{margin-top:0}
+.btn.sm2.pv{background:rgba(31,162,60,.14);color:#167a2e}.btn.sm2.pv:hover{background:#1fa23c;color:#fff}
+.psbox{background:#fff;border-radius:18px;box-shadow:var(--shadow);width:min(900px,100%);max-height:min(90vh,760px);max-height:min(90dvh,760px);display:flex;flex-direction:column;overflow:hidden}
+.psbox .pb{padding:14px 22px 18px;overflow:auto;min-height:0;flex:1}
+.psbox .search{width:100%;margin-bottom:12px}
+.psbox .mf{align-items:center}.psbox .mf small{margin-right:auto;color:var(--muted);font-size:12.5px;min-width:0}
+.ps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px}
+.ps-card{position:relative;display:flex;flex-direction:column;text-align:left;min-width:0;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 0 0 .5px var(--line),0 4px 14px rgba(30,30,80,.08);transition:transform .15s,box-shadow .15s}
+.ps-card:hover{transform:translateY(-3px);box-shadow:0 0 0 1.5px var(--accent),0 12px 24px rgba(30,30,80,.16)}
+.ps-card:active{transform:scale(.98)}
+.ps-img{position:relative;aspect-ratio:4/3;display:grid;place-items:center;font-size:38px;font-weight:800;color:rgba(255,255,255,.9);background:linear-gradient(150deg,#a5b4fc,#c4b0fb 55%,#f9c4de)}
+.ps-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
+.ps-body{display:flex;flex-direction:column;gap:4px;padding:10px 12px 12px;flex:1;min-width:0}
+.ps-kd{align-self:flex-start;font-size:11.5px;font-weight:800;letter-spacing:.08em;padding:2px 8px;border-radius:7px;background:rgba(10,122,255,.1);color:#0a4fa8}
+.ps-body h4{font-size:15px;line-height:1.25;overflow-wrap:anywhere}
+.ps-body p{font-size:13px;line-height:1.35;color:var(--muted);white-space:pre-line;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden}
+.ps-card{cursor:pointer}.ps-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ps-desc{margin-top:6px;display:block;width:100%;text-align:center;font-size:12.5px;font-weight:700;padding:6px 8px;border-radius:9px;background:var(--track);color:var(--text);transition:background .15s}
+.ps-desc:hover,.ps-desc:focus-visible{background:rgba(120,120,128,.26)}
+/* Modal Deskripsi produk: semua data tampil utuh, isi bisa digulir di smartphone */
+#mProdDesc{z-index:103}
+.pdbox{background:#fff;border-radius:18px;box-shadow:var(--shadow);width:min(560px,100%);max-height:min(92vh,780px);max-height:min(92dvh,780px);display:flex;flex-direction:column;overflow:hidden}
+.pdbox .mf{flex-wrap:wrap}
+.pdb{padding:14px 22px 18px;overflow-y:auto;overflow-x:hidden;min-height:0;flex:1;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.pd-img{position:relative;border-radius:12px;overflow:hidden;margin-bottom:14px;display:grid;place-items:center;aspect-ratio:16/10;font-size:44px;font-weight:800;color:rgba(255,255,255,.9);background:linear-gradient(150deg,#a5b4fc,#c4b0fb 55%,#f9c4de)}
+.pd-img.has{aspect-ratio:auto;background:#f2f2f7}
+.pd-img img{display:block;width:100%;height:auto;max-height:50vh;max-height:50dvh;object-fit:contain}
+.pd-row{padding:10px 0;border-bottom:.5px solid var(--line);min-width:0}
+.pd-row:last-child{border-bottom:0}
+.pd-row dt{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.pd-row dd{margin:0;font-size:15px;color:var(--text);white-space:pre-line;overflow-wrap:anywhere;word-break:break-word}
+.pd-row dd.big{font-size:19px;font-weight:800;color:#0a4fa8}
+@media (max-width:520px){.pdb{padding:12px 14px 16px}}
+.ps-price{margin-top:auto;padding-top:6px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px}.ps-price b{font-size:15px;color:#0a4fa8}
+.ps-st{font-size:12px;font-weight:700;padding:3px 9px;border-radius:99px;background:rgba(31,162,60,.14);color:#167a2e}.ps-st.out{background:rgba(255,69,58,.14);color:#c4281f}
+.ps-add{margin-top:6px;text-align:center;font-size:13px;font-weight:700;padding:7px 8px;border-radius:9px;background:var(--accent);color:#fff}
+.ps-in{position:absolute;top:8px;right:8px;z-index:1;font-size:12px;font-weight:800;padding:3px 10px;border-radius:99px;color:#fff;background:#1fa23c;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+@media (max-width:520px){.ps-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.ps-body{padding:8px 10px 10px}.ps-body h4{font-size:14px}.psbox .pb{padding:12px 12px 14px}}
 .pbox{background:#fff;border-radius:18px;box-shadow:var(--shadow);width:min(860px,100%);max-height:min(88vh,720px);max-height:min(88dvh,720px);display:flex;flex-direction:column;overflow:hidden}
 .pbox .pb{padding:14px 22px 18px;overflow:auto;min-height:0;flex:1}
 .pbox .search{width:100%;margin-bottom:12px}
@@ -583,7 +622,10 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
               <div class="ihead"><span>Nama barang</span><span>Banyaknya</span><span>Satuan</span><span>Harga satuan</span><span>Jumlah</span><span></span></div>
               <div id="items"></div>
             </div>
-            <button type="button" class="btn sm2" id="addItem"><span data-i="plus"></span>Tambah barang</button>
+            <div class="irbtns">
+              <button type="button" class="btn sm2" id="addItem"><span data-i="plus"></span>Tambah barang</button>
+              <button type="button" class="btn sm2 pv" id="btnProdToko"><span data-i="search"></span>Lihat Produk Toko</button>
+            </div>
             <div class="tot"><div><small class="nil" style="color:var(--muted)">JUMLAH</small><br><b id="total">Rp 0</b></div><em id="terbilang">Terbilang: -</em></div>
             <p class="msg"></p>
           </div>
@@ -670,6 +712,31 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       <button type="button" class="btn" id="expUpdate" style="display:none" data-tip="Update" aria-label="Update"><span data-i="edit"></span><span id="expUpdTx">Update</span></button>
       <button type="button" class="btn pri" id="expPdf" data-tip="Export PDF" aria-label="Export PDF"><span data-i="pdf"></span><span id="expPdfTx">Simpan PDF</span></button>
     </div>
+  </div>
+</div>
+
+<div class="ov" id="mProdSO" aria-hidden="true">
+  <div class="psbox" role="dialog" aria-modal="true" aria-labelledby="psT">
+    <div class="mh">
+      <div style="min-width:0"><h2 id="psT" style="overflow-wrap:anywhere">Produk Toko</h2><p id="psSub">Klik produk untuk memasukkannya ke Rincian Barang</p></div>
+      <button type="button" class="mx" id="psClose" aria-label="Tutup"><span data-i="close"></span></button>
+    </div>
+    <div class="pb">
+      <label class="search"><span data-i="search"></span><input id="psq" type="search" placeholder="Cari nama, ID, atau keterangan produk" aria-label="Cari produk toko"></label>
+      <div id="psBody"></div>
+    </div>
+    <div class="mf"><small id="psInfo" aria-live="polite"></small><button type="button" class="btn pri" id="psDone">Selesai</button></div>
+  </div>
+</div>
+
+<div class="ov" id="mProdDesc" aria-hidden="true">
+  <div class="pdbox" role="dialog" aria-modal="true" aria-labelledby="pdT">
+    <div class="mh">
+      <div style="min-width:0"><h2 id="pdT" style="overflow-wrap:anywhere">Deskripsi produk</h2><p>Data lengkap produk</p></div>
+      <button type="button" class="mx" id="pdClose" aria-label="Tutup"><span data-i="close"></span></button>
+    </div>
+    <div class="pdb" id="pdBody"></div>
+    <div class="mf"><button type="button" class="btn" id="pdTutup">Tutup</button><button type="button" class="btn pri" id="pdAdd">+ Masukkan ke rincian</button></div>
   </div>
 </div>
 
@@ -791,7 +858,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     if(mform.classList.contains('open')&&!editRow&&!$('kpa').value){$('kpa').value=kpa.nama||'';$('nip').value=(kpa.nip&&kpa.nip!=='-')?kpa.nip:'';}
   }
   async function muatPenerima(){
-    var r=await sb.from('penerima').select('nama_pemilik,nama_toko,alamat,telepon,npwp,logo_url').order('nama_toko',{ascending:true});
+    var r=await sb.from('penerima').select('nama_pemilik,nama_toko,alamat,telepon,npwp,logo_url,id_toko').order('nama_toko',{ascending:true});
     if(r.error)return;
     penerima=r.data||[];
     renderPick();
@@ -839,6 +906,111 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     var v=this.value.trim().toLowerCase();
     var p=penerima.filter(function(x){return (x.nama_toko||x.nama_pemilik||'').toLowerCase()===v;})[0];
     if(p){$('alamat').value=p.alamat||'';$('pemilik').value=p.nama_pemilik||'';}
+  });
+
+  /* ---------- Lihat Produk Toko: klik produk -> masuk ke Rincian Barang ---------- */
+  var mps=$('mProdSO'),psData=[],psBusy=false;
+  function psRp(v){return v==null||v===''?'Harga belum diisi':'Rp '+nf(Math.round(Number(v)));}
+  function psHarga(p){return p.harga==null||p.harga===''?'':String(Math.round(Number(p.harga)));}
+  function psCount(p){   /* jumlah produk ini yang sudah ada di rincian */
+    var h=psHarga(p),n=String(p.nama||'').trim().toLowerCase();
+    return items.reduce(function(a,it){return (String(it.nama||'').trim().toLowerCase()===n&&String(it.harga||'')===h)?a+num(it.qty):a;},0);
+  }
+  function psRender(){
+    var q=$('psq').value.trim().toLowerCase(),n=0;
+    var h=psData.map(function(p,i){
+      if(q&&((p.nama||'')+' '+(p.keterangan||'')+' '+(p.kode_produk||'')).toLowerCase().indexOf(q)<0)return '';
+      n++;
+      var c=psCount(p),ini=(String(p.nama||'?').trim().charAt(0)||'?').toUpperCase();
+      return '<div role="button" tabindex="0" class="ps-card" data-ps="'+i+'">'+(c?'<span class="ps-in">Dipilih '+esc(c)+'</span>':'')
+        +'<div class="ps-img">'+esc(ini)+(p.gambar_url?'<img alt="" loading="lazy" src="'+esc(p.gambar_url)+'" onerror="this.remove()">':'')+'</div>'
+        +'<div class="ps-body">'+(p.kode_produk?'<span class="ps-kd">'+esc(p.kode_produk)+'</span>':'')+'<h4>'+esc(p.nama)+'</h4><p>'+esc(p.keterangan||'Tanpa keterangan')+'</p>'
+        +'<div class="ps-price"><b>'+psRp(p.harga)+'</b>'+(p.stok==null?'':'<span class="ps-st'+(p.stok>0?'':' out')+'">'+(p.stok>0?'Stok '+esc(p.stok):'Habis')+'</span>')+'</div>'
+        +'<button type="button" class="ps-desc" data-psd="'+i+'">Deskripsi produk</button><span class="ps-add">+ Masukkan ke rincian</span></div></div>';
+    }).join('');
+    $('psBody').innerHTML=h?'<div class="ps-grid">'+h+'</div>':'<p class="state">Produk tidak ditemukan.</p>';
+  }
+  function psTambah(p){
+    var h=psHarga(p),nm=String(p.nama||'').trim();
+    var ada=items.filter(function(it){return String(it.nama||'').trim().toLowerCase()===nm.toLowerCase()&&String(it.harga||'')===h;})[0];
+    if(ada){ada.qty=String(num(ada.qty)+1);}   /* produk sama diklik lagi -> banyaknya +1 */
+    else{
+      var kosong=items.length===1&&!String(items[0].nama||'').trim()&&!String(items[0].harga||'').trim();
+      var baru={nama:nm,qty:'1',satuan:'buah',harga:h};
+      if(kosong)items=[baru];else items.push(baru);
+    }
+    renderItems();psRender();
+    $('psInfo').textContent=items.length+' barang di rincian, jumlah Rp '+nf(sum());
+    toast('Ditambahkan: '+nm,'ok');
+  }
+  function psClose(){
+    mps.classList.remove('open');mps.setAttribute('aria-hidden','true');lockBody();
+    $('btnProdToko').focus();
+  }
+  async function psOpen(){
+    if(psBusy)return;
+    var v=$('toko').value.trim().toLowerCase();
+    if(!v){toast('Pilih nama toko terlebih dahulu','err');$('toko').focus();return;}
+    var t=penerima.filter(function(x){return (x.nama_toko||x.nama_pemilik||'').toLowerCase()===v;})[0];
+    if(!t){toast('Toko tidak ditemukan di data penerima. Pilih toko dari daftar.','err');return;}
+    if(!t.id_toko){toast('Toko ini tidak aktif','err');return;}
+    var btn=$('btnProdToko'),lama=btn.innerHTML;psBusy=true;btn.disabled=true;btn.textContent='Memuat…';
+    try{
+      var q=await sb.from('produk').select('*').eq('id_toko',t.id_toko).order('created_at',{ascending:false});
+      if(q.error)throw q.error;
+      if(!q.data||!q.data.length){toast('Toko ini tidak aktif','err');return;}
+      psData=q.data;
+      $('psT').textContent='Produk '+(t.nama_toko||t.nama_pemilik);
+      $('psSub').textContent='Id Toko: '+t.id_toko+', '+psData.length+' produk. Klik produk untuk memasukkannya ke Rincian Barang';
+      $('psInfo').textContent='';$('psq').value='';psRender();
+      mps.classList.add('open');mps.setAttribute('aria-hidden','false');lockBody();
+    }catch(err){
+      console.error(err);
+      toast(err&&(err.code==='PGRST205'||err.code==='42P01')?'Tabel "produk" belum ada. Jalankan produk.sql di SQL Editor Supabase.':'Gagal memuat produk: '+((err&&err.message)||'coba lagi'),'err');
+    }finally{
+      psBusy=false;btn.disabled=false;btn.innerHTML=lama;
+    }
+  }
+  /* Modal Deskripsi produk: tampilkan seluruh data produk tanpa dipotong */
+  var mpd=$('mProdDesc'),pdCur=null;
+  function pdRow(l,v,c){return '<div class="pd-row"><dt>'+l+'</dt><dd'+(c?' class="'+c+'"':'')+'>'+v+'</dd></div>';}
+  function pdOpen(p){
+    pdCur=p;
+    var ini=(String(p.nama||'?').trim().charAt(0)||'?').toUpperCase();
+    $('pdT').textContent=p.nama||'Deskripsi produk';
+    $('pdBody').innerHTML=
+      '<div class="pd-img'+(p.gambar_url?' has':'')+'">'+(p.gambar_url?'<img alt="'+esc(p.nama||'Gambar produk')+'" src="'+esc(p.gambar_url)+'" onerror="this.parentNode.classList.remove(\'has\');this.remove()">':'')+(p.gambar_url?'':esc(ini))+'</div>'
+      +'<dl style="margin:0">'
+      +(p.kode_produk?pdRow('ID produk',esc(p.kode_produk)):'')
+      +pdRow('Nama produk',esc(p.nama||'-'))
+      +pdRow('Harga',esc(psRp(p.harga)),'big')
+      +pdRow('Stok',p.stok==null?'-':(p.stok>0?esc(p.stok):'Habis'))
+      +pdRow('Keterangan',esc(p.keterangan||'Tanpa keterangan'))
+      +'</dl>';
+    $('pdBody').scrollTop=0;
+    mpd.classList.add('open');mpd.setAttribute('aria-hidden','false');lockBody();
+  }
+  function pdClose(){
+    mpd.classList.remove('open');mpd.setAttribute('aria-hidden','true');pdCur=null;lockBody();
+  }
+  $('pdClose').addEventListener('click',pdClose);$('pdTutup').addEventListener('click',pdClose);
+  mpd.addEventListener('mousedown',function(e){if(e.target===mpd)pdClose();});
+  $('pdAdd').addEventListener('click',function(){var p=pdCur;pdClose();if(p)psTambah(p);});
+
+  $('btnProdToko').addEventListener('click',psOpen);
+  $('psClose').addEventListener('click',psClose);$('psDone').addEventListener('click',psClose);
+  mps.addEventListener('mousedown',function(e){if(e.target===mps)psClose();});
+  $('psq').addEventListener('input',psRender);
+  $('psBody').addEventListener('click',function(e){
+    var d=e.target.closest('[data-psd]');   /* tombol Deskripsi produk: buka modal, jangan tambah ke rincian */
+    if(d){e.stopPropagation();var pd=psData[+d.dataset.psd];if(pd)pdOpen(pd);return;}
+    var b=e.target.closest('[data-ps]');if(!b)return;
+    var p=psData[+b.dataset.ps];if(p)psTambah(p);
+  });
+  $('psBody').addEventListener('keydown',function(e){
+    if((e.key==='Enter'||e.key===' ')&&e.target.classList&&e.target.classList.contains('ps-card')){
+      e.preventDefault();var p=psData[+e.target.dataset.ps];if(p)psTambah(p);
+    }
   });
 
   /* ---------- Modal pilih penerima ---------- */
@@ -898,7 +1070,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 
   /* ---------- Modal form ---------- */
   var mform=$('mForm'),formFrom=null;
-  function lockBody(){document.body.style.overflow=(mform.classList.contains('open')||$('mExp').classList.contains('open')||$('mDoc').classList.contains('open')||$('mFoto').classList.contains('open')||$('mDel').classList.contains('open')||$('mPick').classList.contains('open'))?'hidden':'';}
+  function lockBody(){document.body.style.overflow=(mform.classList.contains('open')||$('mExp').classList.contains('open')||$('mDoc').classList.contains('open')||$('mFoto').classList.contains('open')||$('mDel').classList.contains('open')||$('mPick').classList.contains('open')||$('mProdSO').classList.contains('open')||$('mProdDesc').classList.contains('open'))?'hidden':'';}
   function nomorBaru(){
     var th=new Date().getFullYear(),n=rows.length+1;
     return String(n).padStart(3,'0')+' / ORD / 421.5 SMKN1SIMTER/ '+th;
@@ -3373,7 +3545,9 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   mdel.addEventListener('mousedown',function(e){if(e.target===mdel)delClose();});
   document.addEventListener('keydown',function(e){
     if(e.key!=='Escape')return;
-    if(mpick.classList.contains('open'))pickClose();
+    if($('mProdDesc').classList.contains('open'))pdClose();
+    else if($('mProdSO').classList.contains('open'))psClose();
+    else if(mpick.classList.contains('open'))pickClose();
     else if($('mCam').classList.contains('open'))camClose();
     else if($('mFoto').classList.contains('open'))fotoCloseAll();
     else if($('mExp').classList.contains('open'))expClose();
